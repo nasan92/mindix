@@ -171,6 +171,21 @@
     </div>
 </script>
 
+<script id="template-import-markdown" type="text/x-jquery-tmpl">
+    <div id="import-markdown-dialog" class="file-dialog" title="Import markdown">
+        <h1>From File</h1>
+
+        <p>Choose a markdown file from your computer's hard drive.</p>
+        <p>Supported format: Markdown (.md, .markdown)</p>
+
+        <div class="file-chooser">
+            <input type="file" accept=".md,.markdown,text/markdown,text/plain"/>
+        </div>
+
+        <span class="import-markdown-error error"></span>
+    </div>
+</script>
+
 <script id="template-share" type="text/x-jquery-tmpl">
     <div id="share-dialog" class="file-dialog" title="Share your mindmap">
 		<center>
@@ -672,6 +687,7 @@
 <script src="js/MindMapModel.js"></script>
 <script src="js/NewDocument.js"></script>
 <script src="js/OpenDocument.js"></script>
+<script src="js/ImportMarkdown.js"></script>
 <script src="js/SaveDocument.js"></script>
 <script src="js/MainViewController.js"></script>
 <script src="js/Storage.js"></script>

@@ -168,6 +168,13 @@ mindmaps.SaveInstantDocumentCommand = function() {
     this.description = "Save the mind map"
 };
 mindmaps.SaveInstantDocumentCommand.prototype = new mindmaps.Command;
+mindmaps.ImportMarkdownCommand = function() {
+    this.id = "IMPORT_MARKDOWN_COMMAND";
+    this.label = "Import";
+    this.icon = "ui-icon-arrowthick-1-s";
+    this.description = "Import a markdown file as mind map"
+};
+mindmaps.ImportMarkdownCommand.prototype = new mindmaps.Command;
 mindmaps.OpenDocumentCommand = function() {
     this.id = "OPEN_DOCUMENT_COMMAND";
     this.label = "Open...";

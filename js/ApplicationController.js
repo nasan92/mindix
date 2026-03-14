@@ -97,6 +97,27 @@ mindmaps.ApplicationController = function() {
         var n = new mindmaps.ExportMapPresenter(c, g, new mindmaps.ExportMapView);
         n.go()
     }
+
+    function v() {
+        if (mindmaps.isMapLoadingConfirmationRequired) $("#dialog-confirm").dialog({
+            resizable: !1,
+            height: 140,
+            modal: !0,
+            buttons: {
+                Proceed: function() {
+                    var n = new mindmaps.ImportMarkdownPresenter(c, g, new mindmaps.ImportMarkdownView);
+                    n.go(), $(this).dialog("close")
+                },
+                Cancel: function() {
+                    $(this).dialog("close")
+                }
+            }
+        });
+        else {
+            var n = new mindmaps.ImportMarkdownPresenter(c, g, new mindmaps.ImportMarkdownView);
+            n.go()
+        }
+    }
     mindmaps.connectStartNode = null, mindmaps.connectMode = !1, mindmaps.connectSelected = !1;
     var c = new mindmaps.EventBus,
         l = new mindmaps.ShortcutController,
@@ -149,9 +170,11 @@ mindmaps.ApplicationController = function() {
         var l = p.get(mindmaps.SaveInstantDocumentCommand);
         // l.setHandler(r), l.setEnabled(!0);
         // var u = p.get(mindmaps.ShareMapGoogleCommand);
-        u.setHandler(s), u.setEnabled(!0);
+        // u.setHandler(s), u.setEnabled(!0);
         var g = p.get(mindmaps.OpenDocumentCommand);
         g.setHandler(m), g.setEnabled(!0);
+        var N = p.get(mindmaps.ImportMarkdownCommand);
+        N.setHandler(v), N.setEnabled(!0);
         var h = p.get(mindmaps.SaveDocumentCommand);
         h.setHandler(o);
         var f = p.get(mindmaps.CloseDocumentCommand);

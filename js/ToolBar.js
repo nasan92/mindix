@@ -168,6 +168,9 @@ mindmaps.ToolBarPresenter = function(e, t, n, r, i) {
     var c = [mindmaps.SaveInstantDocumentCommand];
     var h = o(c);
     n.addButtonGroup(h, n.alignLeft);
+    var C = [mindmaps.ImportMarkdownCommand];
+    var H = o(C);
+    n.addButtonGroup(H, n.alignLeft);
     var p = new mindmaps.ToolBarMenu("Nodes", "ui-icon-document");
     var d = [mindmaps.CreateNodeCommand, mindmaps.CreateSiblingNodeCommand, mindmaps.DeleteNodeCommand, mindmaps.SelectParentNodeCommand, mindmaps.SelectChildFirstNodeCommand, mindmaps.SelectSiblingNextNodeCommand, mindmaps.SelectSiblingPrevNodeCommand];
     var v = o(d);
@@ -179,7 +182,7 @@ mindmaps.ToolBarPresenter = function(e, t, n, r, i) {
     m.add(y);
     n.addMenu(m);
     var b = new mindmaps.ToolBarMenu("Document", "ui-icon-document");
-    var w = [mindmaps.NewDocumentCommand, mindmaps.OpenDocumentCommand, mindmaps.SaveDocumentCommand, mindmaps.ShareMapCommand, mindmaps.ExportCommand, mindmaps.PrintCommand, mindmaps.CloseDocumentCommand];
+    var w = [mindmaps.NewDocumentCommand, mindmaps.OpenDocumentCommand, mindmaps.SaveDocumentCommand, mindmaps.ImportMarkdownCommand, mindmaps.ShareMapCommand, mindmaps.ExportCommand, mindmaps.PrintCommand, mindmaps.CloseDocumentCommand];
     var E = o(w);
     b.add(E);
     n.addMenu(b);
