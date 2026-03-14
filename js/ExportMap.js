@@ -416,6 +416,17 @@ mindmaps.StaticSVGRenderer = function() {
         function drawAllBranches(node) {
             node.forEachChild(function(child) {
                 drawBranch(child, node);
+                // Bottom colored connector rect: bridges the bezier endpoint to the node box
+                // (matches ctx.fillRect(0, tm.height + padding, tm.width, node.lineWidth) in StaticCanvas.js)
+                var childPos = getPositionSafe(child);
+                var childBranchColor = child.getPluginData("style", "branchColor") || "#000000";
+                addSelfTag("rect", {
+                    x: childPos.x,
+                    y: childPos.y + child.textMetrics.height + padding,
+                    width: child.textMetrics.width,
+                    height: child.lineWidth,
+                    fill: childBranchColor
+                });
                 drawAllBranches(child)
             })
         }

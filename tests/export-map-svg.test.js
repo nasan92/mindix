@@ -202,6 +202,8 @@ function testBasicVectorOutput() {
   assert(svg.includes("<path "), "Expected vector branch paths");
   assert(svg.includes("<rect "), "Expected node rectangles");
   assert(svg.includes("<text "), "Expected node text");
+  // Bottom connector rects must carry branch fill color, confirming they were drawn
+  assert(svg.includes('fill="#333333"') || svg.includes('fill="#008800"'), "Expected bottom connector rect with branch color");
   assert(!svg.includes('dominant-baseline="text-before-edge"'), "Should not rely on dominant-baseline for alignment");
   assert(!svg.includes('<image href="data:image/png'), "Should not contain PNG fallback image wrapper");
 }
