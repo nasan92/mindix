@@ -202,6 +202,7 @@ function testBasicVectorOutput() {
   assert(svg.includes("<path "), "Expected vector branch paths");
   assert(svg.includes("<rect "), "Expected node rectangles");
   assert(svg.includes("<text "), "Expected node text");
+  assert(!svg.includes('dominant-baseline="text-before-edge"'), "Should not rely on dominant-baseline for alignment");
   assert(!svg.includes('<image href="data:image/png'), "Should not contain PNG fallback image wrapper");
 }
 

@@ -574,9 +574,10 @@ mindmaps.StaticSVGRenderer = function() {
             addSelfTag("rect", rectAttrs);
 
             var lines = (node.getCaption() || "").split(/\r\n|\r|\n/g);
+            var baselineShift = toNumber(font.size, 15) * .8;
             var textAttrs = {
                 x: textX,
-                y: textY,
+                y: textY + baselineShift,
                 fill: font.color,
                 "font-family": font.fontfamily,
                 "font-size": font.size,
@@ -595,7 +596,7 @@ mindmaps.StaticSVGRenderer = function() {
                 for (var i = 0; i < lines.length; i++) {
                     pushLine(buildTag("tspan", {
                         x: textX,
-                        y: textY + i * font.size
+                        y: textY + baselineShift + i * font.size
                     }) + escapeXml(lines[i]) + "</tspan>")
                 }
                 closeTag("text")
