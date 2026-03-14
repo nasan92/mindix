@@ -17,7 +17,7 @@ mindmaps.Node = function() {
     this.setPluginData("style", "border", {
         visible: true,
         style: "dashed",
-        color: "#ffa500",
+        color: "#0015ff",
         background: "#ffffff"
     });
     this.setPluginData("style", "lineWidthOffset", 0);

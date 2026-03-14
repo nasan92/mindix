@@ -1,0 +1,7 @@
+/Users/nathanaelsantschi/Repos/Mind-Map-Maker/.devenv/bootstrap/bootstrapLib.nix
+/Users/nathanaelsantschi/Repos/Mind-Map-Maker/.devenv/bootstrap/default.nix
+/Users/nathanaelsantschi/Repos/Mind-Map-Maker/.devenv/bootstrap/resolve-lock.nix
+/Users/nathanaelsantschi/Repos/Mind-Map-Maker/devenv.local.nix
+/Users/nathanaelsantschi/Repos/Mind-Map-Maker/devenv.lock
+/Users/nathanaelsantschi/Repos/Mind-Map-Maker/devenv.nix
+/Users/nathanaelsantschi/Repos/Mind-Map-Maker/.env

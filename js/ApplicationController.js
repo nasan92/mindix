@@ -147,8 +147,8 @@ mindmaps.ApplicationController = function() {
         var i = p.get(mindmaps.ShareMapCommand);
         i.setHandler(t), i.setEnabled(!0);
         var l = p.get(mindmaps.SaveInstantDocumentCommand);
-        l.setHandler(r), l.setEnabled(!0);
-        var u = p.get(mindmaps.ShareMapGoogleCommand);
+        // l.setHandler(r), l.setEnabled(!0);
+        // var u = p.get(mindmaps.ShareMapGoogleCommand);
         u.setHandler(s), u.setEnabled(!0);
         var g = p.get(mindmaps.OpenDocumentCommand);
         g.setHandler(m), g.setEnabled(!0);

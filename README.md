@@ -1,4 +1,19 @@
 
+# Getting Started with development
+
+activate the development environment: 
+
+``devenv shell``
+
+start php web server: 
+
+``php -S localhost:8080``
+
+open 
+
+http://localhost:8080/index.html
+
+
 If you have any doubt, feel free to contact me at cvazeem@gmail.com
 
 # Requirements

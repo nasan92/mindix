@@ -1,0 +1,572 @@
+﻿{
+    "id": "de16bc8d-380d-4ec6-b0ec-ec060ca6b973",
+    "title": "epistemological \ntheories",
+    "mindmap": {
+        "root": {
+            "id": "aab7830e-d0be-4a96-bf94-6eb2f768a7e6",
+            "parentId": null,
+            "text": {
+                "caption": "epistemological \ntheories"
+            },
+            "children": [
+                {
+                    "id": "960d677b-0cf3-45cc-80a2-7c5a6be84dc9",
+                    "parentId": "aab7830e-d0be-4a96-bf94-6eb2f768a7e6",
+                    "text": {
+                        "caption": "infinitism"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "1164600d-208a-441c-815e-aac5aaf11af6",
+                    "parentId": "aab7830e-d0be-4a96-bf94-6eb2f768a7e6",
+                    "text": {
+                        "caption": "empiricism"
+                    },
+                    "children": [
+                        {
+                            "id": "67d3a958-29bf-40fa-aa9f-4a263b7704c8",
+                            "parentId": "1164600d-208a-441c-815e-aac5aaf11af6",
+                            "text": {
+                                "caption": "description"
+                            },
+                            "children": [
+                                {
+                                    "id": "047a13bf-b540-4871-84c8-02b75c68d76f",
+                                    "parentId": "67d3a958-29bf-40fa-aa9f-4a263b7704c8",
+                                    "text": {
+                                        "caption": "sfsdf"
+                                    },
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "723e00fc-dc17-4e04-a681-eca68fe26d57",
+                            "parentId": "1164600d-208a-441c-815e-aac5aaf11af6",
+                            "text": {
+                                "caption": "something else"
+                            },
+                            "children": [
+                                {
+                                    "id": "2cc4e224-8b9b-4945-9242-7bc9f35e2587",
+                                    "parentId": "723e00fc-dc17-4e04-a681-eca68fe26d57",
+                                    "text": {
+                                        "caption": "asdfdf"
+                                    },
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "78609a31-5076-4c10-af01-111a07cc2212",
+                    "parentId": "aab7830e-d0be-4a96-bf94-6eb2f768a7e6",
+                    "text": {
+                        "caption": "skepticism"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "c535ec57-9426-4a94-869a-202e8d486ea6",
+                    "parentId": "aab7830e-d0be-4a96-bf94-6eb2f768a7e6",
+                    "text": {
+                        "caption": "rationalism"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "3e337ca2-a58f-4f57-b525-e9ce7ca9f5e1",
+                    "parentId": "aab7830e-d0be-4a96-bf94-6eb2f768a7e6",
+                    "text": {
+                        "caption": "fallibiism"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "c638d147-a1d6-415c-a62b-ce44b6221ff7",
+                    "parentId": "aab7830e-d0be-4a96-bf94-6eb2f768a7e6",
+                    "text": {
+                        "caption": "coherentists"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "65d42ee5-151e-4b4d-b19f-95d3117a294e",
+                    "parentId": "aab7830e-d0be-4a96-bf94-6eb2f768a7e6",
+                    "text": {
+                        "caption": "foundherentism"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "49a04d17-ae97-4666-8988-89f15d1b7558",
+                    "parentId": "aab7830e-d0be-4a96-bf94-6eb2f768a7e6",
+                    "text": {
+                        "caption": "foundationalists"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "959f2af2-3531-4330-9bc1-6a7220c5cd71",
+                    "parentId": "aab7830e-d0be-4a96-bf94-6eb2f768a7e6",
+                    "text": {
+                        "caption": "externalism"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "f82ba00a-57b7-4b02-8f1d-6cc5e3cabeec",
+                    "parentId": "aab7830e-d0be-4a96-bf94-6eb2f768a7e6",
+                    "text": {
+                        "caption": "internalism"
+                    },
+                    "children": []
+                }
+            ]
+        }
+    },
+    "dates": {
+        "created": 1773431064180,
+        "modified": 1773431215221
+    },
+    "dimensions": {
+        "x": 16000,
+        "y": 8000
+    },
+    "autosave": false,
+    "pluginData": {
+        "style": {
+            "aab7830e-d0be-4a96-bf94-6eb2f768a7e6": {
+                "font": {
+                    "style": "normal",
+                    "weight": "bold",
+                    "fontfamily": "sans-serif",
+                    "decoration": "none",
+                    "size": 20,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#000000"
+            },
+            "960d677b-0cf3-45cc-80a2-7c5a6be84dc9": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#ff99cc"
+            },
+            "1164600d-208a-441c-815e-aac5aaf11af6": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#ccffff"
+            },
+            "67d3a958-29bf-40fa-aa9f-4a263b7704c8": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#ccffff"
+            },
+            "047a13bf-b540-4871-84c8-02b75c68d76f": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#ccffff"
+            },
+            "723e00fc-dc17-4e04-a681-eca68fe26d57": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#ccffff"
+            },
+            "2cc4e224-8b9b-4945-9242-7bc9f35e2587": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#ccffff"
+            },
+            "78609a31-5076-4c10-af01-111a07cc2212": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#c0c0c0"
+            },
+            "c535ec57-9426-4a94-869a-202e8d486ea6": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#ffcc00"
+            },
+            "3e337ca2-a58f-4f57-b525-e9ce7ca9f5e1": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#800080"
+            },
+            "c638d147-a1d6-415c-a62b-ce44b6221ff7": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#993366"
+            },
+            "65d42ee5-151e-4b4d-b19f-95d3117a294e": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#c0c0c0"
+            },
+            "49a04d17-ae97-4666-8988-89f15d1b7558": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#008000"
+            },
+            "959f2af2-3531-4330-9bc1-6a7220c5cd71": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#ffff99"
+            },
+            "f82ba00a-57b7-4b02-8f1d-6cc5e3cabeec": {
+                "font": {
+                    "style": "normal",
+                    "weight": "normal",
+                    "decoration": "none",
+                    "fontfamily": "sans-serif",
+                    "size": 15,
+                    "color": "#000000"
+                },
+                "border": {
+                    "visible": true,
+                    "style": "dashed",
+                    "color": "#ffa500",
+                    "background": "#ffffff"
+                },
+                "lineWidthOffset": 0,
+                "branchColor": "#008080"
+            }
+        },
+        "layout": {
+            "aab7830e-d0be-4a96-bf94-6eb2f768a7e6": {
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "foldChildren": false
+            },
+            "960d677b-0cf3-45cc-80a2-7c5a6be84dc9": {
+                "offset": {
+                    "x": -258,
+                    "y": -66
+                },
+                "foldChildren": false
+            },
+            "1164600d-208a-441c-815e-aac5aaf11af6": {
+                "offset": {
+                    "x": 139,
+                    "y": -179
+                },
+                "foldChildren": false
+            },
+            "67d3a958-29bf-40fa-aa9f-4a263b7704c8": {
+                "offset": {
+                    "x": 120,
+                    "y": -16
+                },
+                "foldChildren": false
+            },
+            "047a13bf-b540-4871-84c8-02b75c68d76f": {
+                "offset": {
+                    "x": 115,
+                    "y": -24
+                },
+                "foldChildren": false
+            },
+            "723e00fc-dc17-4e04-a681-eca68fe26d57": {
+                "offset": {
+                    "x": 173,
+                    "y": 34
+                },
+                "foldChildren": false
+            },
+            "2cc4e224-8b9b-4945-9242-7bc9f35e2587": {
+                "offset": {
+                    "x": 165,
+                    "y": 19
+                },
+                "foldChildren": false
+            },
+            "78609a31-5076-4c10-af01-111a07cc2212": {
+                "offset": {
+                    "x": 245.0625,
+                    "y": 100.328125
+                },
+                "foldChildren": false
+            },
+            "c535ec57-9426-4a94-869a-202e8d486ea6": {
+                "offset": {
+                    "x": 208,
+                    "y": -70
+                },
+                "foldChildren": false
+            },
+            "3e337ca2-a58f-4f57-b525-e9ce7ca9f5e1": {
+                "offset": {
+                    "x": 267,
+                    "y": 182
+                },
+                "foldChildren": false
+            },
+            "c638d147-a1d6-415c-a62b-ce44b6221ff7": {
+                "offset": {
+                    "x": -213,
+                    "y": 142
+                },
+                "foldChildren": false
+            },
+            "65d42ee5-151e-4b4d-b19f-95d3117a294e": {
+                "offset": {
+                    "x": -270,
+                    "y": 112
+                },
+                "foldChildren": false
+            },
+            "49a04d17-ae97-4666-8988-89f15d1b7558": {
+                "offset": {
+                    "x": -222,
+                    "y": 52
+                },
+                "foldChildren": false
+            },
+            "959f2af2-3531-4330-9bc1-6a7220c5cd71": {
+                "offset": {
+                    "x": -176,
+                    "y": -140
+                },
+                "foldChildren": false
+            },
+            "f82ba00a-57b7-4b02-8f1d-6cc5e3cabeec": {
+                "offset": {
+                    "x": -108,
+                    "y": -214
+                },
+                "foldChildren": false
+            }
+        },
+        "image": {
+            "aab7830e-d0be-4a96-bf94-6eb2f768a7e6": {},
+            "960d677b-0cf3-45cc-80a2-7c5a6be84dc9": {},
+            "1164600d-208a-441c-815e-aac5aaf11af6": {},
+            "67d3a958-29bf-40fa-aa9f-4a263b7704c8": {},
+            "047a13bf-b540-4871-84c8-02b75c68d76f": {},
+            "723e00fc-dc17-4e04-a681-eca68fe26d57": {},
+            "2cc4e224-8b9b-4945-9242-7bc9f35e2587": {},
+            "78609a31-5076-4c10-af01-111a07cc2212": {},
+            "c535ec57-9426-4a94-869a-202e8d486ea6": {},
+            "3e337ca2-a58f-4f57-b525-e9ce7ca9f5e1": {},
+            "c638d147-a1d6-415c-a62b-ce44b6221ff7": {},
+            "65d42ee5-151e-4b4d-b19f-95d3117a294e": {},
+            "49a04d17-ae97-4666-8988-89f15d1b7558": {},
+            "959f2af2-3531-4330-9bc1-6a7220c5cd71": {},
+            "f82ba00a-57b7-4b02-8f1d-6cc5e3cabeec": {}
+        },
+        "attachment": {
+            "aab7830e-d0be-4a96-bf94-6eb2f768a7e6": {},
+            "960d677b-0cf3-45cc-80a2-7c5a6be84dc9": {},
+            "1164600d-208a-441c-815e-aac5aaf11af6": {},
+            "67d3a958-29bf-40fa-aa9f-4a263b7704c8": {},
+            "047a13bf-b540-4871-84c8-02b75c68d76f": {},
+            "723e00fc-dc17-4e04-a681-eca68fe26d57": {},
+            "2cc4e224-8b9b-4945-9242-7bc9f35e2587": {},
+            "78609a31-5076-4c10-af01-111a07cc2212": {},
+            "c535ec57-9426-4a94-869a-202e8d486ea6": {},
+            "3e337ca2-a58f-4f57-b525-e9ce7ca9f5e1": {},
+            "c638d147-a1d6-415c-a62b-ce44b6221ff7": {},
+            "65d42ee5-151e-4b4d-b19f-95d3117a294e": {},
+            "49a04d17-ae97-4666-8988-89f15d1b7558": {},
+            "959f2af2-3531-4330-9bc1-6a7220c5cd71": {},
+            "f82ba00a-57b7-4b02-8f1d-6cc5e3cabeec": {}
+        },
+        "url": {
+            "aab7830e-d0be-4a96-bf94-6eb2f768a7e6": {},
+            "960d677b-0cf3-45cc-80a2-7c5a6be84dc9": {},
+            "1164600d-208a-441c-815e-aac5aaf11af6": {},
+            "67d3a958-29bf-40fa-aa9f-4a263b7704c8": {},
+            "047a13bf-b540-4871-84c8-02b75c68d76f": {},
+            "723e00fc-dc17-4e04-a681-eca68fe26d57": {},
+            "2cc4e224-8b9b-4945-9242-7bc9f35e2587": {},
+            "78609a31-5076-4c10-af01-111a07cc2212": {},
+            "c535ec57-9426-4a94-869a-202e8d486ea6": {},
+            "3e337ca2-a58f-4f57-b525-e9ce7ca9f5e1": {},
+            "c638d147-a1d6-415c-a62b-ce44b6221ff7": {},
+            "65d42ee5-151e-4b4d-b19f-95d3117a294e": {},
+            "49a04d17-ae97-4666-8988-89f15d1b7558": {},
+            "959f2af2-3531-4330-9bc1-6a7220c5cd71": {},
+            "f82ba00a-57b7-4b02-8f1d-6cc5e3cabeec": {}
+        }
+    },
+    "cnodes": []
+}

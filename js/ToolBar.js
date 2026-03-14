@@ -161,7 +161,8 @@ mindmaps.ToolBarPresenter = function(e, t, n, r, i) {
     var u = [mindmaps.CreateNodeCommand, mindmaps.CreateSiblingNodeCommand, mindmaps.DeleteNodeCommand];
     var a = o(u);
     n.addButtonGroup(a, n.alignLeft);
-    var f = [mindmaps.ShareMapCommand, mindmaps.ShareMapGoogleCommand];
+    // var f = [mindmaps.ShareMapCommand, mindmaps.ShareMapGoogleCommand];
+    var f = [mindmaps.ShareMapCommand];
     var l = o(f);
     n.addButtonGroup(l, n.alignLeft);
     var c = [mindmaps.SaveInstantDocumentCommand];
