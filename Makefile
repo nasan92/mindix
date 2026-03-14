@@ -3,7 +3,7 @@ PORT ?= 8080
 DOCROOT ?= .
 PID_FILE ?= .php-server.pid
 
-.PHONY: help check-php serve serve-bg stop
+.PHONY: help check-php serve serve-bg stop test-svg-export
 
 help:
 	@echo "Available targets:"
@@ -46,3 +46,6 @@ stop:
 		echo "Process in $(PID_FILE) is not running."; \
 	fi
 	@rm -f "$(PID_FILE)"
+
+test-svg-export:
+	node tests/export-map-svg.test.js
