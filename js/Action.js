@@ -30,7 +30,7 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
         return new mindmaps.action.CreateNodeAction(n, o, t)
     }
 }, mindmaps.action.DeleteNodeAction.prototype = new mindmaps.action.Action, mindmaps.action.CreateAutoPositionedNodeAction = function(n, t) {
-    if (n.isRoot()) var o = mindmaps.Util.randomColor(),
+    if (n.isRoot()) var o = mindmaps.Util.getNextRootBranchColor(n),
         i = Math.random() > .49 ? 1 : -1,
         e = Math.random() > .49 ? 1 : -1,
         a = i * (100 + 250 * Math.random()),

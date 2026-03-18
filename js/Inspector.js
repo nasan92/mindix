@@ -23,6 +23,7 @@ mindmaps.InspectorView = function() {
         g = $("#inspector-button-border-color-children", o),
         A = $("#inspector-button-connect-node", o),
         N = $("#inspector-button-connect-node-remove", o),
+        T = $("#inspector-color-theme-select", o),
         S = $("#inspector-branch-color-picker", o),
         x = $("#inspector-font-color-picker", o),
         w = $("#inspector-border-color-picker", o),
@@ -71,6 +72,36 @@ mindmaps.InspectorView = function() {
         S.val(e).change()
     }, this.setFontColorPickerColor = function(e) {
         x.val(e).change()
+    }, this.setCurrentTheme = function(e) {
+        T.val(e)
+    }, this.refreshColorPickers = function() {
+        function o(o, n, t) {
+            o.next(".colorPicker-picker").remove();
+            o.off("change");
+            o.colorPicker({
+                pickerDefault: n[0],
+                colors: n
+            });
+            o.on("change", function() {
+                var n = $(this).val();
+                n && t && t(n)
+            })
+        }
+        o(S, mindmaps.Util.colors20, function(o) {
+            e.branchColorPicked && e.branchColorPicked(o)
+        });
+        o(y, mindmaps.Util.colors20c, function(o) {
+            e.borderBackgroundColorPicked && e.borderBackgroundColorPicked(o)
+        });
+        o(w, mindmaps.Util.colors20b, function(o) {
+            e.borderColorPicked && e.borderColorPicked(o)
+        });
+        o(P, mindmaps.Util.colors20d, function(o) {
+            e.connectColorPicked && e.connectColorPicked(o)
+        });
+        o(x, mindmaps.Util.fontColors || mindmaps.Util.colors20, function(o) {
+            e.fontColorPicked && e.fontColorPicked(o)
+        })
     }, this.init = function() {
         $(".buttonset", o).buttonset(), b.button(), p.button(), m.button(), k.button(), v.button(), g.button(), B.button(), A.button(), N.button(), n.change(function() {
             console.log(n.val()), e.fontfaceChangeClicked && e.fontfaceChangeClicked(n.val())
@@ -110,37 +141,22 @@ mindmaps.InspectorView = function() {
                 var o = $(this).prop("checked");
                 e.fontLinethroughCheckboxClicked(o)
             }
-        }), S.colorPicker({
-            pickerDefault: mindmaps.Util.colors20[0],
-            colors: mindmaps.Util.colors20
-        }), S.change(function() {
+        });
+        var O = mindmaps.Util.getColorThemeNames();
+        T.empty();
+        O.forEach(function(o) {
+            var n = mindmaps.Util.getColorThemeLabel(o);
+            T.append($("<option />", {
+                value: o,
+                text: n
+            }))
+        });
+        T.val(mindmaps.Util.getActiveColorTheme());
+        T.change(function() {
             var o = $(this).val();
-            o && e.branchColorPicked && e.branchColorPicked(o)
-        }), y.colorPicker({
-            pickerDefault: mindmaps.Util.colors20c[0],
-            colors: mindmaps.Util.colors20c
-        }), y.change(function() {
-            var o = $(this).val();
-            o && e.borderBackgroundColorPicked && e.borderBackgroundColorPicked(o)
-        }), w.colorPicker({
-            pickerDefault: mindmaps.Util.colors20b[0],
-            colors: mindmaps.Util.colors20b
-        }), w.change(function() {
-            var o = $(this).val();
-            o && e.borderColorPicked && e.borderColorPicked(o)
-        }), P.colorPicker({
-            pickerDefault: mindmaps.Util.colors20d[0],
-            colors: mindmaps.Util.colors20d
-        }), P.change(function() {
-            var o = $(this).val();
-            o && e.connectColorPicked && e.connectColorPicked(o)
-        }), x.colorPicker({
-            pickerDefault: mindmaps.Util.colors20[0],
-            colors: mindmaps.Util.colors20
-        }), x.change(function() {
-            var o = $(this).val();
-            o && e.fontColorPicked && e.fontColorPicked(o)
-        }), v.click(function() {
+            o && e.colorThemeChanged && e.colorThemeChanged(o)
+        });
+        e.refreshColorPickers(), v.click(function() {
             e.backgroundColorChildrenButtonClicked && e.backgroundColorChildrenButtonClicked()
         }), g.click(function() {
             e.borderColorChildrenButtonClicked && e.borderColorChildrenButtonClicked()
@@ -237,6 +253,17 @@ mindmaps.InspectorView = function() {
     }, t.connectColorPicked = function(e) {
         var n = new mindmaps.action.SetConnectColorAction(o.selectedNode, mindmaps.connectStartNode, e);
         o.executeAction(n)
+    }, t.colorThemeChanged = function(n) {
+        var r = mindmaps.Util.setColorTheme(n);
+        var i = o.getMindMap();
+        if (i) {
+            mindmaps.Util.applyThemeToMindMap(i, function(n) {
+                e.publish(mindmaps.Event.NODE_BRANCH_COLOR_CHANGED, n)
+            });
+            mindmaps.isMapLoadingConfirmationRequired = !0
+        }
+        t.refreshColorPickers();
+        t.setCurrentTheme(r)
     }, t.fontColorPreview = function(n) {
         e.publish(mindmaps.Event.NODE_FONT_COLOR_PREVIEW, o.selectedNode, n)
     }, t.branchColorChildrenButtonClicked = function() {

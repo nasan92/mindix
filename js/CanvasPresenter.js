@@ -154,7 +154,7 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
     }, t.foldButtonClicked = function(e) {
         s(e)
     }, c.dragStarted = function(e) {
-        var n = e.isRoot() ? mindmaps.Util.randomColor() : e.getPluginData("style", "branchColor");
+        var n = e.isRoot() ? mindmaps.Util.getNextRootBranchColor(e) : e.getPluginData("style", "branchColor");
         return n
     }, c.dragStopped = function(e, n, t, i) {
         if (!(50 > i)) {

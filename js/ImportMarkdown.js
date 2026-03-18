@@ -36,7 +36,7 @@ mindmaps.MarkdownImportParser = {
             node.setCaption(entry.caption);
 
             if (parent.isRoot()) {
-                node.setPluginData("style", "branchColor", mindmaps.Util.randomColor())
+                node.setPluginData("style", "branchColor", mindmaps.Util.getNextRootBranchColor(parent))
             } else {
                 node.setPluginData("style", "branchColor", parent.getPluginData("style", "branchColor"))
             }
