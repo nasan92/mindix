@@ -1,23 +1,23 @@
-# epistemological theories
+# EPISTEMOLOGICAL THEORIES
 
-## empiricism
-### theory that states that knowledge comes only or primarily from sensory experience
-### philosophical vies
-## rationalism
-### reason
-#### opposite of empiricism
-## sketpicism
-### skeptical about anything
-### lala
-## fallibilism
-### fall to know
-#### yes
-#### no
-### got it
-## foundationalism
+## EMPIRICISM
+- THEORY THAT STATES THAT KNOWLEDGE COMES ONLY OR PRIMARILY FROM SENSORY EXPERIENCE
+- PHILOSOPHICAL VIES
+## RATIONALISM
+### REASON
+#### OPPOSITE OF EMPIRICISM
+## SKETPICISM
+### SKEPTICAL ABOUT ANYTHING
+### LALA
+## FALLIBILISM
+### FALL TO KNOW
+#### YES
+#### NO
+### GOT IT
+## FOUNDATIONALISM
 
-## coherentism
-## Foundherentism
-## Infinitism
-## Externalism
-## Internalism
+## COHERENTISM
+## FOUNDHERENTISM
+## INFINITISM
+## EXTERNALISM
+## INTERNALISM

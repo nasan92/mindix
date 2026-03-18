@@ -61,6 +61,16 @@ mindmaps.MarkdownImportParser = {
         var lines = markdownText.replace(/\r\n/g, "\n").split("\n");
         var headings = [];
         var inCodeBlock = false;
+        var currentHeadingLevel = null;
+        var listIndentStack = [];
+
+        function getIndentWidth(rawIndent) {
+            var width = 0;
+            for (var i = 0; i < rawIndent.length; i++) {
+                width += rawIndent.charAt(i) === "\t" ? 4 : 1
+            }
+            return width
+        }
 
         lines.forEach(function(line) {
             if (/^\s*```/.test(line)) {
@@ -72,19 +82,45 @@ mindmaps.MarkdownImportParser = {
             }
 
             var match = line.match(/^\s*(#{1,6})\s+(.+?)\s*$/);
-            if (!match) {
+            if (match) {
+                var level = match[1].length;
+                var caption = match[2].replace(/\s+#+\s*$/, "").trim();
+                if (!caption) {
+                    return
+                }
+
+                headings.push({
+                    level: level,
+                    caption: caption
+                });
+
+                currentHeadingLevel = level;
+                listIndentStack = [];
                 return
             }
 
-            var level = match[1].length;
-            var caption = match[2].replace(/\s+#+\s*$/, "").trim();
-            if (!caption) {
+            // List items below a heading are treated as its subbranches.
+            var listMatch = line.match(/^(\s*)(?:[-*+]\s+|\d+[.)]\s+)(.+?)\s*$/);
+            if (!listMatch || currentHeadingLevel === null) {
                 return
+            }
+
+            var listCaption = listMatch[2].trim();
+            if (!listCaption) {
+                return
+            }
+
+            var indentWidth = getIndentWidth(listMatch[1]);
+            while (listIndentStack.length && indentWidth < listIndentStack[listIndentStack.length - 1]) {
+                listIndentStack.pop()
+            }
+            if (!listIndentStack.length || indentWidth > listIndentStack[listIndentStack.length - 1]) {
+                listIndentStack.push(indentWidth)
             }
 
             headings.push({
-                level: level,
-                caption: caption
+                level: currentHeadingLevel + listIndentStack.length,
+                caption: listCaption
             })
         });
 
