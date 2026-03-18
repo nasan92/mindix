@@ -18,7 +18,7 @@ mindmaps.MindMap = function(e) {
         this.root.setPluginData("style", "border", {
             visible: true,
             style: "dashed",
-            color: "#ffa500",
+            color: "#ffffff",
             background: "#ffffff"
         })
     }
