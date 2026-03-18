@@ -47,6 +47,15 @@ mindmaps.ExportMapView = function() {
     };
     this.setImage = function(e) {
         $("#export-preview").html(e)
+    };
+    this.showScaleSelector = function() {
+        $("#export-scale-selector").show()
+    };
+    this.hideScaleSelector = function() {
+        $("#export-scale-selector").hide()
+    };
+    this.getScale = function() {
+        return parseFloat($("#export-png-scale").val()) || 1
     }
 };
 mindmaps.StaticSVGRenderer = function() {
@@ -652,6 +661,7 @@ mindmaps.ExportMapPresenter = function(e, t, n) {
     var a = "mindmap";
     var f = 0;
     var l = 0;
+    var currentDocument = null;
 
     function c(e) {
         var t = e.split(",");
@@ -674,7 +684,8 @@ mindmaps.ExportMapPresenter = function(e, t, n) {
 
     this.go = function() {
         var o = t.getDocument();
-        var p = r.renderAsCanvas(o);
+        currentDocument = o;
+        var p = r.renderAsCanvas(o, 1);
         var h = p[0];
         i = h.toDataURL("image/png");
         f = h.width;
@@ -685,8 +696,13 @@ mindmaps.ExportMapPresenter = function(e, t, n) {
             src: i,
             "class": "map"
         }));
+        n.showScaleSelector();
         n.setDownloadHandlers(function() {
-            window.saveAs(c(i), a + ".png")
+            // Get the selected scale and render at that scale
+            var scale = n.getScale();
+            var scaledCanvas = r.renderAsCanvas(currentDocument, scale);
+            var scaledImage = scaledCanvas[0].toDataURL("image/png");
+            window.saveAs(c(scaledImage), a + ".png")
         }, function() {
             try {
                 var t = s.render(o);

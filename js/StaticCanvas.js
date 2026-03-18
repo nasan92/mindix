@@ -336,10 +336,12 @@ mindmaps.StaticCanvasRenderer = function() {
    * Returns the rendered canvas as a jQuery object.
    * 
    * @param {mindmaps.Document} document
+   * @param {number} scale - Optional scale factor (default: 1). E.g., 2 for 200%
    * @returns {jQuery}
    */
-  this.renderAsCanvas = function(document) {
-    renderCanvas(document);
+  this.renderAsCanvas = function(document, scale) {
+    scale = scale || 1;
+    renderCanvas(document, scale);
     return $canvas;
   };
 
@@ -347,14 +349,16 @@ mindmaps.StaticCanvasRenderer = function() {
    * Renders the map onto the canvas.
    * 
    * @param {mindmaps.Document} document
+   * @param {number} scale - Scale factor (default: 1)
    */
-  function renderCanvas(document) {
+  function renderCanvas(document, scale) {
+    scale = scale || 1;
     var map = document.mindmap;
     var root = prepareNodes(map);
     var dimensions = getMindMapDimensions(root);
 
-    var width = dimensions.width;
-    var height = dimensions.height;
+    var width = dimensions.width * scale;
+    var height = dimensions.height * scale;
     $canvas.attr({
       width : width,
       height : height
@@ -367,7 +371,9 @@ mindmaps.StaticCanvasRenderer = function() {
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, width, height);
 
-    ctx.translate(width / 2, height / 2);
+    // Apply scale transformation
+    ctx.scale(scale, scale);
+    ctx.translate(dimensions.width / 2, dimensions.height / 2);
 
     // render in two passes: 1. lines, 2. captions. because we have
     // no z-index, captions should not be covered by lines
