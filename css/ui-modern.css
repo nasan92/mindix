@@ -37,6 +37,7 @@ textarea,
   border-radius: 14px;
   background: var(--ui-surface-strong);
   box-shadow: var(--ui-shadow);
+  z-index: 1100 !important;
 }
 
 .ui-dialog .ui-dialog-titlebar {
@@ -66,6 +67,12 @@ textarea,
 .ui-dialog .ui-dialog-content {
   background: #ffffff;
   color: #3a414a;
+}
+
+/* Attachment editor: let CKEditor fill the content area edge-to-edge */
+#attachmentEditor {
+  padding: 0 !important;
+  overflow: hidden !important;
 }
 
 .ui-dialog .ui-dialog-buttonpane {
