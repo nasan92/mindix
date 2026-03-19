@@ -42,6 +42,10 @@ textarea,
 #canvas-container {
   position: relative;
   box-sizing: border-box;
+  padding-right: 0;
+}
+
+#canvas-container.format-sidebar-open {
   padding-right: 360px;
 }
 
@@ -51,35 +55,34 @@ textarea,
   right: 0;
   bottom: 50px;
   width: 360px;
-  padding: 12px;
+  padding: 10px 12px;
   border-left: 1px solid #d6dbe3;
   background: rgba(247, 249, 251, 0.96);
   box-shadow: var(--ui-shadow);
   overflow-y: auto;
+  overflow-x: visible;
   z-index: 3500;
 }
 
+#format-sidebar.hidden {
+  display: none;
+}
+
 .format-sidebar-section {
-  border: 1px solid #d7dce4;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: var(--ui-shadow-soft);
-  margin-bottom: 10px;
-  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  margin: 0;
+  overflow: visible;
 }
 
 .format-sidebar-title {
-  margin: 0;
-  padding: 10px 12px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #2f3742;
-  border-bottom: 1px solid #e2e6ec;
-  background: linear-gradient(180deg, #fcfcfd 0%, #f1f4f8 100%);
+  display: none;
 }
 
 .format-sidebar-body {
-  padding: 10px 12px;
+  padding: 0;
 }
 
 #format-sidebar .float-panel,
@@ -96,6 +99,8 @@ textarea,
 #format-sidebar #inspector-content,
 #format-sidebar #navi-content {
   background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 #format-sidebar #navi-slider {
@@ -103,7 +108,7 @@ textarea,
 }
 
 @media (max-width: 1100px) {
-  #canvas-container {
+  #canvas-container.format-sidebar-open {
     padding-right: 320px;
   }
 
@@ -635,6 +640,16 @@ textarea,
   width: 24px;
   height: 24px;
   margin: 0;
+}
+
+/* Keep the color palette above the fixed sidebar and map canvas layers. */
+#format-sidebar .colorPicker-palette,
+div.colorPicker-palette,
+div.colorPicker-palette.inspector {
+  z-index: 5005 !important;
+  border-color: #b5beca;
+  border-radius: 10px;
+  box-shadow: 0 12px 26px rgba(32, 38, 48, 0.24);
 }
 
 #inspector-button-connect-node {

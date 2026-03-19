@@ -130,18 +130,17 @@ mindmaps.MainViewController = function (eventBus, mindmapModel, commandRegistry)
         return $sidebar;
     }
 
-    function createSidebarSection(title, $content) {
-        return $("<section/>", {
-            "class": "format-sidebar-section"
-        }).append(
-            $("<h3/>", {
-                "class": "format-sidebar-title",
-                text: title
-            }),
-            $("<div/>", {
-                "class": "format-sidebar-body"
-            }).append($content)
-        );
+    function setFormatSidebarVisible(isVisible) {
+        var visible = !!isVisible;
+        var $sidebar = ensureFormatSidebar();
+
+        $sidebar.toggleClass("hidden", !visible);
+        canvasContainer.getContent().toggleClass("format-sidebar-open", visible);
+    }
+
+    function toggleFormatSidebar() {
+        var $sidebar = ensureFormatSidebar();
+        setFormatSidebarVisible($sidebar.hasClass("hidden"));
     }
 
     /**
@@ -224,17 +223,14 @@ mindmaps.MainViewController = function (eventBus, mindmapModel, commandRegistry)
             mindmapModel, commandRegistry, inspectorView);
         inspectorPresenter.go();
 
-        // navigator
-        var naviView = new mindmaps.NavigatorView();
-        var naviPresenter = new mindmaps.NavigatorPresenter(eventBus, naviView,
-            canvasContainer, zoomController);
-        naviPresenter.go();
-
         var $sidebar = ensureFormatSidebar();
-        $sidebar.empty().append(
-            createSidebarSection("Inspector", inspectorView.getContent()),
-            createSidebarSection("Navigator", naviView.getContent())
-        );
+        $sidebar.empty().append(inspectorView.getContent());
+
+        setFormatSidebarVisible(false);
+
+        var formatSidebarCommand = commandRegistry.get(mindmaps.FormatSidebarCommand);
+        formatSidebarCommand.setHandler(toggleFormatSidebar);
+        formatSidebarCommand.setEnabled(true);
 
 
 

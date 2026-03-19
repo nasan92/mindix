@@ -207,6 +207,14 @@ mindmaps.HelpCommand = function() {
     this.description = "Get help!"
 };
 mindmaps.HelpCommand.prototype = new mindmaps.Command;
+mindmaps.FormatSidebarCommand = function() {
+    this.id = "FORMAT_SIDEBAR_COMMAND";
+    this.enabled = true;
+    this.icon = "ui-icon-wrench";
+    this.label = "Format";
+    this.description = "Show or hide the format sidebar"
+};
+mindmaps.FormatSidebarCommand.prototype = new mindmaps.Command;
 mindmaps.PrintCommand = function() {
     this.id = "PRINT_COMMAND";
     this.icon = "ui-icon-print";
