@@ -123,6 +123,39 @@ h3 {
 
 .text p + p { margin-top: 12px; }
 
+.mindix-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: 18px;
+  align-items: start;
+}
+
+.mindix-copy {
+  min-width: 0;
+}
+
+.mindix-figure {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #e3e7ed;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  text-align: center;
+}
+
+.mindix-figure img {
+  display: block;
+  width: min(100%, 320px);
+  height: auto;
+  margin: 0 auto;
+}
+
+.mindix-figure figcaption {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
 .text ul {
   list-style: disc;
   padding-left: 20px;
@@ -162,4 +195,15 @@ h3 {
   #topbar { padding: 0 14px; }
   .section { padding: 18px 16px; border-radius: 10px; }
   #topbar .logo a { font-size: 1.4em; }
+}
+
+@media (max-width: 760px) {
+  .mindix-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .mindix-figure {
+    max-width: 320px;
+    margin: 4px auto 0;
+  }
 }
