@@ -37,7 +37,6 @@ textarea,
   border-radius: 14px;
   background: var(--ui-surface-strong);
   box-shadow: var(--ui-shadow);
-  z-index: 1100 !important;
 }
 
 .ui-dialog .ui-dialog-titlebar {
@@ -178,6 +177,8 @@ textarea,
   background: linear-gradient(180deg, #fcfcfd 0%, #f2f3f5 100%);
   box-shadow: 0 2px 10px rgba(35, 40, 49, 0.08);
   overflow: visible;
+  position: relative;
+  z-index: 4000;
 }
 
 #toolbar {
