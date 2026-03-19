@@ -699,13 +699,12 @@ mindmaps.DefaultCanvasView = function() {
     this.highlightNode = function(e) {
         var t = h(e);
         t.addClass("selected");
-        this.updateNode(e);
-        t.addClass("selected")
+        this.updateNode(e)
     };
     this.unhighlightNode = function(e) {
         var t = h(e);
-        this.updateNode(e);
-        t.removeClass("selected")
+        t.removeClass("selected");
+        this.updateNode(e)
     };
     this.closeNode = function(e) {
         var t = c(e);
