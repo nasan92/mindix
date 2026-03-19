@@ -322,26 +322,6 @@
     <div id="inspector">
         <div id="inspector-content">
             <table id="inspector-table">
-			<tr>
-                    <td>
-                        <div class="buttonset buttons-very-small buttons-less-padding">
-							 <button id="inspector-button-border-show-hide">Toggle Border</button>
-                        </div>
-                    </td>
-					<td>Style: 
-					 <select id="inspector-button-border-style">
-							<option value="solid">Solid</option>
-							<option value="dashed">Dashed</option>
-							<option value="dotted">Dotted</option>
-							<option value="groove">Groove</option>
-							<option value="inset">Inset</option>
-							<option value="outset">Outset</option>
-					</select>
-					<button id="inspector-button-border-style-children" title="Apply border style to all children"
-                            class="right buttons-small buttons-less-padding">Inherit
-                    </button>
-				</td>
-            </tr>
 				<tr>
                     <td>Font face:</td>
                     <td>
@@ -462,14 +442,20 @@
                         <select id="inspector-color-theme-select"></select>
                     </td>
                 </tr>
-				<tr>
-                    <td>Border Color:</td>
-					<td><input type="text" id="inspector-border-color-picker"/>
-					<button id="inspector-button-border-color-children" title="Apply border color to all children"
+                <tr>
+                    <td>Border:</td>
+                    <td>
+                        <select id="inspector-button-border-style">
+                            <option value="none">None</option>
+                            <option value="dashed">Dashed</option>
+                            <option value="solid">Solid</option>
+                        </select>
+                        <input type="text" id="inspector-border-color-picker"/>
+                        <button id="inspector-button-border-color-children" title="Apply border color to all children"
                             class="right buttons-small buttons-less-padding">Inherit
                     </button>
-					</td>
-				</tr>
+                    </td>
+                </tr>
 				<tr>		
                     <td>Background:</td>
 					<td><input type="text" id="inspector-border-background-color-picker"/>

@@ -9,7 +9,6 @@ mindmaps.InspectorView = function() {
         d = $("#inspector-button-font-size-increase", o),
         l = $("#inspector-button-line-width-decrease", o),
         a = $("#inspector-button-line-width-increase", o),
-        s = $("#inspector-button-border-show-hide", o),
         u = $("#inspector-checkbox-font-bold", o),
         C = $("#inspector-checkbox-font-italic", o),
         h = $("#inspector-checkbox-font-underline", o),
@@ -19,7 +18,6 @@ mindmaps.InspectorView = function() {
         p = $("#inspector-button-font-style-children", o),
         m = $("#inspector-button-font-face-children", o),
         v = $("#inspector-button-background-color-children", o),
-        B = $("#inspector-button-border-style-children", o),
         g = $("#inspector-button-border-color-children", o),
         A = $("#inspector-button-connect-node", o),
         N = $("#inspector-button-connect-node-remove", o),
@@ -29,8 +27,13 @@ mindmaps.InspectorView = function() {
         w = $("#inspector-border-color-picker", o),
         P = $("#inspector-connection-color-picker", o),
         y = $("#inspector-border-background-color-picker", o),
-        E = [r, d, l, a, s, u, C, h, f, m, p, b, k, B, g, v, A, N],
+        E = [r, d, l, a, u, C, h, f, m, p, b, k, g, v, A, N],
         D = [S, x, w, y, P];
+
+    function M(e) {
+        return "solid" === e || "dashed" === e || "none" === e ? e : "dashed"
+    }
+
     this.getContent = function() {
         return o
     }, this.setControlsEnabled = function(e) {
@@ -43,9 +46,9 @@ mindmaps.InspectorView = function() {
             o.inspectorAdviser && o.inspectorAdviser.setControlsEnabled && o.inspectorAdviser.setControlsEnabled(e)
         })
     }, this.setBorderText = function(e) {
-        e ? ($("#inspector-button-border-show-hide span").text("Hide Border"), $("#inspector-button-border-style").removeAttr("disabled")) : ($("#inspector-button-border-show-hide span").text("Show Border"), $("#inspector-button-border-style").attr("disabled", "disabled"))
+        e ? $("#inspector-border-color-picker").removeAttr("disabled") : $("#inspector-border-color-picker").attr("disabled", "disabled")
     }, this.setBorderStyle = function(e) {
-        i.val(e)
+        i.val(M(e))
     }, this.setFontFace = function(e) {
         n.val(e)
     }, this.setConnectStyle = function(e) {
@@ -103,7 +106,7 @@ mindmaps.InspectorView = function() {
             e.fontColorPicked && e.fontColorPicked(o)
         })
     }, this.init = function() {
-        $(".buttonset", o).buttonset(), b.button(), p.button(), m.button(), k.button(), v.button(), g.button(), B.button(), A.button(), N.button(), n.change(function() {
+        $(".buttonset", o).buttonset(), b.button(), p.button(), m.button(), k.button(), v.button(), g.button(), A.button(), N.button(), n.change(function() {
             console.log(n.val()), e.fontfaceChangeClicked && e.fontfaceChangeClicked(n.val())
         }), c.change(function() {
             console.log(c.val()), e.connectStyleChangeClicked && e.connectStyleChangeClicked(c.val())
@@ -124,8 +127,6 @@ mindmaps.InspectorView = function() {
                 var o = $(this).prop("checked");
                 e.fontBoldCheckboxClicked(o)
             }
-        }), s.click(function() {
-            e.toggleBorderButtonClick && e.toggleBorderButtonClick()
         }), C.click(function() {
             if (e.fontItalicCheckboxClicked) {
                 var o = $(this).prop("checked");
@@ -160,8 +161,6 @@ mindmaps.InspectorView = function() {
             e.backgroundColorChildrenButtonClicked && e.backgroundColorChildrenButtonClicked()
         }), g.click(function() {
             e.borderColorChildrenButtonClicked && e.borderColorChildrenButtonClicked()
-        }), B.click(function() {
-            e.borderStyleChildrenButtonClicked && e.borderStyleChildrenButtonClicked()
         }), k.click(function() {
             e.branchColorChildrenButtonClicked && e.branchColorChildrenButtonClicked()
         }), b.click(function() {
@@ -179,6 +178,10 @@ mindmaps.InspectorView = function() {
         })
     }
 }, mindmaps.InspectorPresenter = function(e, o, n, t) {
+    function M(e) {
+        return "solid" === e || "dashed" === e || "none" === e ? e : "dashed"
+    }
+
     function c(e, o) {
         var n = mindmaps.getConnectedNodes().filter(function(n) {
             return n.from == e.id && n.to == o.id || n.from == o.id && n.to == e.id
@@ -189,11 +192,16 @@ mindmaps.InspectorView = function() {
     function i(e) {
         var o = e.getPluginData("style", "font"),
             n = e.getPluginData("style", "border") || {
-                visible: !0,
-                style: "dashed",
-                color: "#ffa500",
+                visible: !1,
+                style: "none",
+                color: "#ffffff",
                 background: "#ffffff"
             };
+        n.style = M(n.style);
+        if (!n.visible || "none" === n.style) {
+            n.style = "none"
+        }
+        n.visible = "none" !== n.style;
         t.setBorderStyle(n.style), t.setBorderText(n.visible ? !0 : !1), t.setBoldCheckboxState("bold" === o.weight), t.setFontFace(o.fontfamily), t.setItalicCheckboxState("italic" === o.style), t.setUnderlineCheckboxState("underline" === o.decoration), t.setLinethroughCheckboxState("line-through" === o.decoration), t.setFontColorPickerColor(o.color), t.setBorderColorPickerColor(n.color), t.setBorderBackgroundColorPickerColor(n.background), t.setBranchColorPickerColor(e.getPluginData("style", "branchColor"))
     }
     t.fontfaceChangeClicked = function(e) {
@@ -224,9 +232,6 @@ mindmaps.InspectorView = function() {
     }, t.fontBoldCheckboxClicked = function(e) {
         var n = new mindmaps.action.SetFontWeightAction(o.selectedNode, e);
         o.executeAction(n)
-    }, t.toggleBorderButtonClick = function() {
-        var e = new mindmaps.action.ToggleBorderButtonAction(o.selectedNode);
-        o.executeAction(e)
     }, t.fontItalicCheckboxClicked = function(e) {
         var n = new mindmaps.action.SetFontStyleAction(o.selectedNode, e);
         o.executeAction(n)
@@ -273,7 +278,9 @@ mindmaps.InspectorView = function() {
         var e = new mindmaps.action.SetChildrenBackgroundColorAction(o.selectedNode);
         o.executeAction(e)
     }, t.borderColorChildrenButtonClicked = function() {
-        var e = new mindmaps.action.SetChildrenBorderColorAction(o.selectedNode);
+        var e = new mindmaps.action.CompositeAction;
+        e.addAction(new mindmaps.action.SetChildrenBorderStyleAction(o.selectedNode));
+        e.addAction(new mindmaps.action.SetChildrenBorderColorAction(o.selectedNode));
         o.executeAction(e)
     }, t.borderStyleChildrenButtonClicked = function() {
         var e = new mindmaps.action.SetChildrenBorderStyleAction(o.selectedNode);

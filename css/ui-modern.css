@@ -515,7 +515,6 @@ textarea,
 
 #inspector-button-font-face-children,
 #inspector-button-font-style-children,
-#inspector-button-border-style-children,
 #inspector-button-font-color-children,
 #inspector-button-background-color-children,
 #inspector-button-border-color-children,
@@ -523,7 +522,6 @@ textarea,
   margin-top: 0;
 }
 
-#inspector-table #inspector-button-border-show-hide,
 #inspector-table #inspector-button-connect-node,
 #inspector-table #inspector-button-connect-node-remove,
 #inspector-table #inspector-button-attachment,
@@ -536,6 +534,11 @@ textarea,
 #inspector-table #inspector-button-add-image,
 #inspector-table #inspector-button-urls {
   width: auto;
+}
+
+#inspector-table #inspector-button-border-style {
+  min-width: 108px;
+  margin-right: 6px;
 }
 
 #inspector-table .colorPicker-picker {
@@ -625,6 +628,24 @@ textarea,
 
 #navi-slider .ui-slider-range {
   background: #c2c8d1;
+}
+
+.mindmap .node-caption.root {
+  border: none;
+}
+
+.mindmap .node-caption.root.selected {
+  border: 2px solid transparent;
+}
+
+.mindmap .node-caption.selected {
+  border-color: transparent;
+}
+
+/* Use outline so hover indicator never affects box size or node position. */
+.mindmap .node-caption:hover {
+  outline: 2px dotted #ddd;
+  outline-offset: 1px;
 }
 
 @media (max-width: 1100px) {

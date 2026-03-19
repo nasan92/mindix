@@ -453,7 +453,12 @@ mindmaps.StaticCanvasRenderer = function() {
      */
     function drawCaptions(node) {
       ctx.save();
-	  var borderStyle = node.getPluginData("style", "border") || {visible: true, style: "dashed", color: "#ffa500", background: "#ffffff"};
+    var borderStyle = node.getPluginData("style", "border") || {visible: false, style: "none", color: "#ffffff", background: "#ffffff"};
+    if(borderStyle.style != 'solid' && borderStyle.style != 'dashed' && borderStyle.style != 'none')
+    borderStyle.style = 'dashed';
+    var borderVisible = borderStyle.visible !== false && borderStyle.style != 'none';
+    if(borderStyle.style == 'none')
+    borderVisible = false;
       var x = node.getPluginData("layout", "offset").x;
       var y = node.getPluginData("layout", "offset").y;
 	  console.log(x + ',' + y);
@@ -482,17 +487,15 @@ mindmaps.StaticCanvasRenderer = function() {
         captionX = 0;
         captionY = 20;
 
-		if(borderStyle.style == 'dotted')
-			setLineDashCatch(ctx,[3]);
-		else if(borderStyle.style == 'dashed')
+    if(borderVisible && borderStyle.style == 'dashed')
 			setLineDashCatch(ctx,[8]);
 		else
 			setLineDashCatch(ctx,[0]);
 			
 	
         // root box
-        ctx.lineWidth = 5.0;
-        ctx.strokeStyle = borderStyle.color;
+        ctx.lineWidth = borderVisible ? 5.0 : 0;
+        ctx.strokeStyle = borderVisible ? borderStyle.color : borderStyle.background;
         ctx.fillStyle = borderStyle.background;
 		x = 0 - tm.width / 2 - 4;
 		y = 20 - 4;
@@ -563,24 +566,12 @@ mindmaps.StaticCanvasRenderer = function() {
         //captionY = 20;
 
         // root box
-        ctx.lineWidth = 5.0;
-		
-		if(borderStyle.visible)
-		{
-			ctx.strokeStyle = borderStyle.color;// "orange";
-			
-			if(borderStyle.style == 'dotted')
-				ctx.setLineDash([3]);
-			else if(borderStyle.style == 'dashed')
-				ctx.setLineDash([8]);
-			else
-				ctx.setLineDash([0]);			
-		}			
-		else
-		{
-			ctx.strokeStyle = borderStyle.background;// "orange";
-			ctx.setLineDash([0]);
-		}
+    ctx.lineWidth = borderVisible ? 5.0 : 0;
+    ctx.strokeStyle = borderVisible ? borderStyle.color : borderStyle.background;
+    if(borderVisible && borderStyle.style == 'dashed')
+      ctx.setLineDash([8]);
+    else
+      ctx.setLineDash([0]);
 		
 		x = 0 - 4;
 		y = 20 - 4 - 20;
