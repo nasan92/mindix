@@ -109,6 +109,40 @@ mindmaps.CanvasContainer.Event = {
 mindmaps.MainViewController = function (eventBus, mindmapModel, commandRegistry) {
     var zoomController = new mindmaps.ZoomController(eventBus, commandRegistry);
     var canvasContainer = new mindmaps.CanvasContainer();
+    var sidebarState = {
+        $root: null
+    };
+
+    function ensureFormatSidebar() {
+        if (sidebarState.$root) {
+            return sidebarState.$root;
+        }
+
+        var $container = canvasContainer.getContent();
+        var $sidebar = $container.children("#format-sidebar").first();
+        if (!$sidebar.length) {
+            $sidebar = $("<div/>", {
+                id: "format-sidebar"
+            }).appendTo($container);
+        }
+
+        sidebarState.$root = $sidebar;
+        return $sidebar;
+    }
+
+    function createSidebarSection(title, $content) {
+        return $("<section/>", {
+            "class": "format-sidebar-section"
+        }).append(
+            $("<h3/>", {
+                "class": "format-sidebar-title",
+                text: title
+            }),
+            $("<div/>", {
+                "class": "format-sidebar-body"
+            }).append($content)
+        );
+    }
 
     /**
      * When a file was dropped on the canvas container try to open it.
@@ -184,24 +218,11 @@ mindmaps.MainViewController = function (eventBus, mindmapModel, commandRegistry)
         mindmaps.ui.statusbarPresenter=statusbarPresenter
 
 
-        // floating Panels
-        var fpf = new mindmaps.FloatPanelFactory(canvasContainer);
-
-        mindmaps.ui.floatPanelFactory=fpf
-
-
         // inspector
         var inspectorView = new mindmaps.InspectorView();
         var inspectorPresenter = new mindmaps.InspectorPresenter(eventBus,
             mindmapModel, commandRegistry, inspectorView);
         inspectorPresenter.go();
-
-        var inspectorPanel = fpf
-            .create("Inspector", inspectorView.getContent());
-        inspectorPanel.show();
-        statusbarPresenter.addEntry(inspectorPanel);
-
-
 
         // navigator
         var naviView = new mindmaps.NavigatorView();
@@ -209,9 +230,11 @@ mindmaps.MainViewController = function (eventBus, mindmapModel, commandRegistry)
             canvasContainer, zoomController);
         naviPresenter.go();
 
-        var navigatorPanel = fpf.create("Navigator", naviView.getContent());
-        navigatorPanel.show();
-        statusbarPresenter.addEntry(navigatorPanel);
+        var $sidebar = ensureFormatSidebar();
+        $sidebar.empty().append(
+            createSidebarSection("Inspector", inspectorView.getContent()),
+            createSidebarSection("Navigator", naviView.getContent())
+        );
 
 
 
