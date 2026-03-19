@@ -67,14 +67,14 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
     }
 }, mindmaps.action.ChangeNodeCaptionAction.prototype = new mindmaps.action.Action, mindmaps.action.ChangeNodeBorderStyleAction = function(n, t) {
     var o = n.getPluginData("style", "border") || {
-            visible: !0,
-            style: "dashed",
-            color: "#ffa500",
+            visible: !1,
+            style: "none",
+            color: "#ffffff",
             background: "#ffffff"
         },
         i = o.style;
     this.execute = function() {
-        return t === o.style ? !1 : (o.style = t, n.setPluginData("style", "border", o), void(mindmaps.isMapLoadingConfirmationRequired = !0))
+        return t === o.style ? !1 : (o.style = t, o.visible = "none" !== t, n.setPluginData("style", "border", o), void(mindmaps.isMapLoadingConfirmationRequired = !0))
     }, this.event = [mindmaps.Event.NODE_BORDER_CHANGED, n], this.undo = function() {
         return new mindmaps.action.ChangeNodeBorderStyleAction(n, i)
     }
@@ -110,15 +110,13 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
     return new mindmaps.action.ChangeNodeLineWidthAction(n, 2)
 }, mindmaps.action.ToggleBorderButtonAction = function(n) {
     this.execute = function() {
-        if (!n.isRoot()) {
-            var t = n.getPluginData("style", "border") || {
-                visible: !0,
-                style: "dashed",
-                color: "#ffa500",
-                background: "#ffffff"
-            };
-            t.visible = !t.visible, n.setPluginData("style", "border", t), mindmaps.isMapLoadingConfirmationRequired = !0
-        }
+        var t = n.getPluginData("style", "border") || {
+            visible: !1,
+            style: "none",
+            color: "#ffffff",
+            background: "#ffffff"
+        };
+        "none" === t.style ? (t.style = "dashed", t.visible = !0) : (t.style = "none", t.visible = !1), n.setPluginData("style", "border", t), mindmaps.isMapLoadingConfirmationRequired = !0
     }, this.event = [mindmaps.Event.NODE_BORDER_CHANGED, n], this.undo = function() {
         return new mindmaps.action.ToggleBorderButtonAction(n)
     }
@@ -148,9 +146,9 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
     }
 }, mindmaps.action.SetFontDecorationAction.prototype = new mindmaps.action.Action, mindmaps.action.SetBorderBackgroundColorAction = function(n, t) {
     var o = n.getPluginData("style", "border") || {
-            visible: !0,
-            style: "dashed",
-            color: "#ffa500",
+            visible: !1,
+            style: "none",
+            color: "#ffffff",
             background: "#ffffff"
         },
         i = o.background;
@@ -161,9 +159,9 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
     }
 }, mindmaps.action.SetBorderBackgroundColorAction.prototype = new mindmaps.action.Action, mindmaps.action.SetBorderColorAction = function(n, t) {
     var o = n.getPluginData("style", "border") || {
-            visible: !0,
-            style: "dashed",
-            color: "#ffa500",
+            visible: !1,
+            style: "none",
+            color: "#ffffff",
             background: "#ffffff"
         },
         i = o.color;
@@ -288,9 +286,9 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
 }, mindmaps.action.SetChildrenBranchColorAction.prototype = new mindmaps.action.CompositeAction, mindmaps.action.SetChildrenBackgroundColorAction = function(n) {
     mindmaps.action.CompositeAction.call(this);
     var t = n.getPluginData("style", "border") || {
-            visible: !0,
-            style: "dashed",
-            color: "#ffa500",
+            visible: !1,
+            style: "none",
+            color: "#ffffff",
             background: "#ffffff"
         },
         o = this;
@@ -321,9 +319,9 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
 }, mindmaps.action.SetChildrenFontFaceAction.prototype = new mindmaps.action.CompositeAction, mindmaps.action.SetChildrenBorderColorAction = function(n) {
     mindmaps.action.CompositeAction.call(this);
     var t = n.getPluginData("style", "border") || {
-            visible: !0,
-            style: "dashed",
-            color: "#ffa500",
+            visible: !1,
+            style: "none",
+            color: "#ffffff",
             background: "#ffffff"
         },
         o = this;
@@ -333,9 +331,9 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
 }, mindmaps.action.SetChildrenBorderColorAction.prototype = new mindmaps.action.CompositeAction, mindmaps.action.SetChildrenBorderStyleAction = function(n) {
     mindmaps.action.CompositeAction.call(this);
     var t = n.getPluginData("style", "border") || {
-            visible: !0,
-            style: "dashed",
-            color: "#ffa500",
+            visible: !1,
+            style: "none",
+            color: "#ffffff",
             background: "#ffffff"
         },
         o = this;

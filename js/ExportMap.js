@@ -71,9 +71,9 @@ mindmaps.StaticSVGRenderer = function() {
     };
 
     var defaultBorder = {
-        visible: true,
-        style: "dashed",
-        color: "#ffa500",
+        visible: false,
+        style: "none",
+        color: "#ffffff",
         background: "#ffffff"
     };
 
@@ -122,6 +122,16 @@ mindmaps.StaticSVGRenderer = function() {
 
     function normalizeBorder(border) {
         return $.extend(true, {}, defaultBorder, border || {})
+    }
+
+    function borderIsVisible(border) {
+        if (!border) {
+            return false
+        }
+        if (border.style === "none") {
+            return false
+        }
+        return border.visible !== false
     }
 
     function lineDash(e) {
@@ -575,7 +585,8 @@ mindmaps.StaticSVGRenderer = function() {
                 })
             }
 
-            var strokeColor = border.visible ? border.color : border.background;
+            var borderVisible = borderIsVisible(border);
+            var strokeColor = borderVisible ? border.color : "none";
             var rectAttrs = {
                 x: boxX,
                 y: boxY,
@@ -585,10 +596,10 @@ mindmaps.StaticSVGRenderer = function() {
                 ry: 10,
                 fill: border.background,
                 stroke: strokeColor,
-                "stroke-width": 5
+                "stroke-width": borderVisible ? 5 : 0
             };
             var borderDash = lineDash(border.style);
-            if (border.visible && borderDash) {
+            if (borderVisible && borderDash) {
                 rectAttrs["stroke-dasharray"] = borderDash
             }
             addSelfTag("rect", rectAttrs);

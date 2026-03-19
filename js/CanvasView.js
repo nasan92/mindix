@@ -699,13 +699,12 @@ mindmaps.DefaultCanvasView = function() {
     this.highlightNode = function(e) {
         var t = h(e);
         t.addClass("selected");
-        this.updateNode(e);
-        t.addClass("selected")
+        this.updateNode(e)
     };
     this.unhighlightNode = function(e) {
         var t = h(e);
-        this.updateNode(e);
-        t.removeClass("selected")
+        t.removeClass("selected");
+        this.updateNode(e)
     };
     this.closeNode = function(e) {
         var t = c(e);
@@ -788,11 +787,18 @@ mindmaps.DefaultCanvasView = function() {
         var r = h(e);
         var i = e.getPluginData("style", "font");
         var o = e.getPluginData("style", "border") || {
-            visible: true,
-            style: "dashed",
-            color: "#ffa500",
+            visible: false,
+            style: "none",
+            color: "#ffffff",
             background: "#ffffff"
         };
+        if (o.style !== "solid" && o.style !== "dashed" && o.style !== "none") {
+            o.style = "dashed"
+        }
+        var borderVisible = o.visible !== false && o.style !== "none";
+        if (o.style === "none") {
+            borderVisible = false
+        }
         var u = e.getPluginData("image", "data");
         if (u) {
             bkgrndsize = "" + this.zoomFactor * parseInt(u.width) + "px " + this.zoomFactor * parseInt(u.height) + "px";
@@ -862,22 +868,18 @@ mindmaps.DefaultCanvasView = function() {
             r.css("background-size", bkgrndsize);
             r.css("background-color", o.background)
         } else r.css("background-color", o.background); {
-            if (!o.visible && r.hasClass("border")) r.removeClass("border");
-            if (o.visible && !r.hasClass("border")) r.addClass("border");
-            if (o.visible) {
+            if (!borderVisible && r.hasClass("border")) r.removeClass("border");
+            if (borderVisible && !r.hasClass("border")) r.addClass("border");
+            if (borderVisible) {
                 var l = "#node-caption-" + e.id + ".border";
                 $(l).css({
                     "border-style": o.style,
                     "border-color": o.color
                 })
             }
-            if (o.visible) {
-                $("#inspector-button-border-show-hide span").text("Hide Border");
-                $("#inspector-button-border-style").removeAttr("disabled");
+            if (borderVisible) {
                 $("#inspector-border-color-picker").removeAttr("disabled")
             } else {
-                $("#inspector-button-border-show-hide span").text("Show Border");
-                $("#inspector-button-border-style").attr("disabled", "disabled");
                 $("#inspector-border-color-picker").attr("disabled", "disabled")
             }
         }

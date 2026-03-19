@@ -10,10 +10,16 @@ mindmaps.AttachmentView = function() {
             width: t - 40,
             resizable: !1,
             stack: !1,
+            buttons: [{
+                text: "Save & Close",
+                click: function() {
+                    $(this).dialog("close");
+                }
+            }],
             close: function() {
-                console.log("remove");
                 var t = e.find("#attachment-data").val();
-                self.textChanged(t), console.log(t), $(this).dialog("close"), $(this).dialog("destroy")
+                self.textChanged(t);
+                $(this).dialog("destroy");
             }
         }),
         i = e.find("#attachment-data"),
