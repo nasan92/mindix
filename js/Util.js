@@ -25,11 +25,11 @@ mindmaps.Util.colorThemes = {
     },
     usefulcharts: {
         label: "UsefulCharts",
-        branch: ["#0b3954", "#087e8b", "#bfd7ea", "#ff5a5f", "#c81d25", "#7d4f50", "#588157", "#a98467", "#6b705c", "#bc6c25", "#3d405b", "#7f5539", "#1d3557", "#52796f", "#8d99ae", "#9a8c98", "#6d597a", "#2f3e46", "#264653", "#4a4e69"],
-        border: ["#072b3f", "#065c66", "#6c8ca1", "#c73d43", "#8b1a1f", "#5b3a3b", "#3e5c3f", "#7e624e", "#4f554c", "#8f4e1f", "#2b2d42", "#5a3e2b", "#102a43", "#3f6b62", "#64748b", "#6b6572", "#51445a", "#1f2d33", "#1c3d46", "#34364f"],
-        background: ["#f8fafc", "#f1f5f9", "#f8f9fa", "#fef2f2", "#fff7ed", "#f7f7f7", "#f2f8f2", "#f8f3ef", "#f6f4f1", "#fff8f1"],
-        connect: ["#0b3954", "#087e8b", "#ff5a5f", "#c81d25", "#588157", "#bc6c25", "#3d405b", "#52796f", "#6d597a", "#2f3e46"],
-        font: ["#111111", "#0b3954", "#3d405b", "#2f3e46", "#4a4e69", "#5a3e2b", "#102a43", "#34364f", "#1f2937", "#334155"]
+        branch: ["#E08A96", "#95BB64", "#E29EC6", "#DCB127", "#A159C5", "#F7941D", "#74AAA9", "#F36E53", "#7ABCD9", "#A78345", "#7AD9C4", "#C2B59B"],
+        border: ["#726658"],
+        background: ["#ffffff", "#f8f9fa", "#f1faee", "#fefae0", "#fff1e6", "#edf6f9", "#e9f5db", "#fdf0d5", "#f8edeb", "#faf3dd", "#eef7f2", "#eef4ff"],
+        connect: ["#E08A96", "#95BB64", "#E29EC6", "#DCB127", "#A159C5", "#F7941D", "#74AAA9", "#F36E53", "#7ABCD9", "#A78345", "#7AD9C4", "#C2B59B"],
+        font: ["#000000"]
     }
 };
 mindmaps.Util.activeColorTheme = "classic";
