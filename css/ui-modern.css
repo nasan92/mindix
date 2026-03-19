@@ -39,6 +39,101 @@ textarea,
   box-shadow: var(--ui-shadow);
 }
 
+#canvas-container {
+  position: relative;
+  box-sizing: border-box;
+  padding-right: 0;
+}
+
+#canvas-container.format-sidebar-open {
+  padding-right: 360px;
+}
+
+#format-sidebar {
+  position: fixed;
+  top: 58px;
+  right: 0;
+  bottom: 50px;
+  width: 360px;
+  padding: 10px 12px;
+  border-left: 1px solid #d6dbe3;
+  background: rgba(247, 249, 251, 0.96);
+  box-shadow: var(--ui-shadow);
+  overflow-y: auto;
+  overflow-x: visible;
+  z-index: 3500;
+}
+
+#format-sidebar.hidden {
+  display: none;
+}
+
+.format-sidebar-section {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  margin: 0;
+  overflow: visible;
+}
+
+.format-sidebar-title {
+  display: none;
+}
+
+.format-sidebar-body {
+  padding: 0;
+}
+
+#format-sidebar .float-panel,
+#format-sidebar .ui-dialog-titlebar,
+#format-sidebar .ui-dialog-titlebar-close {
+  display: none;
+}
+
+#format-sidebar #inspector,
+#format-sidebar #navigator {
+  width: 100%;
+}
+
+#format-sidebar #inspector-content,
+#format-sidebar #navi-content {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+#format-sidebar #navi-slider {
+  width: 132px;
+}
+
+@media (max-width: 1100px) {
+  #canvas-container.format-sidebar-open {
+    padding-right: 320px;
+  }
+
+  #format-sidebar {
+    top: 58px;
+    bottom: 50px;
+    width: 320px;
+  }
+}
+
+@media (max-width: 860px) {
+  #canvas-container {
+    padding-right: 0;
+  }
+
+  #format-sidebar {
+    width: min(86vw, 322px);
+    right: 6px;
+    top: 64px;
+    bottom: 56px;
+    border: 1px solid #d6dbe3;
+    border-radius: 14px;
+  }
+}
+
 .ui-dialog .ui-dialog-titlebar {
   border: 0;
   border-bottom: 1px solid #d6dbe3;
@@ -206,7 +301,7 @@ textarea,
   background: none !important;
   border: none;
   box-shadow: none;
-  font-size: 1.9em;
+  font-size: 27px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: #3a414d;
@@ -547,6 +642,16 @@ textarea,
   margin: 0;
 }
 
+/* Keep the color palette above the fixed sidebar and map canvas layers. */
+#format-sidebar .colorPicker-palette,
+div.colorPicker-palette,
+div.colorPicker-palette.inspector {
+  z-index: 5005 !important;
+  border-color: #b5beca;
+  border-radius: 10px;
+  box-shadow: 0 12px 26px rgba(32, 38, 48, 0.24);
+}
+
 #inspector-button-connect-node {
   background: linear-gradient(180deg, #848d99 0%, #6f7886 100%) !important;
   border-color: #646d7b !important;
@@ -650,7 +755,7 @@ textarea,
 
 @media (max-width: 1100px) {
   #logo {
-    font-size: 1.7em;
+    font-size: 24px;
   }
 
   #toolbar .ui-button .ui-button-text {
@@ -667,7 +772,7 @@ textarea,
   }
 
   #logo {
-    font-size: 1.5em;
+    font-size: 22px;
     margin-right: 8px;
   }
 

@@ -23,8 +23,8 @@ mindmaps.Util.colorThemes = {
         connect: ["#e63946", "#ff7f11", "#8ac926", "#2ec4b6", "#3a86ff", "#8338ec", "#ff006e", "#06d6a0", "#f3722c", "#577590"],
         font: ["#111111", "#9b2226", "#7f4f24", "#386641", "#0f766e", "#1d4ed8", "#5b21b6", "#be185d", "#1f2937", "#334155"]
     },
-    usefulcharts: {
-        label: "UsefulCharts",
+    vintage: {
+        label: "Vintage",
         branch: ["#E08A96", "#95BB64", "#E29EC6", "#DCB127", "#A159C5", "#F7941D", "#74AAA9", "#F36E53", "#7ABCD9", "#A78345", "#7AD9C4", "#C2B59B"],
         border: ["#726658"],
         background: ["#ffffff", "#f8f9fa", "#f1faee", "#fefae0", "#fff1e6", "#edf6f9", "#e9f5db", "#fdf0d5", "#f8edeb", "#faf3dd", "#eef7f2", "#eef4ff"],

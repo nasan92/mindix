@@ -109,6 +109,39 @@ mindmaps.CanvasContainer.Event = {
 mindmaps.MainViewController = function (eventBus, mindmapModel, commandRegistry) {
     var zoomController = new mindmaps.ZoomController(eventBus, commandRegistry);
     var canvasContainer = new mindmaps.CanvasContainer();
+    var sidebarState = {
+        $root: null
+    };
+
+    function ensureFormatSidebar() {
+        if (sidebarState.$root) {
+            return sidebarState.$root;
+        }
+
+        var $container = canvasContainer.getContent();
+        var $sidebar = $container.children("#format-sidebar").first();
+        if (!$sidebar.length) {
+            $sidebar = $("<div/>", {
+                id: "format-sidebar"
+            }).appendTo($container);
+        }
+
+        sidebarState.$root = $sidebar;
+        return $sidebar;
+    }
+
+    function setFormatSidebarVisible(isVisible) {
+        var visible = !!isVisible;
+        var $sidebar = ensureFormatSidebar();
+
+        $sidebar.toggleClass("hidden", !visible);
+        canvasContainer.getContent().toggleClass("format-sidebar-open", visible);
+    }
+
+    function toggleFormatSidebar() {
+        var $sidebar = ensureFormatSidebar();
+        setFormatSidebarVisible($sidebar.hasClass("hidden"));
+    }
 
     /**
      * When a file was dropped on the canvas container try to open it.
@@ -184,34 +217,20 @@ mindmaps.MainViewController = function (eventBus, mindmapModel, commandRegistry)
         mindmaps.ui.statusbarPresenter=statusbarPresenter
 
 
-        // floating Panels
-        var fpf = new mindmaps.FloatPanelFactory(canvasContainer);
-
-        mindmaps.ui.floatPanelFactory=fpf
-
-
         // inspector
         var inspectorView = new mindmaps.InspectorView();
         var inspectorPresenter = new mindmaps.InspectorPresenter(eventBus,
             mindmapModel, commandRegistry, inspectorView);
         inspectorPresenter.go();
 
-        var inspectorPanel = fpf
-            .create("Inspector", inspectorView.getContent());
-        inspectorPanel.show();
-        statusbarPresenter.addEntry(inspectorPanel);
+        var $sidebar = ensureFormatSidebar();
+        $sidebar.empty().append(inspectorView.getContent());
 
+        setFormatSidebarVisible(false);
 
-
-        // navigator
-        var naviView = new mindmaps.NavigatorView();
-        var naviPresenter = new mindmaps.NavigatorPresenter(eventBus, naviView,
-            canvasContainer, zoomController);
-        naviPresenter.go();
-
-        var navigatorPanel = fpf.create("Navigator", naviView.getContent());
-        navigatorPanel.show();
-        statusbarPresenter.addEntry(navigatorPanel);
+        var formatSidebarCommand = commandRegistry.get(mindmaps.FormatSidebarCommand);
+        formatSidebarCommand.setHandler(toggleFormatSidebar);
+        formatSidebarCommand.setEnabled(true);
 
 
 
