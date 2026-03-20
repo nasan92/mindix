@@ -163,12 +163,6 @@ textarea,
   color: #3a414a;
 }
 
-/* Attachment editor: let CKEditor fill the content area edge-to-edge */
-#attachmentEditor {
-  padding: 0 !important;
-  overflow: hidden !important;
-}
-
 .ui-dialog .ui-dialog-buttonpane {
   border-top: 1px solid #e2e6ec;
   background: #f7f8fa;
@@ -616,13 +610,11 @@ textarea,
 
 #inspector-table #inspector-button-connect-node,
 #inspector-table #inspector-button-connect-node-remove,
-#inspector-table #inspector-button-attachment,
 #inspector-table #inspector-button-add-image,
 #inspector-table #inspector-button-urls {
   min-height: 24px;
 }
 
-#inspector-table #inspector-button-attachment,
 #inspector-table #inspector-button-add-image,
 #inspector-table #inspector-button-urls {
   width: auto;

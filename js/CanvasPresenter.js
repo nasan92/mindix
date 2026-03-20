@@ -167,9 +167,6 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
     }, t.pluginclick = function(e,icon) {
         //this function created by ms to click on plugin icon
         o.selectNode(e);
-        if(icon=="attachment") {
-            $('#inspector-button-attachment').trigger('click')
-        }
         if(icon=="draw") {
 			console.log("need work");
 
