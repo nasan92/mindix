@@ -128,7 +128,9 @@ mindmaps.HelpController = function(e, t) {
         }
 
         function d() {
-            return mindmaps.LocalStorage.get("mindmaps.tutorial.done") == 1
+            var done = mindmaps.LocalStorage.get("mindmaps.tutorial.done");
+            // Default to done so the onboarding bubbles are hidden on a fresh load.
+            return done == null || done == 1
         }
 
         function v() {
