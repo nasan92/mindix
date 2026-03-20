@@ -182,7 +182,6 @@ mindmaps.ToolBarPresenter = function(e, t, n, r, i) {
     var E = o(w);
     b.add(E);
     n.addMenu(b);
-    n.addButton(s(mindmaps.HelpCommand), n.alignRight);
     n.addButton(s(mindmaps.FormatSidebarCommand), n.alignRight);
     this.go = function() {
         n.init();
