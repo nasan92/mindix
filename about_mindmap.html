@@ -50,6 +50,33 @@
         </div>
         <div class="section">
           <header>
+            <h2>Storage</h2>
+            <h3>browser and file support</h3>
+          </header>
+          <div class="text">
+            <p>
+              <strong>Default storage:</strong> mindix stores your maps in your browser.
+              It uses <strong>IndexedDB</strong> when available, and falls back to
+              localStorage only if needed.
+            </p>
+            <p>
+              <strong>Linked local files:</strong> on supported browsers, you can link a
+              local JSON file and keep writing changes back to the same file.
+            </p>
+            <p>
+              <strong>Browser overview:</strong><br>
+              Chrome: full linked-file support.<br>
+              Brave: needs to manually enable via brave://flags/#file-system-access-api .<br>
+              Safari: linked-file workflow is not available.
+            </p>
+            <p>
+              When linked files are unavailable, use browser storage plus export/import.
+              Your maps are still editable and autosaved inside your browser.
+            </p>
+          </div>
+        </div>
+        <div class="section">
+          <header>
             <h2>David Richardson</h2>
             <h3>original notes</h3>
           </header>

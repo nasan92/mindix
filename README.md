@@ -1,42 +1,70 @@
+# Mindix (Mind Map Maker)
 
-# Getting Started with development
+## Development
 
-activate the development environment: 
+1. Activate the development shell:
 
-``devenv shell``
+```bash
+devenv shell
+```
 
-start php web server: 
+2. Start a local web server:
 
-``php -S localhost:8080``
+```bash
+php -S localhost:8080
+```
 
-open 
+3. Open the app:
 
 http://localhost:8080/index.html
 
+## Storage and Compatibility Overview
 
-If you have any doubt, feel free to contact me at cvazeem@gmail.com
+The app supports two local persistence modes:
 
-# Requirements
---
-A simple webserver to serve the app.
+1. Browser storage (default)
+- Primary backend: IndexedDB
+- Automatic fallback: localStorage (only when IndexedDB is unavailable)
+- Works across modern browsers
+- Best for always-available autosave in-browser workflows
 
-Extract the files and place it in the root directory of your website.
+2. Linked local file storage (optional)
+- Uses the browser File System Access API to keep writing to the same local file
+- Full support in Chromium-based browsers that expose both file pickers
+- Brave Browser supports the File System Access API but disables it by default due to privacy and security concerns, despite being based on Chromium. You can enable it manually via brave://flags/#file-system-access-api and restart the browser.
+- Not available in Safari
 
-# i. Sharemap.js
-To share your public map via Facebook, do the following changes.
+### Browser behavior summary
 
-a. Create an App in facebook. Make sure your website is allowed as origin.
+1. Chrome
+- IndexedDB: supported
+- Linked files: full support (open + save pickers)
 
-Open Sharemap.js and make the following changes.
-a. Locate this line (number 28) and change https://www.facebook.com/dialog/feed?app_id=11111111&'
-to app_id='With your facebook app id'
+2. Safari
+- IndexedDB: supported
+- Linked files: unavailable for this workflow
 
-b. Change http://mindmapmaker.org/mind-map-maker.png (on line number 32) to your website
-c. Change https://app.mindmapmaker.org (on line number 34) to your website
+### In-app fallback behavior
 
-# ii. UrlShortener.js
-To share map via 'bit.ly' make changes in js/UrlShortener.js
-//Register for an account at bit.ly/a/sign_up
-Change 'var username="";' (on line number 12) with your username from bit.ly
-Change 'var actoken="";' (on line number 13) with your actoken from bit.ly
+1. If linked files are unavailable, use browser storage (IndexedDB) plus manual export/import.
+2. The Save/Open dialogs show a live capability status for linked files.
+
+## How to verify active browser storage backend
+
+Run in browser console:
+
+```javascript
+await mindmaps.LocalDocumentStorage.getBackendDiagnostics()
+```
+
+Expected fields:
+- `activeBackend`: `indexedDB` or `localStorage`
+- `indexedDbDocuments`: number of docs in IndexedDB
+- `localStorageDocuments`: number of legacy docs in localStorage
+
+## Requirements
+
+- A simple web server to serve the app.
+- Extract files to your web root.
+
 
