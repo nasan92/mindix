@@ -2,6 +2,11 @@
 
 ## Development
 
+### Requirements
+Devenv installed https://devenv.sh/getting-started/
+
+### Getting Started
+
 1. Activate the development shell:
 
 ```bash

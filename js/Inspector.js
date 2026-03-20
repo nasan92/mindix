@@ -22,13 +22,15 @@ mindmaps.InspectorView = function() {
         A = $("#inspector-button-connect-node", o),
         N = $("#inspector-button-connect-node-remove", o),
         T = $("#inspector-color-theme-select", o),
+        F = $("#inspector-checkbox-map-grid", o),
         S = $("#inspector-branch-color-picker", o),
         x = $("#inspector-font-color-picker", o),
         w = $("#inspector-border-color-picker", o),
         P = $("#inspector-connection-color-picker", o),
         y = $("#inspector-border-background-color-picker", o),
-        E = [r, d, l, a, u, C, h, f, m, p, b, k, g, v, A, N],
-        D = [S, x, w, y, P];
+        B = $("#inspector-map-background-color-picker", o),
+        E = [r, d, l, a, u, C, h, f, m, p, b, k, g, v, A, N, F],
+        D = [S, x, w, y, P, B];
 
     function M(e) {
         return "solid" === e || "dashed" === e || "none" === e ? e : "dashed"
@@ -71,6 +73,10 @@ mindmaps.InspectorView = function() {
         w.val(e).change()
     }, this.setConnectColorPickerColor = function(e) {
         P.val(e).change()
+    }, this.setMapGridEnabled = function(e) {
+        F.prop("checked", !!e).button("refresh")
+    }, this.setMapBackgroundColorPickerColor = function(e) {
+        B.val(e).change()
     }, this.setBranchColorPickerColor = function(e) {
         S.val(e).change()
     }, this.setFontColorPickerColor = function(e) {
@@ -101,6 +107,9 @@ mindmaps.InspectorView = function() {
         });
         o(P, mindmaps.Util.colors20d, function(o) {
             e.connectColorPicked && e.connectColorPicked(o)
+        });
+        o(B, mindmaps.Util.colors20c, function(o) {
+            e.mapBackgroundColorPicked && e.mapBackgroundColorPicked(o)
         });
         o(x, mindmaps.Util.fontColors || mindmaps.Util.colors20, function(o) {
             e.fontColorPicked && e.fontColorPicked(o)
@@ -141,6 +150,11 @@ mindmaps.InspectorView = function() {
             if (e.fontLinethroughCheckboxClicked) {
                 var o = $(this).prop("checked");
                 e.fontLinethroughCheckboxClicked(o)
+            }
+        }), F.click(function() {
+            if (e.mapGridCheckboxClicked) {
+                var o = $(this).prop("checked");
+                e.mapGridCheckboxClicked(o)
             }
         });
         var O = mindmaps.Util.getColorThemeNames();
@@ -204,6 +218,27 @@ mindmaps.InspectorView = function() {
         n.visible = "none" !== n.style;
         t.setBorderStyle(n.style), t.setBorderText(n.visible ? !0 : !1), t.setBoldCheckboxState("bold" === o.weight), t.setFontFace(o.fontfamily), t.setItalicCheckboxState("italic" === o.style), t.setUnderlineCheckboxState("underline" === o.decoration), t.setLinethroughCheckboxState("line-through" === o.decoration), t.setFontColorPickerColor(o.color), t.setBorderColorPickerColor(n.color), t.setBorderBackgroundColorPickerColor(n.background), t.setBranchColorPickerColor(e.getPluginData("style", "branchColor"))
     }
+
+    function r() {
+        var e = o.getMindMap();
+        if (!e || !e.root) {
+            return {
+                gridEnabled: !0,
+                color: "#ffffff"
+            }
+        }
+        var n = e.root.getPluginData("canvas", "background") || {};
+        return {
+            gridEnabled: n.gridEnabled !== !1,
+            color: n.color || "#ffffff"
+        }
+    }
+
+    function s() {
+        var e = r();
+        t.setMapGridEnabled(e.gridEnabled);
+        t.setMapBackgroundColorPickerColor(e.color)
+    }
     t.fontfaceChangeClicked = function(e) {
         var n = new mindmaps.action.ChangeNodeFontFaceAction(o.selectedNode, e);
         o.executeAction(n)
@@ -258,6 +293,20 @@ mindmaps.InspectorView = function() {
     }, t.connectColorPicked = function(e) {
         var n = new mindmaps.action.SetConnectColorAction(o.selectedNode, mindmaps.connectStartNode, e);
         o.executeAction(n)
+    }, t.mapGridCheckboxClicked = function(e) {
+        var n = o.getMindMap();
+        if (!n || !n.root) {
+            return
+        }
+        var t = new mindmaps.action.SetMapGridEnabledAction(n.root, e);
+        o.executeAction(t)
+    }, t.mapBackgroundColorPicked = function(e) {
+        var n = o.getMindMap();
+        if (!n || !n.root) {
+            return
+        }
+        var t = new mindmaps.action.SetMapBackgroundColorAction(n.root, e);
+        o.executeAction(t)
     }, t.colorThemeChanged = function(n) {
         var r = mindmaps.Util.setColorTheme(n);
         var i = o.getMindMap();
@@ -307,9 +356,11 @@ mindmaps.InspectorView = function() {
     }), e.subscribe(mindmaps.Event.NODE_SELECTED, function(o) {
         mindmaps.connectMode ? (e.publish(mindmaps.Event.CONNECTED_TWO_NODES, mindmaps.connectStartNode, o), mindmaps.connectSelected = !0, c(mindmaps.connectStartNode, o)) : (mindmaps.connectSelected = !1, $("#node-connect-styles-row").hide(), $("#inspector-button-connect-node-remove").hide()), i(o), mindmaps.connectMode = !1
     }), e.subscribe(mindmaps.Event.DOCUMENT_OPENED, function() {
-        t.setControlsEnabled(!0)
+        t.setControlsEnabled(!0), s()
     }), e.subscribe(mindmaps.Event.DOCUMENT_CLOSED, function() {
         t.setControlsEnabled(!1)
+    }), e.subscribe(mindmaps.Event.MAP_BACKGROUND_CHANGED, function() {
+        s()
     }), this.go = function() {
         t.init()
     }

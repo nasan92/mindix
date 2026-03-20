@@ -34,11 +34,12 @@ mindmaps.CanvasView = function() {
         var l = a.height();
         a.width(f * e).height(l * e);
         this.scroll(n, r);
-        var c = parseFloat(a.css("background-size"));
-        if (isNaN(c)) {
-            console.warn("Could not set background-size!")
+        var c = a.css("background-size") || "";
+        var h = parseFloat(c);
+        if (!isNaN(h)) {
+            var p = h * e;
+            a.css("background-size", p + "px " + p + "px")
         }
-        a.css("background-size", c * e)
     };
     this.setDimensions = function(e, t) {
         e = e * this.zoomFactor;
@@ -49,6 +50,21 @@ mindmaps.CanvasView = function() {
     this.setZoomFactor = function(e) {
         this.zoomFactorDelta = e / (this.zoomFactor || 1);
         this.zoomFactor = e
+    };
+    this.applyMapBackgroundStyle = function(e) {
+        var t = this.$getDrawingArea();
+        var n = e || {};
+        var r = n.gridEnabled !== false;
+        var i = n.color || "#ffffff";
+        t.css("background-color", i);
+        if (r) {
+            var s = 24 * (this.zoomFactor || 1);
+            t.css("background-image", "url(img/grid.gif)");
+            t.css("background-size", s + "px " + s + "px")
+        } else {
+            t.css("background-image", "none");
+            t.css("background-size", "auto")
+        }
     }
 };
 mindmaps.CanvasView.prototype.drawMap = function(e) {
