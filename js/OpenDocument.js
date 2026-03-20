@@ -16,6 +16,12 @@ mindmaps.OpenDocumentView = function() {
             e.openCloudButtonClicked()
         }
     });
+    var r = $("#button-open-linked-file").button().click(function() {
+        if (e.openLinkedFileClicked) {
+            e.openLinkedFileClicked()
+        }
+    });
+    var a = t.find(".linked-file-support-status");
     t.find(".file-chooser input").bind("change", function(t) {
         if (e.openExernalFileClicked) {
             e.openExernalFileClicked(t)
@@ -57,6 +63,25 @@ mindmaps.OpenDocumentView = function() {
     this.showOpenDialog = function(e) {
         this.render(e);
         t.dialog("open")
+    };
+    this.setLinkedFileSupportStatus = function() {
+        if (!mindmaps.LocalFileStorage) {
+            a.text("Linked files: unavailable in this browser.");
+            r.button("disable");
+            return;
+        }
+        if (mindmaps.LocalFileStorage.canOpenFiles() && mindmaps.LocalFileStorage.canSaveFiles()) {
+            a.text("Linked files: supported (open + save). Best in Chrome.");
+            r.button("enable");
+            return;
+        }
+        if (mindmaps.LocalFileStorage.canOpenFiles()) {
+            a.text("Linked files: partially supported (open existing file only).");
+            r.button("enable");
+            return;
+        }
+        a.text("Linked files: unavailable in this browser.");
+        r.button("disable");
     };
     this.hideOpenDialog = function() {
         t.dialog("close")
@@ -122,13 +147,51 @@ mindmaps.OpenDocumentPresenter = function(e, t, n, r) {
         n.hideOpenDialog()
     };
     n.deleteDocumentClicked = function(e) {
-        mindmaps.LocalDocumentStorage.deleteDocument(e);
-        var t = mindmaps.LocalDocumentStorage.getDocuments();
-        n.render(t)
+        mindmaps.LocalDocumentStorage.deleteDocument(e).then(function() {
+            return mindmaps.LocalDocumentStorage.getDocuments()
+        }).then(function(t) {
+            n.render(t)
+        })
+    };
+    n.openLinkedFileClicked = function() {
+        if (!mindmaps.LocalFileStorage) {
+            e.publish(mindmaps.Event.NOTIFICATION_ERROR, "This browser does not support linked file editing.");
+            return
+        }
+        if (!mindmaps.LocalFileStorage.canOpenFiles()) {
+            e.publish(mindmaps.Event.NOTIFICATION_ERROR, mindmaps.LocalFileStorage.getSupportMessageForOpen() || "This browser does not support linked file editing.");
+            return
+        }
+        mindmaps.LocalFileStorage.pickFileForOpen().then(function(handle) {
+            if (!handle) {
+                return
+            }
+            return mindmaps.LocalFileStorage.readDocument(handle).then(function(doc) {
+                if (!doc) {
+                    throw new Error("File is not a valid mind map")
+                }
+                t.setDocument(doc);
+                t.setLinkedFileHandle(handle);
+                mindmaps.currentMapId = "new-import-file";
+                window.location.hash = "m:new-import-file";
+                mindmaps.isMapLoadingConfirmationRequired = false;
+                mindmaps.ignoreHashChange = true;
+                n.hideOpenDialog()
+            })
+        }).catch(function(err) {
+            if (err && err.name === "AbortError") {
+                return
+            }
+            e.publish(mindmaps.Event.NOTIFICATION_ERROR, (err && err.message) || "Could not open linked file")
+        })
     };
     this.go = function() {
-        var e = mindmaps.LocalDocumentStorage.getDocuments();
-        e.sort(mindmaps.Document.sortByModifiedDateDescending);
-        n.showOpenDialog(e)
+        n.setLinkedFileSupportStatus();
+        mindmaps.LocalDocumentStorage.getDocuments().then(function(e) {
+            e.sort(mindmaps.Document.sortByModifiedDateDescending);
+            n.showOpenDialog(e)
+        }).catch(function() {
+            n.showOpenDialog([])
+        })
     }
 }
