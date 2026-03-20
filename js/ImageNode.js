@@ -145,7 +145,13 @@ mindmaps.ImageNodeView = function() {
     inspectorAdviser: {
         onInit: function(e) {
             var n = '  <tr id="inspector-add-image">                         <td>Image:</td>                         <td>                             <button id="inspector-button-add-image" title="Add/Change Image"                             class="buttons-small buttons-less-padding">Add/Change Image                             </button>                         </td>                     </tr>';
-            e.append($(n));
+            var i = $(n).addClass("inspector-section-row inspector-section-node");
+            var r = e.find("#inspector-font-color-picker").closest("tr");
+            if (r.length) {
+                r.after(i)
+            } else {
+                e.append(i)
+            }
             var t = $("#inspector-button-add-image", e);
             t.button(), t.click(function() {
                 var e = mindmaps.ui.commandRegistry.get(mindmaps.AddImageNodeCommand);
