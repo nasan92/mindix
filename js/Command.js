@@ -182,15 +182,6 @@ mindmaps.CloseDocumentCommand = function() {
     this.description = "Close the mind map"
 };
 mindmaps.CloseDocumentCommand.prototype = new mindmaps.Command;
-mindmaps.HelpCommand = function() {
-    this.id = "HELP_COMMAND";
-    this.enabled = true;
-    this.icon = "ui-icon-help";
-    this.label = "Help";
-    this.shortcut = "F1";
-    this.description = "Get help!"
-};
-mindmaps.HelpCommand.prototype = new mindmaps.Command;
 mindmaps.FormatSidebarCommand = function() {
     this.id = "FORMAT_SIDEBAR_COMMAND";
     this.enabled = true;

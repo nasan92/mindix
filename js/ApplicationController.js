@@ -99,7 +99,7 @@ mindmaps.ApplicationController = function() {
         g = new mindmaps.MindMapModel(c, p, u),
         h = new mindmaps.Geometry(g);
     mindmaps.ui.geometry = h;
-    var f = (new mindmaps.ClipboardController(c, p, g), new mindmaps.HelpController(c, p), new mindmaps.PrintController(c, p, g), new mindmaps.AutoSaveController(c, g)),
+    var f = (new mindmaps.ClipboardController(c, p, g), new mindmaps.PrintController(c, p, g), new mindmaps.AutoSaveController(c, g)),
         w = new mindmaps.FilePicker(c, g);
     self = this, mindmaps.getConnectedNodes = function() {
         return g.getDocument().getConnectedNodes()
