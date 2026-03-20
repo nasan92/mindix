@@ -31,16 +31,6 @@ mindmaps.SaveDocumentView = function() {
             g.hddSaveButtonClicked()
         }
     });
-    var h = $("#button-save-storageserver").button().click(function() {
-        if (g.storageServerButtonClicked) {
-            g.storageServerButtonClicked()
-        }
-    });
-    var a = $("#button-save-google-drive").button().click(function() {
-        if (g.googleDriveButtonClicked) {
-            g.googleDriveButtonClicked()
-        }
-    });
     this.setAutoSaveCheckboxState = function(i) {
         b.prop("checked", i)
     };
@@ -53,26 +43,6 @@ mindmaps.SaveDocumentView = function() {
     this.showCloudError = function(i) {
         c.find(".cloud-error").text(i)
     };
-    this.showStorageServerError = function(i) {
-        c.find(".storageserver-error").text(i)
-    };
-    this.showStorageServerLoading = function() {
-        c.find(".storageserver-error").text("");
-        c.find(".storageserver-loading").addClass("loading")
-    };
-    this.hideStorageServerLoading = function() {
-        c.find(".storageserver-loading").removeClass("loading")
-    };
-    this.showGoogleDriveError = function(i) {
-        c.find(".google-drive-error").text(i)
-    };
-    this.showGoogleDriveLoading = function() {
-        c.find(".google-drive-error").text("");
-        c.find(".google-drive-loading").addClass("loading")
-    };
-    this.hideGoogleDriveLoading = function() {
-        c.find(".google-drive-loading").removeClass("loading")
-    }
 };
 mindmaps.SaveDocumentPresenter = function(d, b, f, c, a) {
     f.cloudStorageButtonClicked = function() {
@@ -103,39 +73,6 @@ mindmaps.SaveDocumentPresenter = function(d, b, f, c, a) {
         } else {
             d.publish(mindmaps.Event.NOTIFICATION_ERROR, "Error while saving to local storage")
         }
-    };
-    f.googleDriveButtonClicked = function() {
-        console.log("google drive clicked");
-        b.saveToGoogleDrive({
-            start: function() {
-                f.hideSaveDialog()
-            },
-            success: function() {},
-            error: function(g) {},
-            notify: function(g) {
-                console.log(g)
-            }
-        })
-    };
-    f.storageServerButtonClicked = function() {
-        mindmaps.Util.trackEvent("Clicks", "storageserver-save");
-        b.saveToStorageServer({
-            start: function() {
-                selfcopy.showStorageServerLoading()
-            },
-            success: function() {
-                selfcopy.hideStorageServerLoading();
-                f.hideSaveDialog()
-            },
-            error: function(g) {
-                selfcopy.hideStorageServerLoading();
-                if (g == 413) {
-                    f.showStorageServerError("Error while saving: File size more than 10MB")
-                } else {
-                    f.showStorageServerError("Network Error while saving to storage server")
-                }
-            }
-        })
     };
     f.autoSaveCheckboxClicked = function(g) {
         if (g) {

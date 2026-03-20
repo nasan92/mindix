@@ -1,3 +1,8 @@
+if [ -n "$PS1" ] && [ -e $HOME/.bashrc ]; then
+    source $HOME/.bashrc;
+fi
+
+shopt -u expand_aliases
 PATH=${PATH:-}
 nix_saved_PATH="$PATH"
 XDG_DATA_DIRS=${XDG_DATA_DIRS:-}
@@ -2268,3 +2273,6 @@ PATH="$PATH${nix_saved_PATH:+:$nix_saved_PATH}"
 XDG_DATA_DIRS="$XDG_DATA_DIRS${nix_saved_XDG_DATA_DIRS:+:$nix_saved_XDG_DATA_DIRS}"
 
 eval "${shellHook:-}"
+shopt -s expand_aliases
+
+exec /var/folders/00/6mt4rpt10cx7gs354g0g326m0000gn/T/devenv-envHRnRC1/script 

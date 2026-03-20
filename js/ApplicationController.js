@@ -44,34 +44,6 @@ mindmaps.ApplicationController = function() {
         n && g.setDocument(null)
     }
 
-    function t() {
-        if ("m" == mindmaps.currentMapId[0] && "m" == mindmaps.currentMapId[1]) {
-            var n = new mindmaps.ShareMapPresenter(new mindmaps.ShareMapView, g);
-            n.go()
-        } else c.publish(mindmaps.Event.NOTIFICATION_INFO, "Store the map in Server Storage to share it."), event.preventDefault()
-    }
-
-    function s() {
-        "g" == mindmaps.currentMapId[0] && "d" == mindmaps.currentMapId[1] ? mindmaps.GoogleDrive.showSharingSettings(mindmaps.currentMapId.substr(2)) : (c.publish(mindmaps.Event.NOTIFICATION_INFO, "Store the map in Google Drive to share it."), event.preventDefault())
-    }
-
-    function r() {
-        "g" == mindmaps.currentMapId[0] && "d" == mindmaps.currentMapId[1] ? (console.log("save instant google"), g.saveToGoogleDrive({
-            start: function() {},
-            success: function() {},
-            error: function() {},
-            notify: function() {}
-        })) : "m" == mindmaps.currentMapId[0] && "m" == mindmaps.currentMapId[1] ? g.saveToStorageServer({
-            start: function() {},
-            success: function() {
-                mindmaps.setInfoText("Saved Successfully")
-            },
-            error: function(n) {
-                mindmaps.setInfoText(413 == n ? "Error while saving: File size more than 10MB" : "Network Error while saving to storage server")
-            }
-        }) : (mindmaps.setInfoText("Error: For quick saving maps in Google Drive Storage or Mindmaps Server Storage only"), event.preventDefault())
-    }
-
     function m() {
         if (mindmaps.isMapLoadingConfirmationRequired) $("#dialog-confirm").dialog({
             resizable: !1,
@@ -165,12 +137,6 @@ mindmaps.ApplicationController = function() {
     }, this.init = function() {
         var n = p.get(mindmaps.NewDocumentCommand);
         n.setHandler(e), n.setEnabled(!0);
-        var i = p.get(mindmaps.ShareMapCommand);
-        i.setHandler(t), i.setEnabled(!0);
-        var l = p.get(mindmaps.SaveInstantDocumentCommand);
-        // l.setHandler(r), l.setEnabled(!0);
-        // var u = p.get(mindmaps.ShareMapGoogleCommand);
-        // u.setHandler(s), u.setEnabled(!0);
         var g = p.get(mindmaps.OpenDocumentCommand);
         g.setHandler(m), g.setEnabled(!0);
         var N = p.get(mindmaps.ImportMarkdownCommand);
@@ -199,33 +165,7 @@ mindmaps.ApplicationController = function() {
             g.setDocument(o), e.success()
         }).fail(function(n) {
             e.error(n.status)
-        }) : "g" == o[3] && "d" == o[4] ? (parseDoc = function(n, e) {
-            console.log("parseDoc  " + n + "   " + Object.prototype.toString.call(n));
-            try {
-                "[object String]" == Object.prototype.toString.call(n) && (console.log("parsing"), n = JSON.parse(n));
-                var o = mindmaps.Document.fromObject(n)
-            } catch (i) {
-                throw c.publish(mindmaps.Event.NOTIFICATION_ERROR, "File is not a valid mind map!"), new Error("Error while parsing map from google drive", i)
-            }
-            g.setDocument(o), mindmaps.currentMapId = "gd" + $.trim(e), window.location.hash = "m:gd" + $.trim(e), mindmaps.isMapLoadingConfirmationRequired = !1, mindmaps.ignoreHashChange = !0
-        }, showAuthentication = function(n) {
-            return console.log("showAuthentication"), "not-authenticated" !== n ? (console.log(n), e.error(n), void console.log("returning")) : void $("#dialog-confirm-google-drive").dialog({
-                resizable: !1,
-                height: 200,
-                width: 400,
-                modal: !0,
-                buttons: {
-                    Authorize: function() {
-                        $(this).dialog("close"), mindmaps.setInfoText("Opening mindmap from Google Drive"), mindmaps.GoogleDrive.loadMap(o.substring(5), !0).then(parseDoc, function(n) {
-                            console.log(n), e.error(n)
-                        })
-                    },
-                    Cancel: function() {
-                        e.error("cancelled"), $(this).dialog("close")
-                    }
-                }
-            })
-        }, mindmaps.setInfoText("Opening mindmap from Google Drive"), mindmaps.GoogleDrive.loadMap(o.substring(5), !1).then(parseDoc, showAuthentication)) : "n" == o[3] && "e" == o[4] && "w" == o[5] ? (("n" != mindmaps.currentMapId[0] || "e" != mindmaps.currentMapId[1] || "w" != mindmaps.currentMapId[2]) && n(), e.success()) : e.error("invalid")) : e.error("invalid")
+        }) : "n" == o[3] && "e" == o[4] && "w" == o[5] ? (("n" != mindmaps.currentMapId[0] || "e" != mindmaps.currentMapId[1] || "w" != mindmaps.currentMapId[2]) && n(), e.success()) : e.error("invalid")) : e.error("invalid")
     }, this.go = function() {
         var e = new mindmaps.MainViewController(c, g, p);
         e.go(), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(n) {
@@ -235,7 +175,7 @@ mindmaps.ApplicationController = function() {
                 mindmaps.currentMapId = window.location.hash.substring(3), window.location.hash = "m:" + mindmaps.currentMapId, mindmaps.isMapLoadingConfirmationRequired = !1, mindmaps.ignoreHashChange = !0
             },
             error: function(e) {
-                "invalid" == e ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server or Invalid map url.") : "no-access-allowed" == e ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "There was an error fetching map from Google Drive") : 413 == e ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server.") : "cancelled" != e && c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Network Error: Unable to fetch map."), n()
+                "invalid" == e ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server or Invalid map url.") : 413 == e ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server.") : c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Network Error: Unable to fetch map."), n()
             }
         }) : n()
     }, this.init(), c.subscribe(mindmaps.Event.DOCUMENT_SAVED, function() {
@@ -258,7 +198,7 @@ mindmaps.ApplicationController = function() {
                                 mindmaps.currentMapId = window.location.hash.substring(3), window.location.hash = "m:" + mindmaps.currentMapId, mindmaps.isMapLoadingConfirmationRequired = !1, mindmaps.ignoreHashChange = !0
                             },
                             error: function(n) {
-                                "invalid" == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server or Invalid map url.") : "no-access-allowed" == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "There was an error fetching map from Google Drive") : 413 == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server.") : c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Network Error: Unable to fetch map.")
+                                "invalid" == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server or Invalid map url.") : 413 == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server.") : c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Network Error: Unable to fetch map.")
                             }
                         }), $(this).dialog("close")
                     },
@@ -271,7 +211,7 @@ mindmaps.ApplicationController = function() {
                     mindmaps.currentMapId = window.location.hash.substring(3), window.location.hash = "m:" + mindmaps.currentMapId, mindmaps.isMapLoadingConfirmationRequired = !1, mindmaps.ignoreHashChange = !0
                 },
                 error: function(n) {
-                    "invalid" == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server or Invalid map url.") : "no-access-allowed" == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "There was an error fetching map from Google Drive") : 413 == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server.") : c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Network Error: Unable to fetch map.")
+                    "invalid" == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server or Invalid map url.") : 413 == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server.") : c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Network Error: Unable to fetch map.")
                 }
             }))
         })
