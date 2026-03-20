@@ -234,25 +234,5 @@ mindmaps.MindMapModel = function(e, t, n) {
             }
         })
     };
-    this.saveToGoogleDrive = function(t) {
-        var n = this.document.prepareSave();
-        mindmaps.GoogleDrive.saveDocument(n, {
-            start: function() {
-                t.start()
-            },
-            success: function() {
-                e.publish(mindmaps.Event.DOCUMENT_SAVED, n);
-                console.log("save drive succes");
-                t.success()
-            },
-            error: function(e) {
-                console.log("save drive error");
-                t.error(e)
-            },
-            notify: function(e) {
-                t.notify(e)
-            }
-        })
-    };
     this.init()
 }

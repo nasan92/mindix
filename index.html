@@ -96,18 +96,6 @@
         </table>
 		 <span class="storageserver-loading">Loading...</span>
 		 <span class="storageserver-error error"></span>
-		<div class="seperator"></div>
-		<h1><span class="highlight">New!</span>Google Drive</h1>
-		<span style="color:red"><p>This sign-in will not work after February 6, 2023. <a href='https://developers.googleblog.com/2021/06/upcoming-security-changes-to-googles-oauth-2.0-authorization-endpoint.html' target='_blank'>Learn more</a></p></span>
-        <p>Mindmap now supports Google Drive natively. <a href='http://mindmapmaker.org/using-google-drive-with-mindmaps.html' target='_blank'>Learn more</a>
-		<br />&nbsp;<br />Either Click the 'Open' button below or go directly to <a href='https://drive.google.com' target='_blank'>Google Drive</a>
-		</p>
-        <button id="button-open-google-drive">Open</button>
-        <span class="google-drive-loading">Loading...</span>
-        <span class="google-drive-error error"></span>
-
-        <span class="google-drive-loading">Loading...</span>
-        <span class="google-drive-error error"></span>
 
         <div class="seperator"></div>
         <h1>Local Storage</h1>
@@ -138,22 +126,6 @@
 
 <script id="template-save" type="text/x-jquery-tmpl">
     <div id="save-dialog" class="file-dialog" title="Save mind map">
-		<a href='http://mindmapmaker.org/storage-options-with-mindmaps.html' target='_blank'>Learn more</a> about storage options.<br /><br />
-		<h1><span class="highlight">New!</span> As public map in Mindmap Storage Server</h1>
-
-        <p>Store maps publicly in mindmap storage to share it anonymously. The url of a map is only known to you and unless you share it others can't open or guess it.</p>
-        <button id="button-save-storageserver">Save</button>
-		<span class="storageserver-loading">Saving...</span>
-        <span class="storageserver-error error"></span>
-		<div class="seperator"></div>
-		<h1><span class="highlight">New!</span>Google Drive</h1>
-		<span style="color:red"><p>This sign-in will not work after February 6, 2023. <a href='https://developers.googleblog.com/2021/06/upcoming-security-changes-to-googles-oauth-2.0-authorization-endpoint.html' target='_blank'>Learn more</a></p></span>
-		<p>Mindmap now supports Google Drive natively. Store your private maps. You can also share them with your friends via Google Drive. <a href='http://mindmapmaker.org/using-google-drive-with-mindmaps.html' target='_blank'>Learn more</a></p>
-        <button id="button-save-google-drive">Save</button>
-        <span class="google-drive-loading">Saving...</span>
-        <span class="google-drive-error error"></span>
-
-        <div class="seperator"></div>
         <h1>Local Storage</h1>
 
         <p>You can save your mindmap in your browser's local storage. Uses space in your HDD. Stays there unless you clear your local storage. Space of HDD is the only limit. Useful for
@@ -607,12 +579,6 @@
   <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><span style="font-size: 15px">There are unsaved changes which will be lost.</span></p>
 </div>
 
-<div id="dialog-confirm-google-drive" title="Authorization Required" hidden>
-  <p><span class="ui-icon ui-icon-info" style="float:left; margin:0 7px 20px 0;"></span><span style="font-size: 15px">You are trying to access Google Drive storage. You need to login to your Google Account and authorize 
-  MindMap app to open or save files for you. Click 'Authorize' below to continue.</span></p>
-</div>
-
-
 <script type="text/javascript" src="js/libs/jquery/jquery-1.8.3.js"></script>
 <script src="js/libs/underscore-min.js"></script>
 <script type="text/javascript" src="js/libs/jquery/jquery-ui-1.9.2.custom.min.js"></script>
@@ -706,7 +672,6 @@
 <script src="js/FilePicker.js"></script>
 <script src="js/UrlShortener.js"></script>
 <script src="js/ShareMap.js"></script>
-<script src="js/GoogleDrive.js"></script>
 
 <script src="js/Plugin.js"></script>
 

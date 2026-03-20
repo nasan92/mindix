@@ -152,14 +152,6 @@ mindmaps.ShareMapCommand = function() {
     this.description = "Share this map"
 };
 mindmaps.ShareMapCommand.prototype = new mindmaps.Command;
-mindmaps.ShareMapGoogleCommand = function() {
-    this.id = "SHARE_MAP_GOOGLE_COMMAND";
-    this.label = "Share Via Drive";
-    this.shortcut = ["ctrl+i", "meta+i"];
-    this.icon = "ui-icon-lightbulb";
-    this.description = "Share this map via Google Drive"
-};
-mindmaps.ShareMapGoogleCommand.prototype = new mindmaps.Command;
 mindmaps.SaveInstantDocumentCommand = function() {
     this.id = "SAVE_INSTANT_DOCUMENT_COMMAND";
     this.label = "Save";
