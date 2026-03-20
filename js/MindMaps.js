@@ -212,17 +212,6 @@ mindmaps.setInfoText = function(e) {
         $("#notification-info").html("")
     }, 2500)
 };
-window.addEventListener("load", function(e) {
-    window.applicationCache.addEventListener("updateready", function(e) {
-        if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-            window.applicationCache.swapCache();
-            window.onbeforeunload = null;
-            if (confirm("A new version of the app is available. Load it?")) {
-                window.location.reload()
-            }
-        } else {}
-    }, false)
-}, false);
 $(function() {
     removeEventLayerXY();
     createECMA5Shims();
