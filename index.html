@@ -68,36 +68,8 @@
     </tr>
 </script>
 
-<script id="template-open-table-item-server-urls" type="text/x-jquery-tmpl">
-    <tr>
-        <td><a class="title" href="#">${title}</a></td>
-        <td>${$item.format(dates)}</td>
-        <td><a class="delete" href="#">delete</a></td>
-    </tr>
-</script>
-
 <script id="template-open" type="text/x-jquery-tmpl">
     <div id="open-dialog" class="file-dialog" title="Open mind map">
-		<a href='http://mindmapmaker.org/storage-options-with-mindmaps.html' target='_blank'>Learn more</a> about storage options.<br /><br />
-		<h1><span class="highlight">New!</span> Public maps on Mindmap Storage Server</h1>
-
-        <p>Store maps publicly in mindmap storage to share it anonymously. The url of a map is only known to you and unless you share it others can't open or guess it.
-		This is a list of mind maps that are created by you. Click on the title of a map
-            to open it.</p>
-        <table class="server-filelist">
-            <thead>
-            <tr>
-                <th class="title">Title</th>
-                <th class="modified">Last Modified</th>
-                <th class="delete"></th>
-            </tr>
-            </thead>
-            <tbody class="server-document-list"></tbody>
-        </table>
-		 <span class="storageserver-loading">Loading...</span>
-		 <span class="storageserver-error error"></span>
-
-        <div class="seperator"></div>
         <h1>Local Storage</h1>
 
         <p>This is a list of all offline mind maps that are saved in your browser's local storage. Click on the title of a map
