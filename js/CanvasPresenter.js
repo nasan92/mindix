@@ -1,10 +1,18 @@
 mindmaps.CanvasPresenter = function(e, n, o, t, i) {
+    function l(e) {
+        var n = e && e.mindmap && e.mindmap.root ? e.mindmap.root.getPluginData("canvas", "background") : null;
+        return {
+            gridEnabled: !!(n && n.gridEnabled),
+            color: n && n.color ? n.color : "#ffffff"
+        }
+    }
+
     function d(e) {
         t.setZoomFactor(i.DEFAULT_ZOOM);
         var n = e.dimensions;
         t.setDimensions(n.x, n.y);
         var d = e.mindmap;
-        t.drawMap(d), t.center(), o.selectNode(d.root), t.updateNode(d.root), d.root.forEachDescendant(function(e) {
+        t.drawMap(d), t.applyMapBackgroundStyle(l(e)), t.center(), o.selectNode(d.root), t.updateNode(d.root), d.root.forEachDescendant(function(e) {
             t.updateNode(e)
         })
     }
@@ -100,6 +108,9 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
             t.updateNode(e)
         }), e.subscribe(mindmaps.Event.NODE_BORDER_CHANGED, function(e) {
             console.log("node border changed"), t.updateNode(e)
+        }), e.subscribe(mindmaps.Event.MAP_BACKGROUND_CHANGED, function() {
+            var e = o.getDocument();
+            e && t.applyMapBackgroundStyle(l(e))
         }), e.subscribe(mindmaps.Event.NODE_FONT_COLOR_PREVIEW, function(e, n) {
             t.updateFontColor(e, n)
         }), e.subscribe(mindmaps.Event.NODE_BRANCH_COLOR_CHANGED, function(e) {
@@ -118,6 +129,51 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         })
     }
     var c = t.getCreator();
+    function h() {
+        return [n.get(mindmaps.EditNodeCaptionCommand), n.get(mindmaps.CreateNodeCommand), n.get(mindmaps.CreateSiblingNodeCommand), n.get(mindmaps.DeleteNodeCommand), n.get(mindmaps.CopyNodeCommand), n.get(mindmaps.CutNodeCommand), n.get(mindmaps.PasteNodeCommand)]
+    }
+
+    function v() {
+        var e = {
+            clipboard: [n.get(mindmaps.CopyNodeCommand), n.get(mindmaps.CutNodeCommand), n.get(mindmaps.PasteNodeCommand)],
+            structure: [n.get(mindmaps.CreateNodeCommand), n.get(mindmaps.CreateSiblingNodeCommand), n.get(mindmaps.DeleteNodeCommand)]
+        };
+        return [{
+            id: "group-clipboard",
+            type: "group-title",
+            label: "Clipboard"
+        }].concat(e.clipboard.map(function(e) {
+            return {
+                id: e.id,
+                type: "action",
+                label: e.label,
+                enabled: e.enabled
+            }
+        })).concat([{ type: "separator" }, {
+            id: "group-structure",
+            type: "group-title",
+            label: "Structure"
+        }]).concat(e.structure.map(function(e) {
+            return {
+                id: e.id,
+                type: "action",
+                label: e.label,
+                enabled: e.enabled
+            }
+        }))
+    }
+
+    function p(e) {
+        var t = null;
+        h().some(function(n) {
+            if (n.id === e) {
+                t = n;
+                return true
+            }
+            return false
+        });
+        return t
+    }
     this.init = function() {
         var e = n.get(mindmaps.EditNodeCaptionCommand);
         e.setHandler(this.editNodeCaption.bind(this));
@@ -140,12 +196,24 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         t.stopEditNodeCaption(), i.zoomByScale(e)
     }, t.tow_tap = function() {
         t.stopEditNodeCaption(), i.zoomToOne()
+    }, t.nodeContextMenuRequested = function(e, r) {
+        o.selectNode(e);
+        var i = v();
+        t.showNodeContextMenu(e, r, i)
+    }, t.nodeContextMenuAction = function(e, n) {
+        if (n) {
+            o.selectNode(n)
+        }
+        var r = p(e);
+        if (r && r.enabled) {
+            r.execute()
+        }
     }, t.nodeMouseOver = function(e) {
         t.isNodeDragging() || c.isDragging() || c.attachToNode(e)
     }, t.nodeCaptionMouseOver = function(e) {
         t.isNodeDragging() || c.isDragging() || c.attachToNode(e)
     }, t.nodeMouseDown = function(e) {
-        o.selectNode(e), c.attachToNode(e)
+        t.hideNodeContextMenu(), o.selectNode(e), c.attachToNode(e)
     }, t.nodeDoubleClicked = function(e) {
         t.editNodeCaption(e)
     }, t.nodeDragged = function(e, n) {
@@ -167,9 +235,6 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
     }, t.pluginclick = function(e,icon) {
         //this function created by ms to click on plugin icon
         o.selectNode(e);
-        if(icon=="attachment") {
-            $('#inspector-button-attachment').trigger('click')
-        }
         if(icon=="draw") {
 			console.log("need work");
 

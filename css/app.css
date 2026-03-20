@@ -123,6 +123,64 @@ html {
     color: #1C4257
 }
 
+.mindmap-context-menu {
+    position: absolute;
+    z-index: 8000;
+    min-width: 170px;
+    background: #fff;
+    border: 1px solid #b8c5cf;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+    padding: 4px 0;
+    font-size: 12px
+}
+
+.mindmap-context-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0
+}
+
+.mindmap-context-menu li {
+    padding: 7px 12px;
+    color: #24323a;
+    cursor: pointer;
+    white-space: nowrap
+}
+
+.mindmap-context-menu li.group-title {
+    padding: 6px 12px 4px;
+    color: #6f7f89;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    cursor: default
+}
+
+.mindmap-context-menu li.separator {
+    padding: 0;
+    margin: 4px 8px;
+    border-top: 1px solid #dbe3e8;
+    cursor: default
+}
+
+.mindmap-context-menu li:hover {
+    background: #e8f2f8
+}
+
+.mindmap-context-menu li.group-title:hover,
+.mindmap-context-menu li.separator:hover {
+    background: transparent
+}
+
+.mindmap-context-menu li.disabled,
+.mindmap-context-menu li.disabled:hover {
+    color: #94a1aa;
+    background: transparent;
+    cursor: default
+}
+
 #bottombar {
     position: fixed;
     width: 100%;

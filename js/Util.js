@@ -29,7 +29,7 @@ mindmaps.Util.colorThemes = {
         border: ["#726658"],
         background: ["#ffffff", "#f8f9fa", "#f1faee", "#fefae0", "#fff1e6", "#edf6f9", "#e9f5db", "#fdf0d5", "#f8edeb", "#faf3dd", "#eef7f2", "#eef4ff"],
         connect: ["#E08A96", "#95BB64", "#E29EC6", "#DCB127", "#A159C5", "#F7941D", "#74AAA9", "#F36E53", "#7ABCD9", "#A78345", "#7AD9C4", "#C2B59B"],
-        font: ["#000000"]
+        font: ["#000000", "#E08A96", "#95BB64", "#E29EC6", "#DCB127", "#A159C5", "#F7941D", "#74AAA9", "#F36E53", "#7ABCD9", "#A78345", "#7AD9C4", "#C2B59B"]
     }
 };
 mindmaps.Util.activeColorTheme = "classic";
