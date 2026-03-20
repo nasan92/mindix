@@ -56,23 +56,3 @@ To share map via 'bit.ly' make changes in js/UrlShortener.js
 Change 'var username="";' (on line number 12) with your username from bit.ly
 Change 'var actoken="";' (on line number 13) with your actoken from bit.ly
 
-# v. googledrive.php
-googledrive.php file is used to open a file from Google Drive where you previously saved. 
-Open 'googledrive.php' file and change https://yourwebsite.com/ to your website.
-
-
-Use the following nginx configuration too. My webserver is 'nginx'. This configuration works for nginx. If you use apache, you need to change the configuration.
-
-//////
-	if ($arg_state) {
-	  set $test  P;
-	}
-	
-	if ($uri !~ /googledrive\.php$) {
-		set $test  "${test}C";
-	}
-
-	if ($test = PC) {
-	 rewrite ^.*$ googledrive.php permanent;
-	}
-/////
