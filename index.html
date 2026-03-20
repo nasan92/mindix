@@ -92,6 +92,12 @@
         <div class="file-chooser">
             <input type="file"/>
         </div>
+        <div class="seperator"></div>
+        <h1>Linked local file</h1>
+
+        <p>Open a local file with persistent write access (supported browsers only).</p>
+
+        <button id="button-open-linked-file">Open linked file</button>
        
     </div>
 </script>
@@ -105,6 +111,13 @@
         <button id="button-save-localstorage">Save</button>
         <input type="checkbox" class="autosave" id="checkbox-autosave-localstorage">
         <label for="checkbox-autosave-localstorage">Save automatically every minute.</label>
+
+        <div class="seperator"></div>
+        <h1>Linked local file</h1>
+
+        <p>Choose a local file and keep editing it with autosave writes to the same file (supported browsers only).</p>
+
+        <button id="button-save-linked-file">Save as linked file</button>
 
         <div class="seperator"></div>
         <h1>To file</h1>
@@ -614,20 +627,21 @@
 <script src="js/CanvasDrawingTools.js"></script>
 <script src="js/CanvasView.js"></script>
 <script src="js/CanvasPresenter.js"></script>
-<script src="js/MindMapModel.js"></script>
+<script src="js/MindMapModel.js?v=20260320d"></script>
 <script src="js/NewDocument.js"></script>
-<script src="js/OpenDocument.js"></script>
+<script src="js/OpenDocument.js?v=20260320d"></script>
 <script src="js/ImportMarkdown.js"></script>
-<script src="js/SaveDocument.js"></script>
+<script src="js/SaveDocument.js?v=20260320d"></script>
 <script src="js/MainViewController.js?v=20260320b"></script>
-<script src="js/Storage.js"></script>
+<script src="js/Storage.js?v=20260320d"></script>
 <script src="js/Event.js?v=20260320"></script>
 <script src="js/Notification.js"></script>
 <script src="js/StaticCanvas.js"></script>
 <script src="js/PrintController.js"></script>
 <script src="js/ExportMap.js"></script>
-<script src="js/AutoSaveController.js"></script>
+<script src="js/AutoSaveController.js?v=20260320d"></script>
 <script src="js/FilePicker.js"></script>
+<script src="js/LocalFileStorage.js?v=20260320d"></script>
 <script src="js/UrlShortener.js"></script>
 
 <script src="js/Plugin.js"></script>

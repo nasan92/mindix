@@ -1,7 +1,11 @@
 mindmaps.AutoSaveController = function(e, t) {
     function i() {
         console.debug("Autosaving...");
-        t.saveToLocalStorage()
+        t.saveToLocalStorage().then(function() {
+            if (t.getLinkedFileHandle()) {
+                return t.saveToLinkedFile()
+            }
+        })
     }
 
     function s() {
