@@ -16,12 +16,6 @@ mindmaps.OpenDocumentView = function() {
             e.openCloudButtonClicked()
         }
     });
-    var r = $("#button-open-google-drive").button().click(function() {
-        console.log("clicked gdrive");
-        if (e.openGoogleDriveButtonClicked) {
-            e.openGoogleDriveButtonClicked()
-        }
-    });
     var i = $("#button-open-storageserver").button().click(function() {
         if (e.openStorageServerButtonClicked) {
             e.openStorageServerButtonClicked()
@@ -134,17 +128,6 @@ mindmaps.OpenDocumentView = function() {
     this.hideCloudLoading = function() {
         t.find(".cloud-loading").removeClass("loading")
     };
-    this.showGoogleDriveError = function(e) {
-        t.find(".google-drive-loading").removeClass("loading");
-        t.find(".google-drive-error").text(e)
-    };
-    this.showGoogleDriveLoading = function() {
-        t.find(".google-drive-error").text("");
-        t.find(".google-drive-loading").addClass("loading")
-    };
-    this.hideGoogleDriveLoading = function() {
-        t.find(".google-drive-loading").removeClass("loading")
-    };
     this.showStorageServerError = function(e) {
         t.find(".storageserver-loading").removeClass("loading");
         t.find(".storageserver-error").text(e)
@@ -177,56 +160,6 @@ mindmaps.OpenDocumentPresenter = function(e, t, n, r) {
                 n.showCloudError(e)
             }
         })
-    };
-    n.openGoogleDriveButtonClicked = function(t) {
-        deferred = jQuery.Deferred();
-        parseDoc = function(t, r) {
-            console.log("parseDoc  " + t + "   " + Object.prototype.toString.call(t));
-            try {
-                if (Object.prototype.toString.call(t) == "[object String]") {
-                    console.log("parsing");
-                    t = JSON.parse(t)
-                }
-                var i = mindmaps.Document.fromObject(t)
-            } catch (s) {
-                e.publish(mindmaps.Event.NOTIFICATION_ERROR, "File is not a valid mind map!");
-                throw new Error("Error while parsing map from google drive", s)
-            }
-            n.googleDriveDocumentClicked(i);
-            mindmaps.currentMapId = "gd" + $.trim(r);
-            window.location.hash = "m:gd" + $.trim(r);
-            mindmaps.isMapLoadingConfirmationRequired = false;
-            mindmaps.ignoreHashChange = true
-        };
-        n.hideOpenDialog();
-        showAuthentication = function(e) {
-            console.log("showAuthentication");
-            if (e !== "not-authenticated") {
-                return
-            }
-            $("#dialog-confirm-google-drive").dialog({
-                resizable: false,
-                height: 200,
-                width: 400,
-                modal: true,
-                buttons: {
-                    Authorize: function() {
-                        mindmaps.GoogleDrive.showPicker("application/json", "Select a mindmap to open", true).then(function(e) {
-                            mindmaps.setInfoText("Opening mindmap from Google Drive");
-                            mindmaps.GoogleDrive.loadMap(e).then(parseDoc, deferred.reject)
-                        }, deferred.reject, deferred.notify);
-                        $(this).dialog("close")
-                    },
-                    Cancel: function() {
-                        $(this).dialog("close")
-                    }
-                }
-            })
-        };
-        mindmaps.GoogleDrive.showPicker("application/json", "Pick a file", false).then(function(e) {
-            mindmaps.setInfoText("Opening mindmap from Google Drive");
-            mindmaps.GoogleDrive.loadMap(e).then(parseDoc, deferred.reject)
-        }, showAuthentication, deferred.notify)
     };
     n.openStorageServerButtonClicked = function(e) {
         mindmaps.Util.trackEvent("Clicks", "storageserver-open");
@@ -275,9 +208,6 @@ mindmaps.OpenDocumentPresenter = function(e, t, n, r) {
         mindmaps.Util.trackEvent("Clicks", "server-open");
         t.setDocument(e);
         n.hideOpenDialog()
-    };
-    n.googleDriveDocumentClicked = function(e) {
-        t.setDocument(e)
     };
     n.deleteDocumentClicked = function(e) {
         mindmaps.LocalDocumentStorage.deleteDocument(e);
