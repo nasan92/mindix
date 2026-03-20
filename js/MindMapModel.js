@@ -219,20 +219,5 @@ mindmaps.MindMapModel = function(e, t, n) {
         }
         return n
     };
-    this.saveToStorageServer = function(t) {
-        var n = this.document.prepareSave();
-        mindmaps.ServerStorage.saveDocument(n, {
-            start: function() {
-                t.start()
-            },
-            success: function() {
-                e.publish(mindmaps.Event.DOCUMENT_SAVED, n);
-                t.success()
-            },
-            error: function(e) {
-                t.error(e)
-            }
-        })
-    };
     this.init()
 }

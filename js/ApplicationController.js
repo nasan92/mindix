@@ -99,7 +99,7 @@ mindmaps.ApplicationController = function() {
         g = new mindmaps.MindMapModel(c, p, u),
         h = new mindmaps.Geometry(g);
     mindmaps.ui.geometry = h;
-    var f = (new mindmaps.ClipboardController(c, p, g), new mindmaps.HelpController(c, p), new mindmaps.PrintController(c, p, g), new mindmaps.AutoSaveController(c, g)),
+    var f = (new mindmaps.ClipboardController(c, p, g), new mindmaps.PrintController(c, p, g), new mindmaps.AutoSaveController(c, g)),
         w = new mindmaps.FilePicker(c, g);
     self = this, mindmaps.getConnectedNodes = function() {
         return g.getDocument().getConnectedNodes()
@@ -151,69 +151,12 @@ mindmaps.ApplicationController = function() {
         }), c.subscribe(mindmaps.Event.DOCUMENT_OPENED, function() {
             h.setEnabled(!0), f.setEnabled(!0), w.setEnabled(!0), mindmaps.isMapLoadingConfirmationRequired = !1
         })
-    }, self.loadMapFromHash = function(e) {
-        var o = window.location.hash;
-        console.log(o), "m" == o[1] && ":" == o[2] ? (console.log("storage serve a r"), "m" == o[3] && "m" == o[4] ? $.ajax({
-            type: "POST",
-            url: mindmaps.Config.MindMapListAddress,
-            data: {
-                url: o.substring(5)
-            }
-        }).done(function(n) {
-            console.log("shortening " + window.location), mindmaps.fireShortener(window.location);
-            var o = mindmaps.Document.fromJSON(n);
-            g.setDocument(o), e.success()
-        }).fail(function(n) {
-            e.error(n.status)
-        }) : "n" == o[3] && "e" == o[4] && "w" == o[5] ? (("n" != mindmaps.currentMapId[0] || "e" != mindmaps.currentMapId[1] || "w" != mindmaps.currentMapId[2]) && n(), e.success()) : e.error("invalid")) : e.error("invalid")
     }, this.go = function() {
         var e = new mindmaps.MainViewController(c, g, p);
         e.go(), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(n) {
             n.onUIInit(c, g)
-        }), window.location.hash.length > 0 ? self.loadMapFromHash({
-            success: function() {
-                mindmaps.currentMapId = window.location.hash.substring(3), window.location.hash = "m:" + mindmaps.currentMapId, mindmaps.isMapLoadingConfirmationRequired = !1, mindmaps.ignoreHashChange = !0
-            },
-            error: function(e) {
-                "invalid" == e ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server or Invalid map url.") : 413 == e ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server.") : c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Network Error: Unable to fetch map."), n()
-            }
-        }) : n()
+        }), n()
     }, this.init(), c.subscribe(mindmaps.Event.DOCUMENT_SAVED, function() {
         mindmaps.isMapLoadingConfirmationRequired = !1
-    }), self.hashChange = function() {
-        console.log("new hash " + window.location.hash.length), $(function() {
-            if (mindmaps.ignoreHashChange) {
-                if (!mindmaps.isMapLoadingConfirmationRequired) return mindmaps.ignoreHashChange = !1, void console.log("ignoreHashChange");
-                mindmaps.ignoreHashChange = !1, console.log("no ignoreHashChange")
-            }
-            var n = window.location.hash;
-            n = n.substring(3), window.location.hash.length > 0 && (n != mindmaps.currentMapId && mindmaps.isMapLoadingConfirmationRequired ? $("#dialog-confirm").dialog({
-                resizable: !1,
-                height: 140,
-                modal: !0,
-                buttons: {
-                    Proceed: function() {
-                        self.loadMapFromHash({
-                            success: function() {
-                                mindmaps.currentMapId = window.location.hash.substring(3), window.location.hash = "m:" + mindmaps.currentMapId, mindmaps.isMapLoadingConfirmationRequired = !1, mindmaps.ignoreHashChange = !0
-                            },
-                            error: function(n) {
-                                "invalid" == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server or Invalid map url.") : 413 == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server.") : c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Network Error: Unable to fetch map.")
-                            }
-                        }), $(this).dialog("close")
-                    },
-                    Cancel: function() {
-                        $(this).dialog("close")
-                    }
-                }
-            }) : self.loadMapFromHash({
-                success: function() {
-                    mindmaps.currentMapId = window.location.hash.substring(3), window.location.hash = "m:" + mindmaps.currentMapId, mindmaps.isMapLoadingConfirmationRequired = !1, mindmaps.ignoreHashChange = !0
-                },
-                error: function(n) {
-                    "invalid" == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server or Invalid map url.") : 413 == n ? c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Map not found on server.") : c.publish(mindmaps.Event.NOTIFICATION_ERROR, "Network Error: Unable to fetch map.")
-                }
-            }))
-        })
-    }, window.addEventListener("hashchange", self.hashChange)
+    })
 };

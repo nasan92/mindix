@@ -18,17 +18,11 @@ If you have any doubt, feel free to contact me at cvazeem@gmail.com
 
 # Requirements
 --
-A simple webserver and PHP (Version 5 or above) if you want to save public mindmaps. Otherwise PHP is not needed.
+A simple webserver to serve the app.
 
 Extract the files and place it in the root directory of your website.
 
-'S3' folder is used to save the public mindmap files. If you are in linux, make that folder writable, ie, chmod 666
-
-# i. S3 storage (public storage)
-Make sure there is 'S3' folder in the root path. Make sure it contains two php files, process.php and processFilenames.php . Make 'S3' folder writable. If you are in linux, make that folder writable, ie, chmod 666
-Edit 'js/Config.js' and replace 'yourwebsite.com' with your website url.
-
-# ii. Sharemap.js
+# i. Sharemap.js
 To share your public map via Facebook, do the following changes.
 
 a. Create an App in facebook. Make sure your website is allowed as origin.
@@ -40,7 +34,7 @@ to app_id='With your facebook app id'
 b. Change http://mindmapmaker.org/mind-map-maker.png (on line number 32) to your website
 c. Change https://app.mindmapmaker.org (on line number 34) to your website
 
-# iii. UrlShortener.js
+# ii. UrlShortener.js
 To share map via 'bit.ly' make changes in js/UrlShortener.js
 //Register for an account at bit.ly/a/sign_up
 Change 'var username="";' (on line number 12) with your username from bit.ly

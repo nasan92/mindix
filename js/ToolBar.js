@@ -167,11 +167,6 @@ mindmaps.ToolBarPresenter = function(e, t, n, r, i) {
     var C = [mindmaps.ImportMarkdownCommand];
     var H = o(C);
     n.addButtonGroup(H, n.alignLeft);
-    var p = new mindmaps.ToolBarMenu("Nodes", "ui-icon-document");
-    var d = [mindmaps.CreateNodeCommand, mindmaps.CreateSiblingNodeCommand, mindmaps.DeleteNodeCommand, mindmaps.SelectParentNodeCommand, mindmaps.SelectChildFirstNodeCommand, mindmaps.SelectSiblingNextNodeCommand, mindmaps.SelectSiblingPrevNodeCommand];
-    var v = o(d);
-    p.add(v);
-    n.addMenu(p);
     var m = new mindmaps.ToolBarMenu("Edit", "ui-icon-document");
     var g = [mindmaps.UndoCommand, mindmaps.RedoCommand, mindmaps.CopyNodeCommand, mindmaps.CutNodeCommand, mindmaps.PasteNodeCommand];
     var y = o(g);
@@ -182,7 +177,6 @@ mindmaps.ToolBarPresenter = function(e, t, n, r, i) {
     var E = o(w);
     b.add(E);
     n.addMenu(b);
-    n.addButton(s(mindmaps.HelpCommand), n.alignRight);
     n.addButton(s(mindmaps.FormatSidebarCommand), n.alignRight);
     this.go = function() {
         n.init();
