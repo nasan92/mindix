@@ -144,14 +144,6 @@ mindmaps.NewDocumentCommand = function() {
     this.description = "Start working on a new mind map"
 };
 mindmaps.NewDocumentCommand.prototype = new mindmaps.Command;
-mindmaps.ShareMapCommand = function() {
-    this.id = "SHARE_MAP_COMMAND";
-    this.label = "Share";
-    this.shortcut = ["ctrl+h", "meta+h"];
-    this.icon = "ui-icon-lightbulb";
-    this.description = "Share this map"
-};
-mindmaps.ShareMapCommand.prototype = new mindmaps.Command;
 mindmaps.SaveInstantDocumentCommand = function() {
     this.id = "SAVE_INSTANT_DOCUMENT_COMMAND";
     this.label = "Save";

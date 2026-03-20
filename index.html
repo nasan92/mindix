@@ -159,19 +159,6 @@
     </div>
 </script>
 
-<script id="template-share" type="text/x-jquery-tmpl">
-    <div id="share-dialog" class="file-dialog" title="Share your mindmap">
-		<center>
-		<a href='#' id='share-button-facebook' target='_blank'><img src='img/share-facebook.jpg'></a><br /><br /><br />
-		<a href='#' id='share-button-twitter' target='_blank'><img src='img/share-twitter.jpg'></a><br /><br /><br />
-		<a href='#' id='share-button-google' target='_blank'><img src='img/share-google.jpg'></a><br /><br /><br /></center>
-		<div class="seperator"></div>
-		<center><span style='font-size:15px;font-weight:bold'>Share URL: Click to highlight and then copy<br /><br />	</center>
-		<span style='font-size:15px;font-weight:bold'>Short Url <input type='text' size='25' id='share-map-short-url' value='' readonly>
-		<br /><br />Permanent Url <input type='text' id='share-map-permanent-url' value='' size='50' readonly></span>
-    </div>
-</script>
-
 <script id="template-urls-table-item" type="text/x-jquery-tmpl">
     <tr>
         <td><a class="url" href="${(url.substr(0,7) == 'http://' || url.substr(0,8) == 'https://' || url.substr(0,7) == 'file://')? url : 'http://'+url}" target="_blank">${url}</a></td>
@@ -671,7 +658,6 @@
 <script src="js/AutoSaveController.js"></script>
 <script src="js/FilePicker.js"></script>
 <script src="js/UrlShortener.js"></script>
-<script src="js/ShareMap.js"></script>
 
 <script src="js/Plugin.js"></script>
 
