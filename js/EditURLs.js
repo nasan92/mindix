@@ -170,7 +170,18 @@ mindmaps.EditURLsView = function() {
     inspectorAdviser: {
         onInit: function(n) {
             var e = '  <tr id="inspector-urls-row">                         <td>URLs:</td>                         <td>                             <button id="inspector-button-urls" title="Open URL dialog"                             class="buttons-small buttons-less-padding">Edit URLs                             </button>                         </td>                     </tr>';
-            n.append($(e));
+            var i = $(e).addClass("inspector-section-row inspector-section-node");
+            var r = n.find("#inspector-add-image");
+            if (r.length) {
+                r.after(i)
+            } else {
+                var o = n.find("#inspector-font-color-picker").closest("tr");
+                if (o.length) {
+                    o.after(i)
+                } else {
+                    n.append(i)
+                }
+            }
             var t = $("#inspector-button-urls", n);
             t.button(), t.click(function() {
                 var n = mindmaps.ui.commandRegistry.get(mindmaps.EditURLsCommand);
