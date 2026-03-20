@@ -21,6 +21,7 @@ mindmaps.OpenDocumentView = function() {
             e.openLinkedFileClicked()
         }
     });
+    var a = t.find(".linked-file-support-status");
     t.find(".file-chooser input").bind("change", function(t) {
         if (e.openExernalFileClicked) {
             e.openExernalFileClicked(t)
@@ -62,6 +63,25 @@ mindmaps.OpenDocumentView = function() {
     this.showOpenDialog = function(e) {
         this.render(e);
         t.dialog("open")
+    };
+    this.setLinkedFileSupportStatus = function() {
+        if (!mindmaps.LocalFileStorage) {
+            a.text("Linked files: unavailable in this browser.");
+            r.button("disable");
+            return;
+        }
+        if (mindmaps.LocalFileStorage.canOpenFiles() && mindmaps.LocalFileStorage.canSaveFiles()) {
+            a.text("Linked files: supported (open + save). Best in Chrome.");
+            r.button("enable");
+            return;
+        }
+        if (mindmaps.LocalFileStorage.canOpenFiles()) {
+            a.text("Linked files: partially supported (open existing file only).");
+            r.button("enable");
+            return;
+        }
+        a.text("Linked files: unavailable in this browser.");
+        r.button("disable");
     };
     this.hideOpenDialog = function() {
         t.dialog("close")
@@ -166,6 +186,7 @@ mindmaps.OpenDocumentPresenter = function(e, t, n, r) {
         })
     };
     this.go = function() {
+        n.setLinkedFileSupportStatus();
         mindmaps.LocalDocumentStorage.getDocuments().then(function(e) {
             e.sort(mindmaps.Document.sortByModifiedDateDescending);
             n.showOpenDialog(e)

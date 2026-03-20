@@ -21,11 +21,6 @@ mindmaps.SaveDocumentView = function() {
             g.localStorageButtonClicked()
         }
     });
-    var b = $("#checkbox-autosave-localstorage").click(function() {
-        if (g.autoSaveCheckboxClicked) {
-            g.autoSaveCheckboxClicked($(this).prop("checked"))
-        }
-    });
     var d = $("#button-save-hdd").button().click(function() {
         if (g.hddSaveButtonClicked) {
             g.hddSaveButtonClicked()
@@ -36,9 +31,7 @@ mindmaps.SaveDocumentView = function() {
             g.linkedFileSaveButtonClicked()
         }
     });
-    this.setAutoSaveCheckboxState = function(i) {
-        b.prop("checked", i)
-    };
+    var l = c.find(".linked-file-support-status");
     this.showSaveDialog = function() {
         c.dialog("open")
     };
@@ -47,6 +40,25 @@ mindmaps.SaveDocumentView = function() {
     };
     this.showCloudError = function(i) {
         c.find(".cloud-error").text(i)
+    };
+    this.setLinkedFileSupportStatus = function() {
+        if (!mindmaps.LocalFileStorage) {
+            l.text("Linked files: unavailable in this browser.");
+            k.button("disable");
+            return;
+        }
+        if (mindmaps.LocalFileStorage.canOpenFiles() && mindmaps.LocalFileStorage.canSaveFiles()) {
+            l.text("Linked files: supported (open + save). Best in Chrome.");
+            k.button("enable");
+            return;
+        }
+        if (mindmaps.LocalFileStorage.canOpenFiles()) {
+            l.text("Linked files: partially supported (link existing file only).");
+            k.button("enable");
+            return;
+        }
+        l.text("Linked files: unavailable in this browser.");
+        k.button("disable");
     };
 };
 mindmaps.SaveDocumentPresenter = function(d, b, f, c, a) {
@@ -79,13 +91,6 @@ mindmaps.SaveDocumentPresenter = function(d, b, f, c, a) {
                 d.publish(mindmaps.Event.NOTIFICATION_ERROR, "Error while saving to local storage")
             }
         })
-    };
-    f.autoSaveCheckboxClicked = function(g) {
-        if (g) {
-            c.enable()
-        } else {
-            c.disable()
-        }
     };
     f.hddSaveButtonClicked = function() {
         mindmaps.Util.trackEvent("Clicks", "hdd-save");
@@ -139,7 +144,7 @@ mindmaps.SaveDocumentPresenter = function(d, b, f, c, a) {
         })
     };
     this.go = function() {
-        f.setAutoSaveCheckboxState(c.isEnabled());
+        f.setLinkedFileSupportStatus();
         f.showSaveDialog()
     }
 };
