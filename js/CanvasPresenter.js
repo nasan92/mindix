@@ -1,10 +1,18 @@
 mindmaps.CanvasPresenter = function(e, n, o, t, i) {
+    function l(e) {
+        var n = e && e.mindmap && e.mindmap.root ? e.mindmap.root.getPluginData("canvas", "background") : null;
+        return {
+            gridEnabled: !n || n.gridEnabled !== !1,
+            color: n && n.color ? n.color : "#ffffff"
+        }
+    }
+
     function d(e) {
         t.setZoomFactor(i.DEFAULT_ZOOM);
         var n = e.dimensions;
         t.setDimensions(n.x, n.y);
         var d = e.mindmap;
-        t.drawMap(d), t.center(), o.selectNode(d.root), t.updateNode(d.root), d.root.forEachDescendant(function(e) {
+        t.drawMap(d), t.applyMapBackgroundStyle(l(e)), t.center(), o.selectNode(d.root), t.updateNode(d.root), d.root.forEachDescendant(function(e) {
             t.updateNode(e)
         })
     }
@@ -100,6 +108,9 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
             t.updateNode(e)
         }), e.subscribe(mindmaps.Event.NODE_BORDER_CHANGED, function(e) {
             console.log("node border changed"), t.updateNode(e)
+        }), e.subscribe(mindmaps.Event.MAP_BACKGROUND_CHANGED, function() {
+            var e = o.getDocument();
+            e && t.applyMapBackgroundStyle(l(e))
         }), e.subscribe(mindmaps.Event.NODE_FONT_COLOR_PREVIEW, function(e, n) {
             t.updateFontColor(e, n)
         }), e.subscribe(mindmaps.Event.NODE_BRANCH_COLOR_CHANGED, function(e) {

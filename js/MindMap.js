@@ -20,6 +20,10 @@ mindmaps.MindMap = function(e) {
             style: "none",
             color: "#ffffff",
             background: "#ffffff"
+        });
+        this.root.setPluginData("canvas", "background", {
+            gridEnabled: true,
+            color: "#ffffff"
         })
     }
     this.addNode(this.root)

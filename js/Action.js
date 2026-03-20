@@ -341,3 +341,45 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
         o.addAction(new mindmaps.action.ChangeNodeBorderStyleAction(n, t.style))
     })
 }, mindmaps.action.SetChildrenBorderStyleAction.prototype = new mindmaps.action.CompositeAction;
+mindmaps.action.SetMapGridEnabledAction = function(n, t) {
+    var o = n.getPluginData("canvas", "background") || {
+            gridEnabled: !0,
+            color: "#ffffff"
+        },
+        i = o.gridEnabled !== !1;
+    this.execute = function() {
+        var e = n.getPluginData("canvas", "background") || {
+            gridEnabled: !0,
+            color: "#ffffff"
+        };
+        if ((e.gridEnabled !== !1) === !!t) {
+            return !1
+        }
+        e.gridEnabled = !!t;
+        n.setPluginData("canvas", "background", e);
+        mindmaps.isMapLoadingConfirmationRequired = !0
+    }, this.event = [mindmaps.Event.MAP_BACKGROUND_CHANGED, n], this.undo = function() {
+        return new mindmaps.action.SetMapGridEnabledAction(n, i)
+    }
+}, mindmaps.action.SetMapGridEnabledAction.prototype = new mindmaps.action.Action;
+mindmaps.action.SetMapBackgroundColorAction = function(n, t) {
+    var o = n.getPluginData("canvas", "background") || {
+            gridEnabled: !0,
+            color: "#ffffff"
+        },
+        i = o.color || "#ffffff";
+    this.execute = function() {
+        var e = n.getPluginData("canvas", "background") || {
+            gridEnabled: !0,
+            color: "#ffffff"
+        };
+        if ((e.color || "#ffffff") === t) {
+            return !1
+        }
+        e.color = t;
+        n.setPluginData("canvas", "background", e);
+        mindmaps.isMapLoadingConfirmationRequired = !0
+    }, this.event = [mindmaps.Event.MAP_BACKGROUND_CHANGED, n], this.undo = function() {
+        return new mindmaps.action.SetMapBackgroundColorAction(n, i)
+    }
+}, mindmaps.action.SetMapBackgroundColorAction.prototype = new mindmaps.action.Action;
