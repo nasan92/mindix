@@ -16,11 +16,6 @@ mindmaps.OpenDocumentView = function() {
             e.openCloudButtonClicked()
         }
     });
-    var i = $("#button-open-storageserver").button().click(function() {
-        if (e.openStorageServerButtonClicked) {
-            e.openStorageServerButtonClicked()
-        }
-    });
     t.find(".file-chooser input").bind("change", function(t) {
         if (e.openExernalFileClicked) {
             e.openExernalFileClicked(t)
@@ -46,43 +41,6 @@ mindmaps.OpenDocumentView = function() {
         }
         event.preventDefault()
     });
-    var o = t.find(".server-filelist");
-    o.delegate("a.title", "click", function() {
-        if (e.serverDocumentClicked) {
-            var t = $(this).tmplItem();
-            console.log("t" + $.trim(t.data.url));
-            e.showStorageServerLoading();
-            $.ajax({
-                type: "POST",
-                url: mindmaps.Config.MindMapListAddress,
-                data: {
-                    url: $.trim(t.data.url)
-                }
-            }).done(function(n) {
-                e.hideStorageServerLoading();
-                mindmaps.currentMapId = "mm" + $.trim(t.data.url);
-                window.location.hash = "m:mm" + $.trim(t.data.url);
-                mindmaps.isMapLoadingConfirmationRequired = false;
-                mindmaps.ignoreHashChange = true;
-                console.log("m:mm" + $.trim(t.data.url));
-                console.log("shortening " + window.location);
-                mindmaps.fireShortener(window.location);
-                var r = mindmaps.Document.fromJSON(n);
-                e.serverDocumentClicked(r)
-            }).fail(function(t) {
-                if (t.status == 413) e.showStorageServerError("Map not found on server.");
-                else e.showStorageServerError("Network Error: Unable to fetch map.")
-            })
-        }
-        event.preventDefault()
-    }).delegate("a.delete", "click", function() {
-        if (e.deleteServerDocumentClicked) {
-            var t = $(this).tmplItem();
-            localStorage.removeItem("mindmaps.serverurl." + t.data.id);
-            e.deleteServerDocumentClicked(t.data.id)
-        }
-        event.preventDefault()
-    });
     this.render = function(e) {
         console.log(e);
         var n = $(".document-list", t).empty();
@@ -96,22 +54,8 @@ mindmaps.OpenDocumentView = function() {
             }
         }).appendTo(n)
     };
-    this.renderServere = function(e) {
-        var n = $(".server-document-list", t).empty();
-        $("#template-open-table-item-server-urls").tmpl(e, {
-            format: function(e) {
-                if (!e) return "";
-                var t = Date.parse(e);
-                var n = t.getDate();
-                var r = t.getMonth() + 1;
-                var i = t.getFullYear();
-                return n + "/" + r + "/" + i
-            }
-        }).appendTo(n)
-    };
-    this.showOpenDialog = function(e, n) {
+    this.showOpenDialog = function(e) {
         this.render(e);
-        this.renderServere(n);
         t.dialog("open")
     };
     this.hideOpenDialog = function() {
@@ -127,17 +71,6 @@ mindmaps.OpenDocumentView = function() {
     };
     this.hideCloudLoading = function() {
         t.find(".cloud-loading").removeClass("loading")
-    };
-    this.showStorageServerError = function(e) {
-        t.find(".storageserver-loading").removeClass("loading");
-        t.find(".storageserver-error").text(e)
-    };
-    this.showStorageServerLoading = function() {
-        t.find(".storageserver-error").text("");
-        t.find(".storageserver-loading").addClass("loading")
-    };
-    this.hideStorageServerLoading = function() {
-        t.find(".storageserver-loading").removeClass("loading")
     }
 };
 mindmaps.OpenDocumentPresenter = function(e, t, n, r) {
@@ -158,22 +91,6 @@ mindmaps.OpenDocumentPresenter = function(e, t, n, r) {
             },
             error: function(e) {
                 n.showCloudError(e)
-            }
-        })
-    };
-    n.openStorageServerButtonClicked = function(e) {
-        mindmaps.Util.trackEvent("Clicks", "storageserver-open");
-        var r = mindmaps.ServerStorage.loadDocument({
-            start: function() {
-                n.showStorageServerLoading()
-            },
-            success: function(e) {
-                t.setDocument(e);
-                n.hideOpenDialog()
-            },
-            error: function() {
-                var e = "Error while loading from storage server.";
-                n.showStorageServerError(e)
             }
         })
     };
@@ -204,46 +121,14 @@ mindmaps.OpenDocumentPresenter = function(e, t, n, r) {
         t.setDocument(e);
         n.hideOpenDialog()
     };
-    n.serverDocumentClicked = function(e) {
-        mindmaps.Util.trackEvent("Clicks", "server-open");
-        t.setDocument(e);
-        n.hideOpenDialog()
-    };
     n.deleteDocumentClicked = function(e) {
         mindmaps.LocalDocumentStorage.deleteDocument(e);
         var t = mindmaps.LocalDocumentStorage.getDocuments();
         n.render(t)
     };
-    n.deleteServerDocumentClicked = function(e) {
-        mindmaps.ServerStorage.deleteDocument(e, {
-            success: function() {
-                var e = mindmaps.LocalDocumentStorage.getDocuments();
-                e.sort(mindmaps.Document.sortByModifiedDateDescending);
-                mindmaps.ServerStorage.getDocuments({
-                    success: function(t) {
-                        t.sort(mindmaps.Document.sortByModifiedDateDescending);
-                        n.showOpenDialog(e, t)
-                    },
-                    start: function() {},
-                    error: function() {}
-                })
-            },
-            start: function() {},
-            error: function() {}
-        })
-    };
     this.go = function() {
         var e = mindmaps.LocalDocumentStorage.getDocuments();
         e.sort(mindmaps.Document.sortByModifiedDateDescending);
-        mindmaps.ServerStorage.getDocuments({
-            success: function(t) {
-                t.sort(mindmaps.Document.sortByModifiedDateDescendingCustom);
-                n.showOpenDialog(e, t)
-            },
-            start: function() {},
-            error: function() {
-                n.showOpenDialog(e, [])
-            }
-        })
+        n.showOpenDialog(e)
     }
 }

@@ -240,15 +240,12 @@ textarea,
 }
 
 .file-dialog .localstorage-filelist tbody tr:nth-child(odd),
-.file-dialog .server-filelist tbody tr:nth-child(odd),
 .file-dialog .url-list tbody tr:nth-child(odd) {
   background-color: #f6f7f9;
 }
 
 .file-dialog .localstorage-filelist tbody tr:hover,
 .file-dialog .localstorage-filelist tbody tr:nth-child(odd):hover,
-.file-dialog .server-filelist tbody tr:hover,
-.file-dialog .server-filelist tbody tr:nth-child(odd):hover,
 .file-dialog .url-list tbody tr:hover,
 .file-dialog .url-list tbody tr:nth-child(odd):hover {
   background-color: #ebeef2;

@@ -68,36 +68,8 @@
     </tr>
 </script>
 
-<script id="template-open-table-item-server-urls" type="text/x-jquery-tmpl">
-    <tr>
-        <td><a class="title" href="#">${title}</a></td>
-        <td>${$item.format(dates)}</td>
-        <td><a class="delete" href="#">delete</a></td>
-    </tr>
-</script>
-
 <script id="template-open" type="text/x-jquery-tmpl">
     <div id="open-dialog" class="file-dialog" title="Open mind map">
-		<a href='http://mindmapmaker.org/storage-options-with-mindmaps.html' target='_blank'>Learn more</a> about storage options.<br /><br />
-		<h1><span class="highlight">New!</span> Public maps on Mindmap Storage Server</h1>
-
-        <p>Store maps publicly in mindmap storage to share it anonymously. The url of a map is only known to you and unless you share it others can't open or guess it.
-		This is a list of mind maps that are created by you. Click on the title of a map
-            to open it.</p>
-        <table class="server-filelist">
-            <thead>
-            <tr>
-                <th class="title">Title</th>
-                <th class="modified">Last Modified</th>
-                <th class="delete"></th>
-            </tr>
-            </thead>
-            <tbody class="server-document-list"></tbody>
-        </table>
-		 <span class="storageserver-loading">Loading...</span>
-		 <span class="storageserver-error error"></span>
-
-        <div class="seperator"></div>
         <h1>Local Storage</h1>
 
         <p>This is a list of all offline mind maps that are saved in your browser's local storage. Click on the title of a map
@@ -601,7 +573,7 @@
 <script src="js/libs/events.js"></script>
 <script src="js/libs/jquery.ie.cors.js"></script>
 
-<script src="js/MindMaps.js"></script>
+<script src="js/MindMaps.js?v=20260320"></script>
 <script src="js/FileSaver.min.js"></script>
 
 
@@ -618,7 +590,7 @@
 <script src="js/adapters/jquery.js"></script>
 
 <script src="js/Config.js"></script>
-<script src="js/Command.js?v=20260319b"></script>
+<script src="js/Command.js?v=20260320b"></script>
 <script src="js/CommandRegistry.js"></script>
 <script src="js/Action.js"></script>
 <script src="js/Point.js"></script>
@@ -632,13 +604,12 @@
 <script src="js/ClipboardController.js"></script>
 <script src="js/ZoomController.js"></script>
 <script src="js/ShortcutController.js"></script>
-<script src="js/HelpController.js"></script>
 <script src="js/FloatPanel.js"></script>
 <script src="js/Navigator.js"></script>
 <script src="js/Inspector.js"></script>
 
 
-<script src="js/ToolBar.js?v=20260319b"></script>
+<script src="js/ToolBar.js?v=20260320a"></script>
 <script src="js/StatusBar.js"></script>
 <script src="js/CanvasDrawingTools.js"></script>
 <script src="js/CanvasView.js"></script>
@@ -648,9 +619,9 @@
 <script src="js/OpenDocument.js"></script>
 <script src="js/ImportMarkdown.js"></script>
 <script src="js/SaveDocument.js"></script>
-<script src="js/MainViewController.js?v=20260319b"></script>
+<script src="js/MainViewController.js?v=20260320b"></script>
 <script src="js/Storage.js"></script>
-<script src="js/Event.js?v=20260319"></script>
+<script src="js/Event.js?v=20260320"></script>
 <script src="js/Notification.js"></script>
 <script src="js/StaticCanvas.js"></script>
 <script src="js/PrintController.js"></script>
@@ -663,7 +634,7 @@
 
 <!-- plugins -->
 <script src="js/Gesture.js"></script>
-<script src="js/Layout.js"></script>
+<script src="js/Layout.js?v=20260320"></script>
 
 
 <script src="js/Attachment.js"></script>
@@ -673,7 +644,7 @@
 <script src="js/ImageNode.js"></script>
 
 
-<script src="js/ApplicationController.js?v=20260319"></script>
+<script src="js/ApplicationController.js?v=20260320"></script>
 
 <script type="text/javascript">
     document.body.addEventListener('touchmove', function (event) {
