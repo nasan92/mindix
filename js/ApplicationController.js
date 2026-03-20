@@ -44,14 +44,6 @@ mindmaps.ApplicationController = function() {
         n && g.setDocument(null)
     }
 
-    function t() {
-        if ("m" == mindmaps.currentMapId[0] && "m" == mindmaps.currentMapId[1]) {
-            var n = new mindmaps.ShareMapPresenter(new mindmaps.ShareMapView, g);
-            n.go()
-        } else c.publish(mindmaps.Event.NOTIFICATION_INFO, "Store the map in Server Storage to share it."), event.preventDefault()
-    }
-
-
     function m() {
         if (mindmaps.isMapLoadingConfirmationRequired) $("#dialog-confirm").dialog({
             resizable: !1,
@@ -145,8 +137,6 @@ mindmaps.ApplicationController = function() {
     }, this.init = function() {
         var n = p.get(mindmaps.NewDocumentCommand);
         n.setHandler(e), n.setEnabled(!0);
-        var i = p.get(mindmaps.ShareMapCommand);
-        i.setHandler(t), i.setEnabled(!0);
         var g = p.get(mindmaps.OpenDocumentCommand);
         g.setHandler(m), g.setEnabled(!0);
         var N = p.get(mindmaps.ImportMarkdownCommand);
