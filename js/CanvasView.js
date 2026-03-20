@@ -34,11 +34,12 @@ mindmaps.CanvasView = function() {
         var l = a.height();
         a.width(f * e).height(l * e);
         this.scroll(n, r);
-        var c = parseFloat(a.css("background-size"));
-        if (isNaN(c)) {
-            console.warn("Could not set background-size!")
+        var c = a.css("background-size") || "";
+        var h = parseFloat(c);
+        if (!isNaN(h)) {
+            var p = h * e;
+            a.css("background-size", p + "px " + p + "px")
         }
-        a.css("background-size", c * e)
     };
     this.setDimensions = function(e, t) {
         e = e * this.zoomFactor;
@@ -49,12 +50,77 @@ mindmaps.CanvasView = function() {
     this.setZoomFactor = function(e) {
         this.zoomFactorDelta = e / (this.zoomFactor || 1);
         this.zoomFactor = e
+    };
+    this.applyMapBackgroundStyle = function(e) {
+        var t = this.$getDrawingArea();
+        var n = e || {};
+        var r = n.gridEnabled !== false;
+        var i = n.color || "#ffffff";
+        t.css("background-color", i);
+        if (r) {
+            var s = 24 * (this.zoomFactor || 1);
+            t.css("background-image", "url(img/grid.gif)");
+            t.css("background-size", s + "px " + s + "px")
+        } else {
+            t.css("background-image", "none");
+            t.css("background-size", "auto")
+        }
     }
 };
 mindmaps.CanvasView.prototype.drawMap = function(e) {
     throw new Error("Not implemented")
 };
 mindmaps.DefaultCanvasView = function() {
+    function M() {
+        if (A) {
+            return A
+        }
+        A = $("<div/>", {
+            id: "node-context-menu",
+            "class": "mindmap-context-menu"
+        }).append($("<ul/>"));
+        A.hide().appendTo("body");
+        A.on("click", "li", function(t) {
+            var n = $(this);
+            if (n.hasClass("disabled")) {
+                return false
+            }
+            var r = n.data("action");
+            if (e.nodeContextMenuAction && N) {
+                e.nodeContextMenuAction(r, N)
+            }
+            e.hideNodeContextMenu();
+            t.preventDefault();
+            return false
+        });
+        A.on("contextmenu", function(e) {
+            e.preventDefault();
+            return false
+        });
+        return A
+    }
+
+    function k() {
+        if (L) {
+            return
+        }
+        L = true;
+        $(document).on("mousedown.canvasContextMenu", function(t) {
+            if (!A || !A.is(":visible")) {
+                return
+            }
+            if ($(t.target).closest("#node-context-menu").length) {
+                return
+            }
+            e.hideNodeContextMenu()
+        });
+        $(document).on("keydown.canvasContextMenu", function(t) {
+            if (t.keyCode === 27) {
+                e.hideNodeContextMenu()
+            }
+        })
+    }
+
     function a() {
         e.$getContainer().dragscrollable({
             dragSelector: "#drawing-area, canvas.line-canvas",
@@ -384,6 +450,9 @@ mindmaps.DefaultCanvasView = function() {
     var e = this;
 	var exx = this;
     var t = false;
+    var A = null;
+    var N = null;
+    var L = false;
     var n = new T(this);
     var i = new x(this);
     i.commit = function(t, n) {
@@ -414,6 +483,7 @@ mindmaps.DefaultCanvasView = function() {
     };
     this.init = function() {
         a();
+        k();
         this.center();
         var t = this.$getDrawingArea();
         t.addClass("mindmap");
@@ -434,6 +504,17 @@ mindmaps.DefaultCanvasView = function() {
             if (e.nodeDoubleClicked) {
                 e.nodeDoubleClicked(n)
             }
+        });
+        t.delegate("div.node-caption", "contextmenu", function(t) {
+            var n = $(this).parent().data("node");
+            if (e.nodeContextMenuRequested) {
+                e.nodeContextMenuRequested(n, {
+                    x: t.pageX,
+                    y: t.pageY
+                })
+            }
+            t.preventDefault();
+            return false
         });
         t.delegate("div.node-container", "mouseover", function(t) {
             if (t.target === this) {
@@ -682,9 +763,6 @@ mindmaps.DefaultCanvasView = function() {
             e.onCreateNode(n)
         })
         //this 3 statement created by ms to click on plugin icon
-        $("#node-attachment-" + n.id).on('click', function() {
-            exx.pluginclick($("#node-" + n.id).data("node"),'attachment');
-        })
         $("#node-draw-" + n.id).on('click', function() {
             exx.pluginclick($("#node-" + n.id).data("node"),'draw');
         })
@@ -746,6 +824,67 @@ mindmaps.DefaultCanvasView = function() {
     };
     this.stopEditNodeCaption = function() {
         i.stop()
+    };
+    this.showNodeContextMenu = function(t, n, r) {
+        var i = M();
+        var s = i.children("ul").first();
+        s.empty();
+        N = t;
+        (r || []).forEach(function(e) {
+            if (e.type === "separator") {
+                s.append($("<li/>", {
+                    "class": "separator"
+                }));
+                return
+            }
+            if (e.type === "group-title") {
+                s.append($("<li/>", {
+                    "class": "group-title",
+                    text: e.label
+                }));
+                return
+            }
+            var t = $("<li/>", {
+                text: e.label
+            }).data("action", e.id);
+            if (e.enabled === false) {
+                t.addClass("disabled")
+            }
+            s.append(t)
+        });
+        if (!s.children().length) {
+            return
+        }
+        i.css({
+            left: n.x,
+            top: n.y,
+            display: "block"
+        });
+        var o = $(window);
+        var u = i.outerWidth();
+        var a = i.outerHeight();
+        var f = o.scrollLeft();
+        var l = o.scrollTop();
+        var c = f + o.width();
+        var h = l + o.height();
+        var p = n.x;
+        var d = n.y;
+        if (p + u > c - 8) {
+            p = Math.max(f + 8, c - u - 8)
+        }
+        if (d + a > h - 8) {
+            d = Math.max(l + 8, h - a - 8)
+        }
+        i.css({
+            left: p,
+            top: d
+        })
+    };
+    this.hideNodeContextMenu = function() {
+        if (A) {
+            A.hide()
+        }
+        N = null
     };
     this.setNodeText = function(e, t) {
         var n = h(e);

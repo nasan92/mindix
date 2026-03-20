@@ -167,13 +167,6 @@
     </div>
 </script>
 
-<script id="template-attachment" class="ui-front" title='puke' type="text/x-jquery-tmpl">
-<div id="attachmentEditor" class="ui-front" style=""  title="Edit Attachment" hidden>
-<textarea id='attachment-data' style="width: 100%;"></textarea>
-</div>
-
-</script>
-
 <script id="template-add-image" type="text/x-jquery-tmpl">
     <div id="addNodeImage" title="Add/Change node Image">
 	<div style="font-size:15px">
@@ -265,7 +258,10 @@
     <div id="inspector">
         <div id="inspector-content">
             <table id="inspector-table">
-				<tr>
+                <tr class="inspector-section-title-row">
+                    <td colspan="2">Text settings</td>
+                </tr>
+                <tr class="inspector-section-row inspector-section-text inspector-group-start">
                     <td>Font face:</td>
                     <td>
                         <select id="inspector-button-font-face-change">
@@ -293,7 +289,7 @@
                         </button>
                     </td>
                 </tr>
-                <tr>
+                <tr class="inspector-section-row inspector-section-text inspector-group-end">
                     <td>Font size:</td>
                     <td>
                         <div
@@ -303,7 +299,7 @@
                         </div>
                     </td>
                 </tr>
-                <tr>
+                <tr class="inspector-section-row inspector-section-text">
                     <td>Font style:</td>
                     <td>
                         <div
@@ -334,7 +330,10 @@
 						                        </div>
                     </td>
                 </tr>
-                <tr>
+				<tr class="inspector-section-title-row">
+                    <td colspan="2">Branch settings</td>
+                </tr>
+                <tr class="inspector-section-row inspector-section-branch inspector-group-start">
                     <td>Line width:</td>
                     <td>
                         <div
@@ -344,7 +343,7 @@
                         </div>
                     </td>
                 </tr>
-				<tr>
+                <tr class="inspector-section-row inspector-section-branch inspector-group-end">
                     <td>Connect:</td>
                     <td>
                         <button id="inspector-button-connect-node" title="Connect node to another non-related node"
@@ -355,7 +354,7 @@
                         </button>
                     </td>
                 </tr>
-				<tr id="node-connect-styles-row" hidden>
+				<tr id="node-connect-styles-row" class="inspector-section-row inspector-section-branch" hidden>
                     <td><input type="text" id="inspector-connection-color-picker"/>
                     </td>
 					<td>
@@ -371,7 +370,7 @@
 						</select>
                     </td>
                 </tr>
-				<tr>
+				<tr class="inspector-section-row inspector-section-branch">
                     <td>Branch color:</td>
                     <td><input type="text" id="inspector-branch-color-picker"/>
                         <button id="inspector-button-branch-color-children" title="Apply branch color to all children"
@@ -379,13 +378,16 @@
                         </button>
                     </td>
                 </tr>
-				<tr>
+				<tr class="inspector-section-row inspector-section-branch">
                     <td>Color theme:</td>
                     <td>
                         <select id="inspector-color-theme-select"></select>
                     </td>
                 </tr>
-                <tr>
+                <tr class="inspector-section-title-row">
+                    <td colspan="2">Node appearance</td>
+                </tr>
+                <tr class="inspector-section-row inspector-section-node inspector-group-start">
                     <td>Border:</td>
                     <td>
                         <select id="inspector-button-border-style">
@@ -399,7 +401,7 @@
                     </button>
                     </td>
                 </tr>
-				<tr>		
+                <tr class="inspector-section-row inspector-section-node inspector-group-end">
                     <td>Background:</td>
 					<td><input type="text" id="inspector-border-background-color-picker"/>
 					<button id="inspector-button-background-color-children" title="Apply background color to all children"
@@ -407,13 +409,29 @@
                     </button>
 						</td>
 				</tr>
-				<tr>
+                <tr class="inspector-section-row inspector-section-node">
                     <td>Font color:</td>
                     <td><input type="text" id="inspector-font-color-picker"/>
 					<button id="inspector-button-font-color-children" title="Apply font color to all children"
                                 class="right buttons-small buttons-less-padding">Inherit
                         </button>
 					</td>
+                </tr>
+                <tr class="inspector-section-title-row">
+                    <td colspan="2">Mind map background</td>
+                </tr>
+                <tr class="inspector-section-row inspector-section-map inspector-group-start">
+                    <td>Enable grid:</td>
+                    <td>
+                        <div class="buttonset buttons-very-small buttons-less-padding">
+                            <input type="checkbox" id="inspector-checkbox-map-grid"/>
+                            <label for="inspector-checkbox-map-grid">Grid</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="inspector-section-row inspector-section-map inspector-group-end">
+                    <td>Background color:</td>
+                    <td><input type="text" id="inspector-map-background-color-picker"/></td>
                 </tr>
             </table>
 
@@ -648,10 +666,6 @@
 <!-- plugins -->
 <script src="js/Gesture.js"></script>
 <script src="js/Layout.js?v=20260320"></script>
-
-
-<script src="js/Attachment.js"></script>
-
 
 <script src="js/EditURLs.js"></script>
 <script src="js/ImageNode.js"></script>
