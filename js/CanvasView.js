@@ -682,9 +682,6 @@ mindmaps.DefaultCanvasView = function() {
             e.onCreateNode(n)
         })
         //this 3 statement created by ms to click on plugin icon
-        $("#node-attachment-" + n.id).on('click', function() {
-            exx.pluginclick($("#node-" + n.id).data("node"),'attachment');
-        })
         $("#node-draw-" + n.id).on('click', function() {
             exx.pluginclick($("#node-" + n.id).data("node"),'draw');
         })
