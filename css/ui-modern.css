@@ -334,22 +334,22 @@ textarea,
 }
 
 #toolbar .ui-button {
-  border: 1px solid var(--ui-border);
-  border-radius: 10px;
-  background: linear-gradient(180deg, #ffffff 0%, #edf0f4 100%);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
   color: var(--ui-text);
-  box-shadow: 0 1px 0 #ffffff inset;
+  box-shadow: none;
 }
 
 #toolbar .ui-button:hover {
-  border-color: var(--ui-border-strong);
-  background: linear-gradient(180deg, #ffffff 0%, #e3e7ed 100%);
+  border-color: transparent;
+  background: rgba(61, 74, 92, 0.08);
 }
 
 #toolbar .ui-button:active,
 #toolbar .ui-state-active {
-  border-color: #aeb4bd;
-  background: linear-gradient(180deg, #eceff3 0%, #e0e4ea 100%);
+  border-color: transparent;
+  background: rgba(61, 74, 92, 0.14);
   color: #2f3640;
 }
 
