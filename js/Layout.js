@@ -53,11 +53,6 @@ mindmaps.plugins["layout"] = {
             var e = mindmaps.ui.geometry.right(t.selectedNode);
             if (e) t.selectNode(e)
         });
-        _(mindmaps.ui.toolbarView.menus).find(function(e) {
-            return e.title == "Nodes"
-        }).add(_.chain([n, r, i, s]).map(function(e) {
-            return new mindmaps.ToolBarButton(e)
-        }).toArray().value());
         e.subscribe(mindmaps.Event.DOCUMENT_CLOSED, function() {
             n.setEnabled(false);
             r.setEnabled(false);
