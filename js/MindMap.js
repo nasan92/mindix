@@ -22,7 +22,7 @@ mindmaps.MindMap = function(e) {
             background: "#ffffff"
         });
         this.root.setPluginData("canvas", "background", {
-            gridEnabled: true,
+            gridEnabled: false,
             color: "#ffffff"
         })
     }

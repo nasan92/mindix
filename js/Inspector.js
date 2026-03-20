@@ -223,13 +223,13 @@ mindmaps.InspectorView = function() {
         var e = o.getMindMap();
         if (!e || !e.root) {
             return {
-                gridEnabled: !0,
+                gridEnabled: !1,
                 color: "#ffffff"
             }
         }
         var n = e.root.getPluginData("canvas", "background") || {};
         return {
-            gridEnabled: n.gridEnabled !== !1,
+            gridEnabled: !!n.gridEnabled,
             color: n.color || "#ffffff"
         }
     }

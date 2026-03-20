@@ -343,16 +343,16 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
 }, mindmaps.action.SetChildrenBorderStyleAction.prototype = new mindmaps.action.CompositeAction;
 mindmaps.action.SetMapGridEnabledAction = function(n, t) {
     var o = n.getPluginData("canvas", "background") || {
-            gridEnabled: !0,
+            gridEnabled: !1,
             color: "#ffffff"
         },
-        i = o.gridEnabled !== !1;
+        i = !!o.gridEnabled;
     this.execute = function() {
         var e = n.getPluginData("canvas", "background") || {
-            gridEnabled: !0,
+            gridEnabled: !1,
             color: "#ffffff"
         };
-        if ((e.gridEnabled !== !1) === !!t) {
+        if (!!e.gridEnabled === !!t) {
             return !1
         }
         e.gridEnabled = !!t;
@@ -364,13 +364,13 @@ mindmaps.action.SetMapGridEnabledAction = function(n, t) {
 }, mindmaps.action.SetMapGridEnabledAction.prototype = new mindmaps.action.Action;
 mindmaps.action.SetMapBackgroundColorAction = function(n, t) {
     var o = n.getPluginData("canvas", "background") || {
-            gridEnabled: !0,
+            gridEnabled: !1,
             color: "#ffffff"
         },
         i = o.color || "#ffffff";
     this.execute = function() {
         var e = n.getPluginData("canvas", "background") || {
-            gridEnabled: !0,
+            gridEnabled: !1,
             color: "#ffffff"
         };
         if ((e.color || "#ffffff") === t) {

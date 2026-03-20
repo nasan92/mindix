@@ -2,7 +2,7 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
     function l(e) {
         var n = e && e.mindmap && e.mindmap.root ? e.mindmap.root.getPluginData("canvas", "background") : null;
         return {
-            gridEnabled: !n || n.gridEnabled !== !1,
+            gridEnabled: !!(n && n.gridEnabled),
             color: n && n.color ? n.color : "#ffffff"
         }
     }
@@ -129,6 +129,51 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         })
     }
     var c = t.getCreator();
+    function h() {
+        return [n.get(mindmaps.EditNodeCaptionCommand), n.get(mindmaps.CreateNodeCommand), n.get(mindmaps.CreateSiblingNodeCommand), n.get(mindmaps.DeleteNodeCommand), n.get(mindmaps.CopyNodeCommand), n.get(mindmaps.CutNodeCommand), n.get(mindmaps.PasteNodeCommand)]
+    }
+
+    function v() {
+        var e = {
+            clipboard: [n.get(mindmaps.CopyNodeCommand), n.get(mindmaps.CutNodeCommand), n.get(mindmaps.PasteNodeCommand)],
+            structure: [n.get(mindmaps.CreateNodeCommand), n.get(mindmaps.CreateSiblingNodeCommand), n.get(mindmaps.DeleteNodeCommand)]
+        };
+        return [{
+            id: "group-clipboard",
+            type: "group-title",
+            label: "Clipboard"
+        }].concat(e.clipboard.map(function(e) {
+            return {
+                id: e.id,
+                type: "action",
+                label: e.label,
+                enabled: e.enabled
+            }
+        })).concat([{ type: "separator" }, {
+            id: "group-structure",
+            type: "group-title",
+            label: "Structure"
+        }]).concat(e.structure.map(function(e) {
+            return {
+                id: e.id,
+                type: "action",
+                label: e.label,
+                enabled: e.enabled
+            }
+        }))
+    }
+
+    function p(e) {
+        var t = null;
+        h().some(function(n) {
+            if (n.id === e) {
+                t = n;
+                return true
+            }
+            return false
+        });
+        return t
+    }
     this.init = function() {
         var e = n.get(mindmaps.EditNodeCaptionCommand);
         e.setHandler(this.editNodeCaption.bind(this));
@@ -151,12 +196,24 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         t.stopEditNodeCaption(), i.zoomByScale(e)
     }, t.tow_tap = function() {
         t.stopEditNodeCaption(), i.zoomToOne()
+    }, t.nodeContextMenuRequested = function(e, r) {
+        o.selectNode(e);
+        var i = v();
+        t.showNodeContextMenu(e, r, i)
+    }, t.nodeContextMenuAction = function(e, n) {
+        if (n) {
+            o.selectNode(n)
+        }
+        var r = p(e);
+        if (r && r.enabled) {
+            r.execute()
+        }
     }, t.nodeMouseOver = function(e) {
         t.isNodeDragging() || c.isDragging() || c.attachToNode(e)
     }, t.nodeCaptionMouseOver = function(e) {
         t.isNodeDragging() || c.isDragging() || c.attachToNode(e)
     }, t.nodeMouseDown = function(e) {
-        o.selectNode(e), c.attachToNode(e)
+        t.hideNodeContextMenu(), o.selectNode(e), c.attachToNode(e)
     }, t.nodeDoubleClicked = function(e) {
         t.editNodeCaption(e)
     }, t.nodeDragged = function(e, n) {
