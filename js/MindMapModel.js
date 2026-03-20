@@ -1,17 +1,45 @@
 mindmaps.MindMapModel = function(e, t, n) {
     var r = this;
+    var linkedSaveTimeoutId = null;
+    var linkedSaveDelayMs = 2e3;
     this.document = null;
+    this.linkedFileHandle = null;
     this.selectedNode = null;
+
+    function scheduleLinkedFileSave() {
+        if (!r.linkedFileHandle || !r.document) {
+            return;
+        }
+        if (linkedSaveTimeoutId) {
+            clearTimeout(linkedSaveTimeoutId);
+        }
+        linkedSaveTimeoutId = setTimeout(function() {
+            linkedSaveTimeoutId = null;
+            r.saveToLinkedFile();
+        }, linkedSaveDelayMs);
+    }
+
     this.getDocument = function() {
         return this.document
     };
     this.setDocument = function(t) {
         this.document = t;
+        this.linkedFileHandle = null;
+        if (linkedSaveTimeoutId) {
+            clearTimeout(linkedSaveTimeoutId);
+            linkedSaveTimeoutId = null;
+        }
         if (t) {
             e.publish(mindmaps.Event.DOCUMENT_OPENED, t)
         } else {
             e.publish(mindmaps.Event.DOCUMENT_CLOSED)
         }
+    };
+    this.setLinkedFileHandle = function(handle) {
+        this.linkedFileHandle = handle || null;
+    };
+    this.getLinkedFileHandle = function() {
+        return this.linkedFileHandle;
     };
     this.getMindMap = function() {
         if (this.document) {
@@ -210,14 +238,30 @@ mindmaps.MindMapModel = function(e, t, n) {
             }
             n.addUndo(o, u)
         }
+        scheduleLinkedFileSave();
     };
     this.saveToLocalStorage = function() {
         var t = this.document.prepareSave();
-        var n = mindmaps.LocalDocumentStorage.saveDocument(t);
-        if (n) {
-            e.publish(mindmaps.Event.DOCUMENT_SAVED, t)
+        return mindmaps.LocalDocumentStorage.saveDocument(t).then(function(n) {
+            if (n) {
+                e.publish(mindmaps.Event.DOCUMENT_SAVED, t)
+            }
+            return n
+        }).catch(function() {
+            return false
+        })
+    };
+    this.saveToLinkedFile = function() {
+        if (!mindmaps.LocalFileStorage || !this.linkedFileHandle) {
+            return Promise.resolve(false)
         }
-        return n
+        var t = this.document.prepareSave();
+        return mindmaps.LocalFileStorage.writeDocument(this.linkedFileHandle, t).then(function() {
+            e.publish(mindmaps.Event.DOCUMENT_SAVED, t);
+            return true
+        }).catch(function() {
+            return false
+        })
     };
     this.init()
 }

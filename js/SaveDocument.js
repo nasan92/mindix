@@ -21,19 +21,17 @@ mindmaps.SaveDocumentView = function() {
             g.localStorageButtonClicked()
         }
     });
-    var b = $("#checkbox-autosave-localstorage").click(function() {
-        if (g.autoSaveCheckboxClicked) {
-            g.autoSaveCheckboxClicked($(this).prop("checked"))
-        }
-    });
     var d = $("#button-save-hdd").button().click(function() {
         if (g.hddSaveButtonClicked) {
             g.hddSaveButtonClicked()
         }
     });
-    this.setAutoSaveCheckboxState = function(i) {
-        b.prop("checked", i)
-    };
+    var k = $("#button-save-linked-file").button().click(function() {
+        if (g.linkedFileSaveButtonClicked) {
+            g.linkedFileSaveButtonClicked()
+        }
+    });
+    var l = c.find(".linked-file-support-status");
     this.showSaveDialog = function() {
         c.dialog("open")
     };
@@ -42,6 +40,25 @@ mindmaps.SaveDocumentView = function() {
     };
     this.showCloudError = function(i) {
         c.find(".cloud-error").text(i)
+    };
+    this.setLinkedFileSupportStatus = function() {
+        if (!mindmaps.LocalFileStorage) {
+            l.text("Linked files: unavailable in this browser.");
+            k.button("disable");
+            return;
+        }
+        if (mindmaps.LocalFileStorage.canOpenFiles() && mindmaps.LocalFileStorage.canSaveFiles()) {
+            l.text("Linked files: supported (open + save). Best in Chrome.");
+            k.button("enable");
+            return;
+        }
+        if (mindmaps.LocalFileStorage.canOpenFiles()) {
+            l.text("Linked files: partially supported (link existing file only).");
+            k.button("enable");
+            return;
+        }
+        l.text("Linked files: unavailable in this browser.");
+        k.button("disable");
     };
 };
 mindmaps.SaveDocumentPresenter = function(d, b, f, c, a) {
@@ -63,23 +80,17 @@ mindmaps.SaveDocumentPresenter = function(d, b, f, c, a) {
     };
     f.localStorageButtonClicked = function() {
         mindmaps.Util.trackEvent("Clicks", "localstorage-save");
-        var e = b.saveToLocalStorage();
-        if (e) {
-            f.hideSaveDialog();
-            mindmaps.currentMapId = "new-localstorage-offline";
-            window.location.hash = "m:new-localstorage-offline";
-            mindmaps.isMapLoadingConfirmationRequired = false;
-            mindmaps.ignoreHashChange = true
-        } else {
-            d.publish(mindmaps.Event.NOTIFICATION_ERROR, "Error while saving to local storage")
-        }
-    };
-    f.autoSaveCheckboxClicked = function(g) {
-        if (g) {
-            c.enable()
-        } else {
-            c.disable()
-        }
+        b.saveToLocalStorage().then(function(e) {
+            if (e) {
+                f.hideSaveDialog();
+                mindmaps.currentMapId = "new-localstorage-offline";
+                window.location.hash = "m:new-localstorage-offline";
+                mindmaps.isMapLoadingConfirmationRequired = false;
+                mindmaps.ignoreHashChange = true
+            } else {
+                d.publish(mindmaps.Event.NOTIFICATION_ERROR, "Error while saving to local storage")
+            }
+        })
     };
     f.hddSaveButtonClicked = function() {
         mindmaps.Util.trackEvent("Clicks", "hdd-save");
@@ -97,8 +108,43 @@ mindmaps.SaveDocumentPresenter = function(d, b, f, c, a) {
         d.publish(mindmaps.Event.DOCUMENT_SAVED, h);
         f.hideSaveDialog()
     };
+    f.linkedFileSaveButtonClicked = function() {
+        if (!mindmaps.LocalFileStorage) {
+            d.publish(mindmaps.Event.NOTIFICATION_ERROR, "This browser does not support linked file editing.");
+            return
+        }
+        mindmaps.Util.trackEvent("Clicks", "linked-file-save");
+        if (b.getLinkedFileHandle()) {
+            b.saveToLinkedFile().then(function(ok) {
+                if (!ok) {
+                    d.publish(mindmaps.Event.NOTIFICATION_ERROR, "Error while saving linked file")
+                } else {
+                    f.hideSaveDialog()
+                }
+            });
+            return
+        }
+        mindmaps.LocalFileStorage.pickFileForLinkingSave().then(function(handle) {
+            if (!handle) {
+                return
+            }
+            b.setLinkedFileHandle(handle);
+            return b.saveToLinkedFile().then(function(ok) {
+                if (!ok) {
+                    d.publish(mindmaps.Event.NOTIFICATION_ERROR, "Error while saving linked file")
+                } else {
+                    f.hideSaveDialog()
+                }
+            })
+        }).catch(function(err) {
+            if (err && err.name === "AbortError") {
+                return
+            }
+            d.publish(mindmaps.Event.NOTIFICATION_ERROR, (err && err.message) || "Could not open local file picker")
+        })
+    };
     this.go = function() {
-        f.setAutoSaveCheckboxState(c.isEnabled());
+        f.setLinkedFileSupportStatus();
         f.showSaveDialog()
     }
 };
