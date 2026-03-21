@@ -61,7 +61,19 @@ textarea,
   box-shadow: var(--ui-shadow);
   overflow-y: auto;
   overflow-x: visible;
+  color: #000000;
   z-index: 3500;
+}
+
+#format-sidebar,
+#format-sidebar label,
+#format-sidebar td,
+#format-sidebar span,
+#format-sidebar select,
+#format-sidebar input,
+#format-sidebar .ui-button .ui-button-text {
+  color: #000000;
+  font-size: 12px;
 }
 
 #format-sidebar.hidden {
@@ -539,9 +551,9 @@ textarea,
 
 #inspector-table .inspector-section-title-row td {
   padding: 5px 2px 2px;
-  color: #5e6977;
-  font-size: 10px;
-  font-weight: 700;
+  color: #000000;
+  font-size: 12px;
+  font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
