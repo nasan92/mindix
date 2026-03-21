@@ -32,6 +32,17 @@ mindmaps.InspectorView = function() {
         E = [r, d, l, a, u, C, h, f, m, p, b, k, g, v, A, N, F],
         D = [S, x, w, y, P, B];
 
+    function I() {
+        var e = ["inspector-section-text", "inspector-section-branch", "inspector-section-node", "inspector-section-map"];
+        e.forEach(function(e) {
+            var n = $("#inspector-table tr.inspector-section-row." + e, o);
+            n.removeClass("inspector-group-start inspector-group-end");
+            if (!n.length) return;
+            n.first().addClass("inspector-group-start");
+            n.last().addClass("inspector-group-end")
+        })
+    }
+
     function M(e) {
         return "solid" === e || "dashed" === e || "none" === e ? e : "dashed"
     }
@@ -189,7 +200,7 @@ mindmaps.InspectorView = function() {
             e.connectNodeRemoveButtonClicked && e.connectNodeRemoveButtonClicked()
         }), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(e) {
             e.inspectorAdviser && e.inspectorAdviser.onInit && e.inspectorAdviser.onInit($("#inspector-table", o))
-        })
+        }), I()
     }
 }, mindmaps.InspectorPresenter = function(e, o, n, t) {
     function M(e) {

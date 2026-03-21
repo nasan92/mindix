@@ -93,6 +93,12 @@ html {
     margin-right: 8px
 }
 
+#toolbar .buttons-middle {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%)
+}
+
 #toolbar .menu-wrapper {
     position: relative;
     display: inline-block
@@ -100,7 +106,8 @@ html {
 
 #toolbar .menu-wrapper .menu {
     position: absolute;
-    right: 0;
+    left: 0;
+    right: auto;
     z-index: 5000;
     display: none;
     background: #EDEDED;

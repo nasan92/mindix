@@ -247,8 +247,57 @@ function testMalformedDataDoesNotThrow() {
   assert(svg.includes("<svg "), "Expected SVG generation with malformed plugin data");
 }
 
+function testNodeUrlsAreClickableInSvg() {
+  const urlNodeColor = "#ff5500";
+  const root = makeNode("root", "Root", {
+    layout: { offset: { x: 0, y: 0 } }
+  });
+  const childWithUrl = makeNode("a", "Click Me", {
+    layout: { offset: { x: 180, y: 80 } },
+    url: { urls: ["https://example.com"] },
+    style: {
+      font: {
+        color: urlNodeColor
+      }
+    }
+  });
+  const childNoUrl = makeNode("b", "No URL", {
+    layout: { offset: { x: -180, y: 120 } }
+  });
+  root.addChild(childWithUrl);
+  root.addChild(childNoUrl);
+
+  const doc = {
+    mindmap: {
+      getRoot() {
+        return root;
+      }
+    },
+    getConnectedNodes() {
+      return [];
+    }
+  };
+
+  const svg = buildRenderer().render(doc);
+  // Verify xlink namespace
+  assert(svg.includes('xmlns:xlink="http://www.w3.org/1999/xlink"'), "Expected xlink namespace declaration in SVG");
+  // Verify link anchor with correct URL
+  assert(svg.includes('xlink:href="https://example.com"'), "Expected anchor tag with xlink:href for node with URL");
+  assert(svg.includes('target="_blank"'), "Expected target=_blank attribute on link");
+  // Verify icon elements for the link (chain-link style) and font-color binding
+  assert(svg.includes('<rect') && svg.includes('stroke="' + urlNodeColor + '"'), "Expected rect element for chain-link icon with font color");
+  assert(svg.includes('transform="rotate(-35'), "Expected rotated link segments in icon");
+  assert(svg.includes('<line') && svg.includes('stroke="' + urlNodeColor + '"'), "Expected connector line for chain-link icon with font color");
+  // Verify anchor structure exists
+  assert(svg.includes("<a ") && svg.includes("</a>"), "Expected anchor elements wrapping the URL icon");
+  // Verify node rectangles still exist (nodes should be clickable normally, not via link)
+  const rects = (svg.match(/<rect/g) || []).length;
+  assert(rects >= 3, "Expected at least 3 rectangles (background + nodes)");
+}
+
+
 (function run() {
-  const tests = [testBasicVectorOutput, testMalformedDataDoesNotThrow];
+  const tests = [testBasicVectorOutput, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg];
   let passed = 0;
 
   tests.forEach((fn) => {

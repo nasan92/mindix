@@ -507,6 +507,10 @@ mindmaps.StaticSVGRenderer = function() {
             var font = normalizeFont(node.getPluginData("style", "font"));
             var border = normalizeBorder(node.getPluginData("style", "border"));
             var imageData = node.getPluginData("image", "data");
+            
+            // Get URLs from node plugin data
+            var urls = node.getPluginData("url", "urls") || [];
+            var primaryUrl = urls && urls.length > 0 ? urls[0] : null;
 
             var boxX;
             var boxY;
@@ -632,6 +636,55 @@ mindmaps.StaticSVGRenderer = function() {
                 }
                 closeTag("text")
             }
+            
+            // Add clickable URL icon if node has URL
+            if (primaryUrl) {
+                var iconPadding = 4;
+                var iconSize = 11;
+                var iconX = boxX + boxWidth + iconPadding;
+                var iconY = boxY + (boxHeight - iconSize) / 2;
+                var iconColor = font.color || "#31A1DF";
+                openTag("a", {
+                    "xlink:href": primaryUrl,
+                    "target": "_blank"
+                });
+
+                // Chain-link style icon: two linked rounded capsules + connector
+                addSelfTag("rect", {
+                    x: iconX,
+                    y: iconY + 1,
+                    width: 6,
+                    height: 4,
+                    rx: 2,
+                    ry: 2,
+                    fill: "none",
+                    stroke: iconColor,
+                    "stroke-width": 1.4,
+                    transform: "rotate(-35 " + (iconX + 3) + " " + (iconY + 3) + ")"
+                });
+                addSelfTag("rect", {
+                    x: iconX + 5,
+                    y: iconY + 5,
+                    width: 6,
+                    height: 4,
+                    rx: 2,
+                    ry: 2,
+                    fill: "none",
+                    stroke: iconColor,
+                    "stroke-width": 1.4,
+                    transform: "rotate(-35 " + (iconX + 8) + " " + (iconY + 7) + ")"
+                });
+                addSelfTag("line", {
+                    x1: iconX + 4,
+                    y1: iconY + 5,
+                    x2: iconX + 7,
+                    y2: iconY + 6,
+                    stroke: iconColor,
+                    "stroke-width": 1.2,
+                    "stroke-linecap": "round"
+                });
+                closeTag("a");
+            }
 
             node.forEachChild(function(child) {
                 drawNode(child)
@@ -641,6 +694,7 @@ mindmaps.StaticSVGRenderer = function() {
         pushLine('<?xml version="1.0" encoding="UTF-8"?>');
         openTag("svg", {
             xmlns: "http://www.w3.org/2000/svg",
+            "xmlns:xlink": "http://www.w3.org/1999/xlink",
             width: dimensions.width,
             height: dimensions.height,
             viewBox: "0 0 " + dimensions.width + " " + dimensions.height

@@ -147,6 +147,260 @@ mindmaps.DefaultCanvasView = function() {
         return $("#node-caption-" + e.id)
     }
 
+    function R(e, t, n, r) {
+        return Math.max(e, Math.min(t, n || r))
+    }
+
+    function D(e) {
+        var t = h(e);
+        if (!t.length) {
+            return null
+        }
+        var n = e.getPluginData("image", "data") || {};
+        if (!n.data) {
+            return null
+        }
+        var r = parseInt(n.width, 10);
+        var i = parseInt(n.height, 10);
+        if (!$.isNumeric(r) || !$.isNumeric(i)) {
+            return null
+        }
+        var s = R(16, 2e3, r, r) * (this.zoomFactor || 1);
+        var o = R(16, 2e3, i, i) * (this.zoomFactor || 1);
+        var u = t.innerWidth();
+        var a = t.innerHeight();
+        var f = 0;
+        var l = 0;
+        if (n.align === "left") {
+            f = 0
+        } else if (n.align === "right") {
+            f = u - s
+        } else {
+            f = (u - s) / 2
+        }
+        if (n.align === "top") {
+            l = 0
+        } else if (n.align === "bottom") {
+            l = a - o
+        } else {
+            l = (a - o) / 2
+        }
+        return {
+            left: Math.max(0, Math.round(f)),
+            top: Math.max(0, Math.round(l)),
+            width: Math.round(s),
+            height: Math.round(o)
+        }
+    }
+
+    function B() {
+        $(".node-image-selection").remove();
+        j = null
+    }
+
+    function P() {
+        if (!I) {
+            return
+        }
+        $(document).off("mousemove.imageResize mouseup.imageResize");
+        $("body").css("cursor", "");
+        var t = I.node;
+        var n = I.moved;
+        var r = I.preview;
+        I = null;
+        if (n && t && r && e.nodeImageResizeCommitted) {
+            e.nodeImageResizeCommitted(t, r)
+        }
+    }
+
+    function O(t, n) {
+        n = n || {};
+        if (!e.selectedNode || e.selectedNode !== t || !n.data || j !== t.id) {
+            return
+        }
+        var r = h(t);
+        var i = D.call(e, t);
+        if (!i) {
+            return
+        }
+        r.find(".node-image-selection").remove();
+        var s = $("<div/>", {
+            "class": "node-image-selection"
+        }).css({
+            position: "absolute",
+            left: i.left,
+            top: i.top,
+            width: i.width,
+            height: i.height,
+            border: "2px solid #2d8cff",
+            "box-sizing": "border-box",
+            "z-index": 250,
+            "pointer-events": "auto",
+            cursor: "move"
+        });
+        s.on("mousedown", function(evt) {
+            if ($(evt.target).hasClass("node-image-corner")) {
+                return;
+            }
+            evt.preventDefault();
+            evt.stopPropagation();
+            var repoState = {
+                startX: evt.pageX,
+                startY: evt.pageY,
+                node: t,
+                imageData: n,
+                moved: false,
+                pendingAlign: null
+            };
+            $("body").css("cursor", "move");
+            $(document).on("mousemove.imageReposition", function(moveEvt) {
+                if (!repoState) {
+                    return;
+                }
+                moveEvt.preventDefault();
+                var s = moveEvt.pageX - repoState.startX;
+                var o = moveEvt.pageY - repoState.startY;
+                var u;
+                if (Math.abs(s) > Math.abs(o)) {
+                    u = s > 0 ? "right" : "left";
+                } else {
+                    u = o > 0 ? "bottom" : "top";
+                }
+                repoState.pendingAlign = u;
+                repoState.moved = true;
+            });
+            $(document).on("mouseup.imageReposition", function() {
+                if (!repoState) {
+                    return;
+                }
+                $(document).off("mousemove.imageReposition mouseup.imageReposition");
+                $("body").css("cursor", "");
+                if (repoState.moved && repoState.pendingAlign && e.nodeImageRepositioned) {
+                    e.nodeImageRepositioned(repoState.node, repoState.imageData, repoState.pendingAlign);
+                }
+                repoState = null;
+            });
+        });
+        var o = [{
+            name: "nw",
+            sx: -1,
+            sy: -1,
+            left: "-6px",
+            top: "-6px",
+            cursor: "nwse-resize"
+        }, {
+            name: "ne",
+            sx: 1,
+            sy: -1,
+            right: "-6px",
+            top: "-6px",
+            cursor: "nesw-resize"
+        }, {
+            name: "se",
+            sx: 1,
+            sy: 1,
+            right: "-6px",
+            bottom: "-6px",
+            cursor: "nwse-resize"
+        }, {
+            name: "sw",
+            sx: -1,
+            sy: 1,
+            left: "-6px",
+            bottom: "-6px",
+            cursor: "nesw-resize"
+        }];
+        o.forEach(function(corner) {
+            var o = $("<div/>", {
+                "class": "node-image-corner handle-" + corner.name,
+                title: "Drag to resize image"
+            }).css({
+                position: "absolute",
+                width: "10px",
+                height: "10px",
+                border: "1px solid #2d8cff",
+                background: "#fff",
+                "border-radius": "1px",
+                "box-sizing": "border-box",
+                cursor: corner.cursor,
+                "pointer-events": "auto"
+            }).css({
+                left: corner.left,
+                right: corner.right,
+                top: corner.top,
+                bottom: corner.bottom
+            });
+            o.on("mousedown", function(evt) {
+            var o = parseInt(n.width, 10);
+            var u = parseInt(n.height, 10);
+            if (!$.isNumeric(o) || !$.isNumeric(u)) {
+                return
+            }
+            evt.preventDefault();
+            evt.stopPropagation();
+            var a = R(16, 2e3, o, o);
+            var f = R(16, 2e3, u, u);
+            var l = a / (f || 1);
+            I = {
+                node: t,
+                imageData: {
+                    data: n.data,
+                    align: n.align,
+                    width: String(a),
+                    height: String(f)
+                },
+                startPageX: evt.pageX,
+                startPageY: evt.pageY,
+                startWidth: a,
+                startHeight: f,
+                signX: corner.sx,
+                signY: corner.sy,
+                aspect: l,
+                moved: false,
+                preview: null
+            };
+            if (e.nodeImageResizeStarted) {
+                e.nodeImageResizeStarted(t, I.imageData)
+            }
+            $("body").css("cursor", $(evt.currentTarget).css("cursor") || "nwse-resize");
+            $(document).on("mousemove.imageResize", function(n) {
+                if (!I) {
+                    return
+                }
+                n.preventDefault();
+                var r = I.signX * (n.pageX - I.startPageX) / (e.zoomFactor || 1);
+                var i = I.signY * (n.pageY - I.startPageY) / (e.zoomFactor || 1);
+                var o;
+                var u;
+                if (Math.abs(r) >= Math.abs(i)) {
+                    o = R(16, 2e3, I.startWidth + r, I.startWidth);
+                    u = o / I.aspect
+                } else {
+                    u = R(16, 2e3, I.startHeight + i, I.startHeight);
+                    o = u * I.aspect
+                }
+                o = Math.round(R(16, 2e3, o, I.startWidth));
+                u = Math.round(R(16, 2e3, u, I.startHeight));
+                I.preview = {
+                    data: I.imageData.data,
+                    align: I.imageData.align,
+                    width: String(o),
+                    height: String(u)
+                };
+                I.moved = true;
+                if (e.nodeImageResizePreview) {
+                    e.nodeImageResizePreview(t, I.preview)
+                }
+            });
+            $(document).on("mouseup.imageResize", function() {
+                P()
+            })
+        });
+            s.append(o)
+        });
+        r.css("position", "relative").append(s)
+    }
+
     function p(t, n, r, i, s, u, a, f, l, c, h) {
         var p = t[0];
         var d = p.getContext("2d");
@@ -453,6 +707,8 @@ mindmaps.DefaultCanvasView = function() {
     var A = null;
     var N = null;
     var L = false;
+    var I = null;
+    var j = null;
     var n = new T(this);
     var i = new x(this);
     i.commit = function(t, n) {
@@ -487,6 +743,23 @@ mindmaps.DefaultCanvasView = function() {
         this.center();
         var t = this.$getDrawingArea();
         t.addClass("mindmap");
+        t.on("mousedown.imageSelection", function(n) {
+            if ($(n.target).closest(".node-image-selection, .node-image-corner").length) {
+                return
+            }
+            if (!$(n.target).closest("div.node-caption").length) {
+                B()
+            }
+        });
+        t.on("mousedown.canvasContextMenu", function(n) {
+            if (n.which !== 1 || !A || !A.is(":visible")) {
+                return
+            }
+            if ($(n.target).closest("#node-context-menu").length) {
+                return
+            }
+            e.hideNodeContextMenu()
+        });
         t.delegate("div.node-caption", "mousedown", function(t) {
             var n = $(this).parent().data("node");
             if (e.nodeMouseDown) {
@@ -503,6 +776,31 @@ mindmaps.DefaultCanvasView = function() {
             var n = $(this).parent().data("node");
             if (e.nodeDoubleClicked) {
                 e.nodeDoubleClicked(n)
+            }
+        });
+        t.delegate("div.node-caption", "click", function(t) {
+            if ($(t.target).closest(".node-image-selection, .node-image-corner").length) {
+                return
+            }
+            var n = $(this).parent().data("node");
+            if (!n) {
+                B();
+                return
+            }
+            var r = D.call(e, n);
+            if (!r) {
+                B();
+                return
+            }
+            var i = $(this).offset();
+            var s = t.pageX - i.left;
+            var o = t.pageY - i.top;
+            var u = s >= r.left && s <= r.left + r.width && o >= r.top && o <= r.top + r.height;
+            if (u) {
+                j = n.id;
+                O(n, n.getPluginData("image", "data"))
+            } else {
+                B()
             }
         });
         t.delegate("div.node-caption", "contextmenu", function(t) {
@@ -924,6 +1222,7 @@ mindmaps.DefaultCanvasView = function() {
         var n = c(e);
         if (!n.length) return;
         var r = h(e);
+        r.find(".node-image-selection").remove();
         var i = e.getPluginData("style", "font");
         var o = e.getPluginData("style", "border") || {
             visible: false,
@@ -1021,6 +1320,11 @@ mindmaps.DefaultCanvasView = function() {
             } else {
                 $("#inspector-border-color-picker").attr("disabled", "disabled")
             }
+        }
+        if (t && u && j === e.id) {
+            O(e, u)
+        } else if (j === e.id && (!t || !u)) {
+            B()
         }
         _.chain(mindmaps.plugins).sortBy("startOrder").each(function(n, r) {
             n.onNodeUpdate(e, t)
