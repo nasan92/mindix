@@ -507,6 +507,10 @@ mindmaps.StaticSVGRenderer = function() {
             var font = normalizeFont(node.getPluginData("style", "font"));
             var border = normalizeBorder(node.getPluginData("style", "border"));
             var imageData = node.getPluginData("image", "data");
+            
+            // Get URLs from node plugin data
+            var urls = node.getPluginData("url", "urls") || [];
+            var primaryUrl = urls && urls.length > 0 ? urls[0] : null;
 
             var boxX;
             var boxY;
@@ -528,6 +532,14 @@ mindmaps.StaticSVGRenderer = function() {
 
             var boxWidth = textMetrics.width + 8;
             var boxHeight = textMetrics.height + 8;
+            
+            // Open link tag if URL exists
+            if (primaryUrl) {
+                openTag("a", {
+                    "xlink:href": primaryUrl,
+                    "target": "_blank"
+                })
+            }
 
             if (imageData) {
                 var imageWidth = toNumber(imageData.width, 0);
@@ -632,6 +644,11 @@ mindmaps.StaticSVGRenderer = function() {
                 }
                 closeTag("text")
             }
+            
+            // Close link tag if it was opened
+            if (primaryUrl) {
+                closeTag("a")
+            }
 
             node.forEachChild(function(child) {
                 drawNode(child)
@@ -641,6 +658,7 @@ mindmaps.StaticSVGRenderer = function() {
         pushLine('<?xml version="1.0" encoding="UTF-8"?>');
         openTag("svg", {
             xmlns: "http://www.w3.org/2000/svg",
+            "xmlns:xlink": "http://www.w3.org/1999/xlink",
             width: dimensions.width,
             height: dimensions.height,
             viewBox: "0 0 " + dimensions.width + " " + dimensions.height
