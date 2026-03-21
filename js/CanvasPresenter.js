@@ -1,4 +1,34 @@
 mindmaps.CanvasPresenter = function(e, n, o, t, i) {
+    function g(e) {
+        return e ? {
+            data: e.data,
+            width: String(e.width),
+            height: String(e.height),
+            align: e.align
+        } : null
+    }
+
+    function y(e, n) {
+        return JSON.stringify(g(e)) === JSON.stringify(g(n))
+    }
+
+    function m(e, n, r) {
+        n = g(n);
+        r = g(r);
+        return {
+            execute: function() {
+                if (y(e.getPluginData("image", "data"), r)) {
+                    return false
+                }
+                e.setPluginData("image", "data", r)
+            },
+            event: [mindmaps.Event.NODE_IMAGE_CHANGED, e],
+            undo: function() {
+                return m(e, r, n)
+            }
+        }
+    }
+
     function l(e) {
         var n = e && e.mindmap && e.mindmap.root ? e.mindmap.root.getPluginData("canvas", "background") : null;
         return {
@@ -129,6 +159,7 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         })
     }
     var c = t.getCreator();
+    var b = {};
     function h() {
         return [n.get(mindmaps.EditNodeCaptionCommand), n.get(mindmaps.CreateNodeCommand), n.get(mindmaps.CreateSiblingNodeCommand), n.get(mindmaps.DeleteNodeCommand), n.get(mindmaps.CopyNodeCommand), n.get(mindmaps.CutNodeCommand), n.get(mindmaps.PasteNodeCommand)]
     }
@@ -241,6 +272,38 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
     }, t.nodeDragged = function(e, n) {
         var t = new mindmaps.action.MoveNodeAction(e, n);
         o.executeAction(t)
+    }, t.nodeImageResizeStarted = function(e, n) {
+        b[e.id] = g(n)
+    }, t.nodeImageResizePreview = function(e, n) {
+        e.setPluginData("image", "data", g(n));
+        t.updateNode(e)
+    }, t.nodeImageResizeCommitted = function(e, n) {
+        var r = b[e.id] || g(e.getPluginData("image", "data"));
+        var i = g(n);
+        delete b[e.id];
+        if (!r || !i || y(r, i)) {
+            return
+        }
+        e.setPluginData("image", "data", g(r));
+        t.updateNode(e);
+        o.executeAction(m(e, r, i))
+    }, t.nodeImageRepositioned = function(e, n, r) {
+        var i = g(e.getPluginData("image", "data"));
+        if (!i) {
+            return;
+        }
+        var s = {
+            data: i.data,
+            width: i.width,
+            height: i.height,
+            align: r
+        };
+        if (y(i, s)) {
+            return;
+        }
+        e.setPluginData("image", "data", s);
+        t.updateNode(e);
+        o.executeAction(m(e, i, s));
     }, t.foldButtonClicked = function(e) {
         s(e)
     }, c.dragStarted = function(e) {
