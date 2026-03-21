@@ -487,6 +487,15 @@ mindmaps.DefaultCanvasView = function() {
         this.center();
         var t = this.$getDrawingArea();
         t.addClass("mindmap");
+        t.on("mousedown.canvasContextMenu", function(n) {
+            if (n.which !== 1 || !A || !A.is(":visible")) {
+                return
+            }
+            if ($(n.target).closest("#node-context-menu").length) {
+                return
+            }
+            e.hideNodeContextMenu()
+        });
         t.delegate("div.node-caption", "mousedown", function(t) {
             var n = $(this).parent().data("node");
             if (e.nodeMouseDown) {
