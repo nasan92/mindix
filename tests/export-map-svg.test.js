@@ -247,8 +247,42 @@ function testMalformedDataDoesNotThrow() {
   assert(svg.includes("<svg "), "Expected SVG generation with malformed plugin data");
 }
 
+function testNodeUrlsAreClickableInSvg() {
+  const root = makeNode("root", "Root", {
+    layout: { offset: { x: 0, y: 0 } }
+  });
+  const childWithUrl = makeNode("a", "Click Me", {
+    layout: { offset: { x: 180, y: 80 } },
+    url: { urls: ["https://example.com"] }
+  });
+  const childNoUrl = makeNode("b", "No URL", {
+    layout: { offset: { x: -180, y: 120 } }
+  });
+  root.addChild(childWithUrl);
+  root.addChild(childNoUrl);
+
+  const doc = {
+    mindmap: {
+      getRoot() {
+        return root;
+      }
+    },
+    getConnectedNodes() {
+      return [];
+    }
+  };
+
+  const svg = buildRenderer().render(doc);
+  assert(svg.includes('xlink:href="https://example.com"'), "Expected anchor tag with xlink:href for node with URL");
+  assert(svg.includes('target="_blank"'), "Expected target=_blank attribute on link");
+  assert(svg.includes('xmlns:xlink="http://www.w3.org/1999/xlink"'), "Expected xlink namespace declaration in SVG");
+  assert(svg.includes("<a "), "Expected anchor elements for nodes with URLs");
+  assert(svg.includes("</a>"), "Expected closing anchor tags");
+}
+
+
 (function run() {
-  const tests = [testBasicVectorOutput, testMalformedDataDoesNotThrow];
+  const tests = [testBasicVectorOutput, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg];
   let passed = 0;
 
   tests.forEach((fn) => {
