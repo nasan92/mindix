@@ -27,10 +27,19 @@ mindmaps.ToolBarView = function() {
     };
     this.addMenu = function(e) {
         this.menus.push(e);
-        this.alignRight(e.getContent())
+        this.alignLeft(e.getContent())
     };
     this.alignLeft = function(e) {
         e.appendTo("#toolbar .buttons-left")
+    };
+    this.alignCenter = function(e) {
+        var t = $("#toolbar .buttons-middle");
+        if (!t.length) {
+            t = $("<span/>", {
+                "class": "buttons-middle"
+            }).appendTo("#toolbar .buttons")
+        }
+        e.appendTo(t)
     };
     this.alignRight = function(e) {
         e.appendTo("#toolbar .buttons-right")
@@ -158,25 +167,19 @@ mindmaps.ToolBarPresenter = function(e, t, n, r, i) {
             n.ensureResponsive()
         })
     }
-    var u = [mindmaps.CreateNodeCommand, mindmaps.CreateSiblingNodeCommand, mindmaps.DeleteNodeCommand];
-    var a = o(u);
-    n.addButtonGroup(a, n.alignLeft);
-    var c = [mindmaps.SaveInstantDocumentCommand];
-    var h = o(c);
-    n.addButtonGroup(h, n.alignLeft);
-    var C = [mindmaps.ImportMarkdownCommand];
-    var H = o(C);
-    n.addButtonGroup(H, n.alignLeft);
+    var b = new mindmaps.ToolBarMenu("File", "ui-icon-document");
+    var w = [mindmaps.NewDocumentCommand, mindmaps.OpenDocumentCommand, mindmaps.SaveDocumentCommand, mindmaps.ImportMarkdownCommand, mindmaps.ExportCommand, mindmaps.PrintCommand, mindmaps.CloseDocumentCommand];
+    var E = o(w);
+    b.add(E);
+    n.addMenu(b);
     var m = new mindmaps.ToolBarMenu("Edit", "ui-icon-document");
     var g = [mindmaps.UndoCommand, mindmaps.RedoCommand, mindmaps.CopyNodeCommand, mindmaps.CutNodeCommand, mindmaps.PasteNodeCommand];
     var y = o(g);
     m.add(y);
     n.addMenu(m);
-    var b = new mindmaps.ToolBarMenu("Document", "ui-icon-document");
-    var w = [mindmaps.NewDocumentCommand, mindmaps.OpenDocumentCommand, mindmaps.SaveDocumentCommand, mindmaps.ImportMarkdownCommand, mindmaps.ExportCommand, mindmaps.PrintCommand, mindmaps.CloseDocumentCommand];
-    var E = o(w);
-    b.add(E);
-    n.addMenu(b);
+    var u = [mindmaps.CreateNodeCommand, mindmaps.CreateSiblingNodeCommand, mindmaps.DeleteNodeCommand];
+    var a = o(u);
+    n.addButtonGroup(a, n.alignCenter);
     n.addButton(s(mindmaps.FormatSidebarCommand), n.alignRight);
     this.go = function() {
         n.init();
