@@ -150,6 +150,20 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
                 enabled: e.enabled
             }
         })).concat([{ type: "separator" }, {
+            id: "group-insert",
+            type: "group-title",
+            label: "Insert"
+        }, {
+            id: "INSERT_URL_ACTION",
+            type: "action",
+            label: "Add URL...",
+            enabled: true
+        }, {
+            id: "INSERT_IMAGE_ACTION",
+            type: "action",
+            label: "Add Image...",
+            enabled: true
+        }, { type: "separator" }, {
             id: "group-structure",
             type: "group-title",
             label: "Structure"
@@ -203,6 +217,14 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
     }, t.nodeContextMenuAction = function(e, n) {
         if (n) {
             o.selectNode(n)
+        }
+        if (e === "INSERT_URL_ACTION") {
+            $("#inspector-button-urls").trigger("click");
+            return
+        }
+        if (e === "INSERT_IMAGE_ACTION") {
+            $("#inspector-button-add-image").trigger("click");
+            return
         }
         var r = p(e);
         if (r && r.enabled) {
