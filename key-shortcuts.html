@@ -1,26 +1,195 @@
+<!doctype html>
 <html>
 <head>
-<title>Keyboard Shortcuts - Mind Map Maker</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keyboard Shortcuts - Mindix</title>
+<link rel="icon" type="image/png" href="img/favicon.png" />
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/about.css">
+<style>
+	.shortcuts-table {
+		width: 100%;
+		border-collapse: separate;
+		border-spacing: 0;
+		margin-top: 8px;
+		border: 1px solid #e2e6ec;
+		border-radius: 10px;
+		overflow: hidden;
+		background: #fff;
+	}
+
+	.shortcuts-table th,
+	.shortcuts-table td {
+		padding: 12px 14px;
+		border-bottom: 1px solid #eef1f5;
+		vertical-align: middle;
+		text-align: left;
+		font-size: 14px;
+	}
+
+	.shortcuts-table tr:last-child td {
+		border-bottom: 0;
+	}
+
+	.shortcuts-table thead th {
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: #6a7380;
+		background: linear-gradient(180deg, #fafbfc 0%, #f3f5f8 100%);
+	}
+
+	.shortcuts-table .group td {
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: #596372;
+		background: #f7f9fc;
+	}
+
+	.shortcut-keys {
+		font-weight: 600;
+		color: #2f3640;
+	}
+
+	.tip {
+		margin-top: 12px;
+		font-size: 13px;
+		color: #66707d;
+	}
+
+	.tip strong {
+		color: #39414c;
+	}
+
+	@media (max-width: 640px) {
+		.shortcuts-table th,
+		.shortcuts-table td {
+			padding: 10px;
+			font-size: 13px;
+		}
+	}
+</style>
 </head>
 <body>
-<strong>Keyboard Shortcut</strong> - Functionality<br />
-<strong>[F2]</strong> - Edit a node<br />
-<strong>[Shift + ENTER]</strong> - Put a line break<br />
-<strong>[F1]</strong> - Get help<br />
-<strong>[TAB, INSERT]</strong> - Creates a new node<br />
-<strong>[RETURN/ENTER]</strong> - Creates a new sibling node<br />
-<strong>[DEL, BACKSPACE]</strong> - Deletes a node<br /><br />
-<strong>[UP]</strong> - Goto up node<br />
-<strong>[DOWN]</strong> - Goto down node<br />
-<strong>[LEFT]</strong> - Goto left node<br />
-<strong>[RIGHT]</strong> - Goto right node<br /><br />
-<strong>[CTRL + Z, META + Z]</strong> - Undo<br />
-<strong>[CTRL + Y, META + SHIFT + Z]</strong> - Redo<br />
-<strong>[CTRL + C, META + C]</strong> - Copy a branch<br />
-<strong>[CTRL + X, META + X]</strong> - Cut a branch<br />
-<strong>[CTRL + V, META + V]</strong> - Paste a branch<br /><br />
-<strong>[CTRL + O, META + O]</strong> - Opens an existing mind map<br />
-<strong>[CTRL + A, META + A]</strong> - Save the mind map<br />
-<strong>[CTRL + P, META + P]</strong> - Print the mind map<br />
+	<div id="topbar">
+		<div class="logo"><a href=".">mindix</a></div>
+		<a href="." class="nav-back">← open app</a>
+	</div>
+
+	<div id="wrap">
+		<div id="container">
+			<div id="content">
+				<div class="section">
+					<header>
+						<h2>Reference</h2>
+						<h3>Keyboard Shortcuts</h3>
+					</header>
+
+					<div class="text">
+						<table class="shortcuts-table" aria-label="Mindix keyboard shortcuts">
+							<thead>
+								<tr>
+									<th>Shortcut</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="group"><td colspan="2">Editing</td></tr>
+								<tr>
+									<td><span class="shortcut-keys">F2</span></td>
+									<td>Edit node text</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Shift + Enter</span></td>
+									<td>Insert line break</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Tab or Insert</span></td>
+									<td>Create child node</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Return / Enter</span></td>
+									<td>Create sibling node</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Delete or Backspace</span></td>
+									<td>Delete node</td>
+								</tr>
+
+								<tr class="group"><td colspan="2">Navigation</td></tr>
+								<tr>
+									<td><span class="shortcut-keys">Up</span></td>
+									<td>Go to up node</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Down</span></td>
+									<td>Go to down node</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Left</span></td>
+									<td>Go to left node</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Right</span></td>
+									<td>Go to right node</td>
+								</tr>
+
+								<tr class="group"><td colspan="2">Clipboard &amp; History</td></tr>
+								<tr>
+									<td><span class="shortcut-keys">Ctrl + Z or Cmd + Z</span></td>
+									<td>Undo</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Ctrl + Y or Cmd + Shift + Z</span></td>
+									<td>Redo</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Ctrl + C or Cmd + C</span></td>
+									<td>Copy branch</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Ctrl + X or Cmd + X</span></td>
+									<td>Cut branch</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Ctrl + V or Cmd + V</span></td>
+									<td>Paste branch</td>
+								</tr>
+
+								<tr class="group"><td colspan="2">Map Actions</td></tr>
+								<tr>
+									<td><span class="shortcut-keys">Ctrl + K or Cmd + K</span></td>
+									<td>Add URL</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Ctrl + O or Cmd + O</span></td>
+									<td>Open mind map</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Ctrl + A or Cmd + A</span></td>
+									<td>Save mind map</td>
+								</tr>
+								<tr>
+									<td><span class="shortcut-keys">Ctrl + P or Cmd + P</span></td>
+									<td>Print mind map</td>
+								</tr>
+
+								<tr class="group"><td colspan="2">Help</td></tr>
+								<tr>
+									<td><span class="shortcut-keys">F1</span></td>
+									<td>Open help</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<p class="tip"><strong>Tip:</strong> On macOS, use <strong>Cmd</strong> where shortcuts show <strong>Ctrl/Cmd</strong>.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
