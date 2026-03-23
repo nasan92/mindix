@@ -4,13 +4,56 @@ mindmaps.ToolBarView = function() {
     this.menus = [];
     this.init = function() {};
     this.ensureResponsive = function() {
-        var t = mindmaps.responsive.isMiddleDevice();
-        e.buttons.forEach(function(e) {
-            e.setSmall(t)
-        });
-        e.menus.forEach(function(e) {
-            e.setSmall(t)
-        })
+        var t = mindmaps.responsive.getToolbarMode();
+
+        function n(t) {
+            e.buttons.forEach(function(e) {
+                e.setResponsiveMode(t)
+            });
+            e.menus.forEach(function(e) {
+                e.setResponsiveMode(t)
+            })
+        }
+
+        function r() {
+            var e = $("#toolbar .buttons .ui-button:visible");
+            var t = false;
+            e.each(function() {
+                var e = $(this);
+                var n = e.find(".ui-button-text").first();
+                if (!n.length || !n.text().trim()) {
+                    return
+                }
+
+                var r = n[0].getBoundingClientRect();
+                var i = e.find(".ui-button-icon-primary").first();
+                if (i.length) {
+                    var s = i[0].getBoundingClientRect();
+                    if (s.right >= r.left - 1) {
+                        t = true;
+                        return false
+                    }
+                }
+
+                var o = e.find(".ui-button-icon-secondary").first();
+                if (o.length) {
+                    var a = o[0].getBoundingClientRect();
+                    if (a.left <= r.right + 1) {
+                        t = true;
+                        return false
+                    }
+                }
+            });
+            return t
+        }
+        n(t);
+
+        if ("compact" === t) {
+            var i = $("#toolbar .buttons").get(0);
+            if (i && (i.scrollWidth > i.clientWidth + 1 || r())) {
+                n("icon-only")
+            }
+        }
     };
     this.addButton = function(t, n) {
         e.buttons.push(t);
@@ -79,6 +122,7 @@ mindmaps.ToolBarButton.prototype.getId = function() {
 };
 mindmaps.ToolBarButton.prototype.asJquery = function() {
     var e = this;
+    var n = this.command.icon;
     var t = $("<button/>", {
         id: this.getId(),
         title: this.getToolTip()
@@ -88,7 +132,6 @@ mindmaps.ToolBarButton.prototype.asJquery = function() {
         label: this.getTitle(),
         disabled: !this.isEnabled()
     });
-    var n = this.command.icon;
     if (n) {
         t.button({
             icons: {
@@ -99,11 +142,28 @@ mindmaps.ToolBarButton.prototype.asJquery = function() {
     this.setEnabled = function(e) {
         t.button(e ? "enable" : "disable")
     };
-    this.setSmall = function(e) {
-        t.button({
-            label: e ? this.getTitle().substr(0, 1) : this.getTitle()
-        })
+    this.setResponsiveMode = function(r) {
+        var i = this.getTitle();
+        var s = "compact" === r ? i.substr(0, 1) : i;
+        var o = "icon-only" === r && !!n;
+        var l = "menu-text-only" === r;
+        var a = {
+            label: o ? i : s,
+            text: !o
+        };
+        if (l) {
+            a.icons = {
+                primary: null,
+                secondary: null
+            }
+        } else if (n) {
+            a.icons = {
+                primary: n
+            }
+        }
+        t.button(a)
     };
+    this.setSmall = this.setResponsiveMode;
     return t
 };
 mindmaps.ToolBarMenu = function(e, t) {
@@ -117,14 +177,22 @@ mindmaps.ToolBarMenu = function(e, t) {
     }, function() {
         n.$menu.hide()
     });
-    this.setSmall = function(t) {
+    this.setResponsiveMode = function(r) {
+        var i = "compact" === r ? e.substr(0, 1) : e;
+        var s = "icon-only" === r;
         n.$menuButton.button({
-            label: t ? e.substr(0, 1) : e
+            label: s ? e : i,
+            text: !s,
+            icons: {
+                primary: t,
+                secondary: "ui-icon-triangle-1-s"
+            }
         });
         n.buttons.forEach(function(e) {
-            e.setSmall(t)
+            e.setResponsiveMode("full" === r ? "full" : "menu-text-only")
         })
     };
+    this.setSmall = this.setResponsiveMode;
     this.$menuButton = $("<button/>").button({
         label: e,
         icons: {
@@ -163,6 +231,9 @@ mindmaps.ToolBarPresenter = function(e, t, n, r, i) {
     }
 
     function S() {
+        $(window).off("resize.toolbarResponsive").on("resize.toolbarResponsive", function() {
+            n.ensureResponsive()
+        });
         i.subscribe(mindmaps.CanvasContainer.Event.RESIZED, function() {
             n.ensureResponsive()
         })
@@ -172,7 +243,7 @@ mindmaps.ToolBarPresenter = function(e, t, n, r, i) {
     var E = o(w);
     b.add(E);
     n.addMenu(b);
-    var m = new mindmaps.ToolBarMenu("Edit", "ui-icon-document");
+    var m = new mindmaps.ToolBarMenu("Edit", "ui-icon-pencil");
     var g = [mindmaps.UndoCommand, mindmaps.RedoCommand, mindmaps.CopyNodeCommand, mindmaps.CutNodeCommand, mindmaps.PasteNodeCommand];
     var y = o(g);
     m.add(y);
