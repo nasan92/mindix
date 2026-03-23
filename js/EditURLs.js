@@ -126,7 +126,7 @@ mindmaps.EditURLsView = function() {
             t.go()
         }
         mindmaps.EditURLsCommand = function() {
-            this.id = "EDIT_URLS_COMMAND", this.label = "Edit URLs...", this.shortcut = [], this.description = "Open the edit URLs dialog"
+            this.id = "EDIT_URLS_COMMAND", this.label = "Edit URLs...", this.shortcut = ["ctrl+k", "meta+k"], this.description = "Open the edit URLs dialog"
         }, mindmaps.EditURLsCommand.prototype = new mindmaps.Command;
         var i = mindmaps.ui.commandRegistry.get(mindmaps.EditURLsCommand);
         i.setHandler(t), mindmaps.action.ChangeURLsAction = function(n, e) {
