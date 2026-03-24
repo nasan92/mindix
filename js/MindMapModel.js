@@ -54,6 +54,8 @@ mindmaps.MindMapModel = function(e, t, n) {
         i.setHandler(this.createSiblingNode.bind(this));
         var s = t.get(mindmaps.DeleteNodeCommand);
         s.setHandler(this.deleteNode.bind(this));
+        var l = t.get(mindmaps.ConnectNodeCommand);
+        l.setHandler(this.connectNode.bind(this));
         var o = t.get(mindmaps.SelectParentNodeCommand);
         o.setHandler(this.selectParent.bind(this));
         var u = t.get(mindmaps.SelectChildFirstNodeCommand);
@@ -66,6 +68,7 @@ mindmaps.MindMapModel = function(e, t, n) {
             n.setEnabled(false);
             i.setEnabled(false);
             s.setEnabled(false);
+            l.setEnabled(false);
             o.setEnabled(false);
             u.setEnabled(false);
             a.setEnabled(false);
@@ -75,6 +78,7 @@ mindmaps.MindMapModel = function(e, t, n) {
             n.setEnabled(true);
             i.setEnabled(true);
             s.setEnabled(true);
+            l.setEnabled(true);
             o.setEnabled(true);
             u.setEnabled(true);
             a.setEnabled(true);
@@ -83,6 +87,7 @@ mindmaps.MindMapModel = function(e, t, n) {
         e.subscribe(mindmaps.Event.NODE_SELECTED, function(e) {
             i.setEnabled(r.getParent(e));
             s.setEnabled(r.getParent(e));
+            l.setEnabled(!!e);
             o.setEnabled(r.getParent(e));
             u.setEnabled(r.getChildFirst(e));
             a.setEnabled(r.getSiblingN(e));
@@ -116,6 +121,13 @@ mindmaps.MindMapModel = function(e, t, n) {
         }
         var r = new mindmaps.action.CreateAutoPositionedNodeAction(n, e);
         this.executeAction(r)
+    };
+    this.connectNode = function() {
+        if (!this.selectedNode) {
+            return
+        }
+        var e = new mindmaps.action.ConnectNodeClickAction(this.selectedNode, !0);
+        this.executeAction(e)
     };
     this.selectNode = function(t) {
         if (t === this.selectedNode) {
