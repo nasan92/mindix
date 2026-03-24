@@ -572,19 +572,19 @@ textarea,
   cursor: pointer;
   user-select: none;
   position: relative;
-  padding-right: 18px;
+  padding-left: 18px;
 }
 
-#inspector-table .inspector-collapsible-title td::after {
+#inspector-table .inspector-collapsible-title td::before {
   content: "▾";
   position: absolute;
-  right: 2px;
+  left: 2px;
   top: 4px;
   font-size: 11px;
   color: #5c6775;
 }
 
-#inspector-table .inspector-collapsible-title[data-collapsed="true"] td::after {
+#inspector-table .inspector-collapsible-title[data-collapsed="true"] td::before {
   content: "▸";
 }
 
