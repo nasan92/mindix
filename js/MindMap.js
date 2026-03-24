@@ -34,6 +34,7 @@ mindmaps.MindMap.fromJSON = function(e) {
 mindmaps.MindMap.fromObject = function(e) {
     var t = mindmaps.Node.fromObject(e.root);
     var n = new mindmaps.MindMap(t);
+    if (e.levelStyles) n.levelStyles = e.levelStyles;
     t.forEachDescendant(function(e) {
         n.addNode(e)
     });
@@ -43,7 +44,30 @@ mindmaps.MindMap.prototype.toJSON = function() {
     var e = {
         root: this.root
     };
+    if (this.levelStyles) e.levelStyles = this.levelStyles;
     return e
+};
+mindmaps.MindMap.prototype.getLevelStyle = function(depth) {
+    if (!this.levelStyles) this.levelStyles = {};
+    var key = String(depth >= 4 ? 4 : depth);
+    if (this.levelStyles[key]) return this.levelStyles[key];
+    if (depth >= 2 && this.levelStyles["2"]) return this.levelStyles["2"];
+    return null;
+};
+mindmaps.MindMap.prototype.setLevelStyle = function(depth, patch) {
+    if (!this.levelStyles) this.levelStyles = {};
+    var key = String(depth >= 4 ? 4 : depth);
+    if (!this.levelStyles[key]) {
+        var defaults = [
+            { fontfamily: 'Sans-serif', size: 20, weight: 'bold', style: 'normal', decoration: 'none' },
+            { fontfamily: 'Sans-serif', size: 15, weight: 'normal', style: 'normal', decoration: 'none' },
+            { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' },
+            { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' },
+            { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' }
+        ];
+        this.levelStyles[key] = $.extend({}, defaults[parseInt(key, 10)] || defaults[4]);
+    }
+    $.extend(this.levelStyles[key], patch);
 };
 mindmaps.MindMap.prototype.serialize = function() {
     return JSON.stringify(this)
