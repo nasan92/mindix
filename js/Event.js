@@ -11,6 +11,7 @@ mindmaps.Event = {
     TWO_NODES_CONNECTED: "TwoNodesConnected",
     TWO_NODES_DISCONNECTED: "TwoNodesDisconnected",
     CONNECTION_COLOR_CHANGED: "ConnectionColorChanged",
+    CONNECTION_SELECTED: "ConnectionSelectedEvent",
     NODE_LINE_WIDTH_CHANGED: "NodeLineWidthChangedEvent",
     NODE_FONT_COLOR_PREVIEW: "NodeFontColorPreviewEvent",
     NODE_BRANCH_COLOR_CHANGED: "NodeBranchColorChangedEvent",

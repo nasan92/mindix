@@ -1028,6 +1028,10 @@ mindmaps.DefaultCanvasView = function() {
                 if (oldFrom) e.redrawConnections(oldFrom)
             }
             var fromN = $("#node-" + n.from).data("node");
+            var toN = $("#node-" + n.to).data("node");
+            if (fromN && toN && e.connectionSelected) {
+                e.connectionSelected(fromN, toN, n)
+            }
             if (fromN) e.redrawConnections(fromN);
             var vPt = V(n);
             var wPt = W(n);
