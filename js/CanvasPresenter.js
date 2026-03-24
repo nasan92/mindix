@@ -275,7 +275,17 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
     }, t.nodeCaptionMouseOver = function(e) {
         t.isNodeDragging() || c.isDragging() || c.attachToNode(e)
     }, t.nodeMouseDown = function(e) {
+        if (!mindmaps.connectMode) {
+            mindmaps.connectSelected = !1
+        }
         t.hideNodeContextMenu(), o.selectNode(e), c.attachToNode(e)
+    }, t.connectionSelected = function(fromNode, toNode, conn) {
+        mindmaps.connectMode = !1;
+        mindmaps.connectStartNode = toNode;
+        mindmaps.connectSelected = !0;
+        o.selectNode(fromNode);
+        c.attachToNode(fromNode);
+        e.publish(mindmaps.Event.CONNECTION_SELECTED, fromNode, toNode, conn)
     }, t.nodeDoubleClicked = function(e) {
         t.editNodeCaption(e)
     }, t.nodeDragged = function(e, n) {

@@ -239,6 +239,8 @@ mindmaps.InspectorView = function() {
             cfnode = n[0];
             var r = "solid" === cfnode.style || "dotted" === cfnode.style || "dashed" === cfnode.style ? cfnode.style : "dashed";
             var i = "curved" === cfnode.shape || "curved" === cfnode.style ? "curved" : "straight";
+            $("#node-connect-styles-row").show();
+            $("#inspector-button-connect-node-remove").show();
             t.setConnectStyle(r);
             t.setConnectShape(i);
             t.setConnectArrow(cfnode.arrow);
@@ -402,8 +404,14 @@ mindmaps.InspectorView = function() {
     }), e.subscribe(mindmaps.Event.NODE_SELECTED, function(o) {
         if (mindmaps.connectMode) {
             e.publish(mindmaps.Event.CONNECTED_TWO_NODES, mindmaps.connectStartNode, o, null), mindmaps.connectSelected = !0, c(mindmaps.connectStartNode, o)
-        } else mindmaps.connectSelected = !1, $("#node-connect-styles-row").hide(), $("#inspector-button-connect-node-remove").hide();
+        } else if (!mindmaps.connectSelected) {
+            $("#node-connect-styles-row").hide(), $("#inspector-button-connect-node-remove").hide()
+        }
         mindmaps.connectPendingAnchor = null, i(o), mindmaps.connectMode = !1
+    }), e.subscribe(mindmaps.Event.CONNECTION_SELECTED, function(e, n) {
+        mindmaps.connectStartNode = n;
+        mindmaps.connectSelected = !0;
+        c(e, n)
     }), e.subscribe(mindmaps.Event.DOCUMENT_OPENED, function() {
         t.setControlsEnabled(!0), s()
     }), e.subscribe(mindmaps.Event.DOCUMENT_CLOSED, function() {
