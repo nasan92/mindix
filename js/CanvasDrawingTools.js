@@ -95,28 +95,109 @@ mindmaps.CanvasConnectorDrawer = function() {
             }
         }
 
-        function _(t, n, r, i) {
+        function C(t, n, r, i, s) {
+            var o = r - t;
+            var u = i - n;
+            var a = Math.sqrt(o * o + u * u) || 1;
+            var f = o / a;
+            var l = u / a;
+            var c = -l;
+            var h = f;
+            var p = s && "number" == typeof s.curve1T ? s.curve1T : .28;
+            var d = s && "number" == typeof s.curve1N ? s.curve1N : .22;
+            var v = s && "number" == typeof s.curve2T ? s.curve2T : .72;
+            var m = s && "number" == typeof s.curve2N ? s.curve2N : -.22;
+            return {
+                c1: {
+                    x: t + o * p + c * (d * a),
+                    y: n + u * p + h * (d * a)
+                },
+                c2: {
+                    x: t + o * v + c * (m * a),
+                    y: n + u * v + h * (m * a)
+                }
+            }
+        }
+
+        function B(t, n, r, i, s, o, u) {
+            if (!u || !u.length || !s) {
+                return
+            }
+            var a = u.offset();
+            if (!a) {
+                return
+            }
+            s._renderPoints = {
+                from: {
+                    x: a.left + t,
+                    y: a.top + n
+                },
+                to: {
+                    x: a.left + r,
+                    y: a.top + i
+                }
+            };
+            if (o) {
+                s._renderPoints.c1 = {
+                    x: a.left + o.c1.x,
+                    y: a.top + o.c1.y
+                };
+                s._renderPoints.c2 = {
+                    x: a.left + o.c2.x,
+                    y: a.top + o.c2.y
+                }
+            }
+        }
+
+        function _(t, n, r, i, s) {
             e.strokeStyle = a;
             e.fillStyle = a;
             e.lineWidth = 2;
-            if (l == "dashed") D(e, [8]);
-            else if (l == "dotted") D(e, [3]);
-            else if (l == "solid") D(e, [0]);
+            if (lineStyle == "dashed") D(e, [8]);
+            else if (lineStyle == "dotted") D(e, [3]);
+            else if (lineStyle == "solid") D(e, [0]);
             else D(e, []);
             e.beginPath();
             e.moveTo(t, n);
-            e.lineTo(r, i);
+            var h = null;
+            if (isCurved) {
+                h = C(t, n, r, i, s);
+                e.bezierCurveTo(h.c1.x, h.c1.y, h.c2.x, h.c2.y, r, i)
+            } else {
+                e.lineTo(r, i)
+            }
             e.stroke();
+            var p = {
+                x: r - t,
+                y: i - n
+            };
+            var d = {
+                x: p.x,
+                y: p.y
+            };
+            var v = {
+                x: p.x,
+                y: p.y
+            };
+            if (h) {
+                d = {
+                    x: h.c1.x - t,
+                    y: h.c1.y - n
+                };
+                v = {
+                    x: r - h.c2.x,
+                    y: i - h.c2.y
+                }
+            }
             if (c == "2") {
-                var s = Math.atan((i - n) / (r - t));
-                s += (r > t ? -90 : 90) * Math.PI / 180;
-                O(t, n, s)
+                var m = Math.atan2(d.y, d.x) - Math.PI / 2;
+                O(t, n, m)
             }
             if (c == "2" || c == "1") {
-                var o = Math.atan((i - n) / (r - t));
-                o += (r > t ? 90 : -90) * Math.PI / 180;
-                O(r, i, o)
+                var g = Math.atan2(v.y, v.x) + Math.PI / 2;
+                O(r, i, g)
             }
+            return h
         }
 
         function oldRender() {
@@ -176,10 +257,15 @@ mindmaps.CanvasConnectorDrawer = function() {
             var endX = startAtLeft ? width : 0;
             var startY = startAtTop ? 0 : height;
             var endY = startAtTop ? height : 0;
-            _(startX, startY, endX, endY);
+            var curve = _(startX, startY, endX, endY, h);
+            B(startX, startY, endX, endY, h, curve, this.$canvas);
             if (h && h._selected) {
                 N(startX, startY);
-                N(endX, endY)
+                N(endX, endY);
+                if (isCurved && curve) {
+                    N(curve.c1.x, curve.c1.y);
+                    N(curve.c2.x, curve.c2.y)
+                }
             }
         }
 
@@ -189,10 +275,16 @@ mindmaps.CanvasConnectorDrawer = function() {
         n = n * f;
         r = r * f;
 
+        var isCurved = h && "curved" == h.shape || "curved" == l;
+        var lineStyle = l;
+        if ("dashed" != lineStyle && "dotted" != lineStyle && "solid" != lineStyle) {
+            lineStyle = "dashed"
+        }
+
         var hasManualToAnchor = h && "number" == typeof h.toAnchorX && "number" == typeof h.toAnchorY;
         var hasManualFromAnchor = h && "number" == typeof h.fromAnchorX && "number" == typeof h.fromAnchorY;
         var hasManualAnchor = hasManualToAnchor || hasManualFromAnchor;
-        if (!hasManualAnchor) {
+        if (!hasManualAnchor && !isCurved) {
             oldRender.call(this);
             e.restore();
             return
@@ -216,16 +308,36 @@ mindmaps.CanvasConnectorDrawer = function() {
         var sourcePoint = hasManualFromAnchor
             ? { x: P(h.fromAnchorX, -.15, 1.15) * fromRect.w, y: P(h.fromAnchorY, -.15, 1.15) * fromRect.h }
             : M(fromRect, targetPoint);
-        var padding = 20;
-        var left = Math.min(sourcePoint.x, targetPoint.x) - padding;
-        var top = Math.min(sourcePoint.y, targetPoint.y) - padding;
-        var width = Math.max(2, Math.abs(targetPoint.x - sourcePoint.x) + 2 * padding);
-        var height = Math.max(2, Math.abs(targetPoint.y - sourcePoint.y) + 2 * padding);
+        var curveAbs = isCurved ? C(sourcePoint.x, sourcePoint.y, targetPoint.x, targetPoint.y, h) : null;
+        var padding = isCurved ? 40 : 20;
+        var minX = Math.min(sourcePoint.x, targetPoint.x);
+        var maxX = Math.max(sourcePoint.x, targetPoint.x);
+        var minY = Math.min(sourcePoint.y, targetPoint.y);
+        var maxY = Math.max(sourcePoint.y, targetPoint.y);
+        if (curveAbs) {
+            minX = Math.min(minX, curveAbs.c1.x, curveAbs.c2.x);
+            maxX = Math.max(maxX, curveAbs.c1.x, curveAbs.c2.x);
+            minY = Math.min(minY, curveAbs.c1.y, curveAbs.c2.y);
+            maxY = Math.max(maxY, curveAbs.c1.y, curveAbs.c2.y)
+        }
+        var left = minX - padding;
+        var top = minY - padding;
+        var width = Math.max(2, maxX - minX + 2 * padding);
+        var height = Math.max(2, maxY - minY + 2 * padding);
         this.beforeDraw(width, height, left, top);
-        _(sourcePoint.x - left, sourcePoint.y - top, targetPoint.x - left, targetPoint.y - top);
+        var sourceX = sourcePoint.x - left;
+        var sourceY = sourcePoint.y - top;
+        var targetX = targetPoint.x - left;
+        var targetY = targetPoint.y - top;
+        var curve = _(sourceX, sourceY, targetX, targetY, h);
+        B(sourceX, sourceY, targetX, targetY, h, curve, this.$canvas);
         if (h && h._selected) {
-            N(sourcePoint.x - left, sourcePoint.y - top);
-            N(targetPoint.x - left, targetPoint.y - top)
+            N(sourceX, sourceY);
+            N(targetX, targetY);
+            if (isCurved && curve) {
+                N(curve.c1.x, curve.c1.y);
+                N(curve.c2.x, curve.c2.y)
+            }
         }
         e.restore()
     }

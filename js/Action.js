@@ -227,6 +227,7 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
             return o.from == t.id && o.to == n.id || o.from == n.id && o.to == t.id
         });
         if (!i.length) return !1;
+        if ("curved" == o) o = "dashed";
         if (i[0].style == o) return !1;
         i[0].style = o;
         var e = mindmaps.getConnectedNodes().filter(function(o) {
@@ -236,16 +237,63 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
     }, this.event = [mindmaps.Event.CONNECTION_COLOR_CHANGED, n], this.undo = function() {
         return new mindmaps.action.SetConnectStyleAction(n, t, e)
     }
-}, mindmaps.action.SetConnectStyleAction.prototype = new mindmaps.action.Action, mindmaps.action.SetConnectAnchorAction = function(n, t, anchor) {
+}, mindmaps.action.SetConnectStyleAction.prototype = new mindmaps.action.Action, mindmaps.action.SetConnectShapeAction = function(n, t, o) {
+    var i = mindmaps.getConnectedNodes().filter(function(o) {
+        return o.from == t.id && o.to == n.id || o.from == n.id && o.to == t.id
+    });
+    var e = "straight";
+    if (i.length) {
+        e = i[0].shape || ("curved" == i[0].style ? "curved" : "straight")
+    }
+    this.execute = function() {
+        var i = mindmaps.getConnectedNodes().filter(function(o) {
+            return o.from == t.id && o.to == n.id || o.from == n.id && o.to == t.id
+        });
+        if (!i.length) return !1;
+        var r = "curved" === o ? "curved" : "straight";
+        var c = i[0].shape || ("curved" == i[0].style ? "curved" : "straight");
+        if (c == r) return !1;
+        i[0].shape = r;
+        i[0].curveLinked = !1 !== i[0].curveLinked;
+        if ("curved" == i[0].style) {
+            i[0].style = "dashed"
+        }
+        if ("curved" == r) {
+            if (!("number" == typeof i[0].curve1T)) i[0].curve1T = .28;
+            if (!("number" == typeof i[0].curve1N)) i[0].curve1N = .22;
+            if (!("number" == typeof i[0].curve2T)) i[0].curve2T = .72;
+            if (!("number" == typeof i[0].curve2N)) i[0].curve2N = -.22
+        }
+        var h = mindmaps.getConnectedNodes().filter(function(o) {
+            return !(o.from == t.id && o.to == n.id || o.from == n.id && o.to == t.id)
+        });
+        h.push(i[0]), mindmaps.setConnectedNodes(h), mindmaps.isMapLoadingConfirmationRequired = !0
+    }, this.event = [mindmaps.Event.CONNECTION_COLOR_CHANGED, n], this.undo = function() {
+        return new mindmaps.action.SetConnectShapeAction(n, t, e)
+    }
+}, mindmaps.action.SetConnectShapeAction.prototype = new mindmaps.action.Action, mindmaps.action.SetConnectAnchorAction = function(n, t, anchor) {
     var r = mindmaps.getConnectedNodes().filter(function(o) {
         return o.from == n.id && o.to == t.id || o.from == t.id && o.to == n.id
     });
-    var c = { toAnchorX: null, toAnchorY: null, fromAnchorX: null, fromAnchorY: null };
+    var c = {
+        toAnchorX: null,
+        toAnchorY: null,
+        fromAnchorX: null,
+        fromAnchorY: null,
+        curve1T: null,
+        curve1N: null,
+        curve2T: null,
+        curve2N: null
+    };
     if (r.length) {
         c.toAnchorX = "number" == typeof r[0].toAnchorX ? r[0].toAnchorX : null;
         c.toAnchorY = "number" == typeof r[0].toAnchorY ? r[0].toAnchorY : null;
         c.fromAnchorX = "number" == typeof r[0].fromAnchorX ? r[0].fromAnchorX : null;
-        c.fromAnchorY = "number" == typeof r[0].fromAnchorY ? r[0].fromAnchorY : null
+        c.fromAnchorY = "number" == typeof r[0].fromAnchorY ? r[0].fromAnchorY : null;
+        c.curve1T = "number" == typeof r[0].curve1T ? r[0].curve1T : null;
+        c.curve1N = "number" == typeof r[0].curve1N ? r[0].curve1N : null;
+        c.curve2T = "number" == typeof r[0].curve2T ? r[0].curve2T : null;
+        c.curve2N = "number" == typeof r[0].curve2N ? r[0].curve2N : null
     }
     this.execute = function() {
         var r = mindmaps.getConnectedNodes().filter(function(o) {
@@ -260,6 +308,14 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
         if ("fromAnchorX" in u || "fromAnchorY" in u) {
             r[0].fromAnchorX = ("number" == typeof u.fromAnchorX && isFinite(u.fromAnchorX)) ? u.fromAnchorX : null;
             r[0].fromAnchorY = ("number" == typeof u.fromAnchorY && isFinite(u.fromAnchorY)) ? u.fromAnchorY : null
+        }
+        if ("curve1T" in u || "curve1N" in u) {
+            r[0].curve1T = ("number" == typeof u.curve1T && isFinite(u.curve1T)) ? u.curve1T : null;
+            r[0].curve1N = ("number" == typeof u.curve1N && isFinite(u.curve1N)) ? u.curve1N : null
+        }
+        if ("curve2T" in u || "curve2N" in u) {
+            r[0].curve2T = ("number" == typeof u.curve2T && isFinite(u.curve2T)) ? u.curve2T : null;
+            r[0].curve2N = ("number" == typeof u.curve2N && isFinite(u.curve2N)) ? u.curve2N : null
         }
         var f = mindmaps.getConnectedNodes().filter(function(o) {
             return !(o.from == t.id && o.to == n.id || o.from == n.id && o.to == t.id)
@@ -288,10 +344,16 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
         $("#node-" + cfnode.from).length && $("#node-connector-canvas-" + cfnode.from + "-" + cfnode.canvasId).length && ($("#node-connector-canvas-" + cfnode.from + "-" + cfnode.canvasId).remove(), console.log("removed canvas")), mindmaps.setConnectedNodes(i), mindmaps.isMapLoadingConfirmationRequired = !0, $("#node-connect-styles-row").hide(), $("#inspector-button-connect-node-remove").hide()
     }, this.event = [mindmaps.Event.TWO_NODES_DISCONNECTED, n, t], this.undo = function() {
         return new mindmaps.action.ConnectTwoNodesAction(n, t, cfnode.style, cfnode.color, cfnode.arrow, {
+            shape: "string" == typeof cfnode.shape ? cfnode.shape : ("curved" == cfnode.style ? "curved" : "straight"),
             toAnchorX: "number" == typeof cfnode.toAnchorX ? cfnode.toAnchorX : null,
             toAnchorY: "number" == typeof cfnode.toAnchorY ? cfnode.toAnchorY : null,
             fromAnchorX: "number" == typeof cfnode.fromAnchorX ? cfnode.fromAnchorX : null,
-            fromAnchorY: "number" == typeof cfnode.fromAnchorY ? cfnode.fromAnchorY : null
+            fromAnchorY: "number" == typeof cfnode.fromAnchorY ? cfnode.fromAnchorY : null,
+            curve1T: "number" == typeof cfnode.curve1T ? cfnode.curve1T : null,
+            curve1N: "number" == typeof cfnode.curve1N ? cfnode.curve1N : null,
+            curve2T: "number" == typeof cfnode.curve2T ? cfnode.curve2T : null,
+            curve2N: "number" == typeof cfnode.curve2N ? cfnode.curve2N : null,
+            curveLinked: !1 !== cfnode.curveLinked
         })
     }
 }, mindmaps.action.ConnectNodeRemoveClickAction.prototype = new mindmaps.action.Action, mindmaps.action.SetFontColorAction = function(n, t) {
