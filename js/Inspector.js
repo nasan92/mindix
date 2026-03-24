@@ -2,11 +2,10 @@ mindmaps.InspectorView = function() {
     var e = this,
         o = $("#template-inspector").tmpl(),
         n = o.find("#inspector-button-font-face-change"),
+        z = $("#inspector-input-font-size", o),
         t = o.find("#inspector-button-connection-arrow-change"),
         c = o.find("#inspector-button-connection-style-change"),
         i = o.find("#inspector-button-border-style"),
-        r = $("#inspector-button-font-size-decrease", o),
-        d = $("#inspector-button-font-size-increase", o),
         l = $("#inspector-button-line-width-decrease", o),
         a = $("#inspector-button-line-width-increase", o),
         u = $("#inspector-checkbox-font-bold", o),
@@ -29,7 +28,7 @@ mindmaps.InspectorView = function() {
         P = $("#inspector-connection-color-picker", o),
         y = $("#inspector-border-background-color-picker", o),
         B = $("#inspector-map-background-color-picker", o),
-        E = [r, d, l, a, u, C, h, f, m, p, b, k, g, v, A, N, F],
+        E = [l, a, u, C, h, f, m, p, b, k, g, v, A, N, F],
         D = [S, x, w, y, P, B];
 
     function I() {
@@ -55,7 +54,7 @@ mindmaps.InspectorView = function() {
             e.button(o)
         }), D.forEach(function(o) {
             o.attr("disabled", e)
-        }), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(o) {
+        }), z.prop("disabled", !e), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(o) {
             o.inspectorAdviser && o.inspectorAdviser.setControlsEnabled && o.inspectorAdviser.setControlsEnabled(e)
         })
     }, this.setBorderText = function(e) {
@@ -64,6 +63,8 @@ mindmaps.InspectorView = function() {
         i.val(M(e))
     }, this.setFontFace = function(e) {
         n.val(e)
+    }, this.setFontSize = function(e) {
+        z.val(e)
     }, this.setConnectStyle = function(e) {
         c.val(e)
     }, this.setConnectArrow = function(e) {
@@ -134,10 +135,13 @@ mindmaps.InspectorView = function() {
             console.log(t.val()), e.connectArrowChangeClicked && e.connectArrowChangeClicked(t.val())
         }), i.change(function() {
             console.log(i.val()), e.borderStyleChangeClicked && e.borderStyleChangeClicked(i.val())
-        }), r.click(function() {
-            e.fontSizeDecreaseButtonClicked && e.fontSizeDecreaseButtonClicked()
-        }), d.click(function() {
-            e.fontSizeIncreaseButtonClicked && e.fontSizeIncreaseButtonClicked()
+        }), z.on("change", function() {
+            var o = parseInt($(this).val(), 10);
+            if (isNaN(o)) return;
+            if (o < 6) o = 6;
+            if (o > 120) o = 120;
+            $(this).val(o);
+            e.fontSizeChanged && e.fontSizeChanged(o)
         }), l.click(function() {
             e.lineWidthDecreaseButtonClicked && e.lineWidthDecreaseButtonClicked()
         }), a.click(function() {
@@ -227,7 +231,7 @@ mindmaps.InspectorView = function() {
             n.style = "none"
         }
         n.visible = "none" !== n.style;
-        t.setBorderStyle(n.style), t.setBorderText(n.visible ? !0 : !1), t.setBoldCheckboxState("bold" === o.weight), t.setFontFace(o.fontfamily), t.setItalicCheckboxState("italic" === o.style), t.setUnderlineCheckboxState("underline" === o.decoration), t.setLinethroughCheckboxState("line-through" === o.decoration), t.setFontColorPickerColor(o.color), t.setBorderColorPickerColor(n.color), t.setBorderBackgroundColorPickerColor(n.background), t.setBranchColorPickerColor(e.getPluginData("style", "branchColor"))
+        t.setBorderStyle(n.style), t.setBorderText(n.visible ? !0 : !1), t.setBoldCheckboxState("bold" === o.weight), t.setFontFace(o.fontfamily), t.setFontSize(o.size), t.setItalicCheckboxState("italic" === o.style), t.setUnderlineCheckboxState("underline" === o.decoration), t.setLinethroughCheckboxState("line-through" === o.decoration), t.setFontColorPickerColor(o.color), t.setBorderColorPickerColor(n.color), t.setBorderBackgroundColorPickerColor(n.background), t.setBranchColorPickerColor(e.getPluginData("style", "branchColor"))
     }
 
     function r() {
@@ -263,11 +267,11 @@ mindmaps.InspectorView = function() {
     }, t.borderStyleChangeClicked = function(e) {
         var n = new mindmaps.action.ChangeNodeBorderStyleAction(o.selectedNode, e);
         o.executeAction(n)
+    }, t.fontSizeChanged = function(e) {
+        var n = new mindmaps.action.SetNodeFontSizeAction(o.selectedNode, e);
+        o.executeAction(n)
     }, t.fontSizeDecreaseButtonClicked = function() {
         var e = new mindmaps.action.DecreaseNodeFontSizeAction(o.selectedNode);
-        o.executeAction(e)
-    }, t.fontSizeIncreaseButtonClicked = function() {
-        var e = new mindmaps.action.IncreaseNodeFontSizeAction(o.selectedNode);
         o.executeAction(e)
     }, t.lineWidthDecreaseButtonClicked = function() {
         var e = new mindmaps.action.DecreaseNodeLineWidthAction(o.selectedNode);
