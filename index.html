@@ -259,7 +259,7 @@
         <div id="inspector-content">
             <table id="inspector-table">
                 <tr class="inspector-section-title-row">
-                    <td colspan="2">Text settings</td>
+                    <td colspan="2">Text Settings</td>
                 </tr>
                 <tr class="inspector-section-row inspector-section-text inspector-group-start">
                     <td>Font face:</td>
@@ -293,11 +293,7 @@
                 <tr class="inspector-section-row inspector-section-text inspector-group-end">
                     <td>Font size:</td>
                     <td>
-                        <div
-                                class="buttonset buttons-very-small buttons-less-padding">
-                            <button id="inspector-button-font-size-decrease">A-</button>
-                            <button id="inspector-button-font-size-increase">A+</button>
-                        </div>
+                        <input type="number" id="inspector-input-font-size" min="6" max="120" step="1" style="width:58px" />
                     </td>
                 </tr>
                 <tr class="inspector-section-row inspector-section-text">
@@ -331,8 +327,69 @@
 						                        </div>
                     </td>
                 </tr>
+                <tr class="inspector-section-title-row">
+                    <td colspan="2">Level Text Styles</td>
+                </tr>
+                <tr class="inspector-section-row inspector-section-levelstyle inspector-group-start">
+                    <td>Level:</td>
+                    <td>
+                        <select id="level-style-depth-select">
+                            <option value="0">Root</option>
+                            <option value="1">Level 1</option>
+                            <option value="2">Level 2</option>
+                            <option value="3">Level 3</option>
+                            <option value="4">Level 4+</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="inspector-section-row inspector-section-levelstyle">
+                    <td>Font face:</td>
+                    <td>
+                        <select id="level-style-font-face">
+                            <option value="Sans-serif">Sans-serif</option>
+                            <option value="Serif">Serif</option>
+                            <option value="Stencil">Stencil</option>
+                            <option value="Arial">Arial</option>
+                            <option value="Arial Black">Arial Black</option>
+                            <option value="Courier">Courier</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Comic Sans MS">Comic Sans MS</option>
+                            <option value="Helvetica">Helvetica</option>
+                            <option value="Helvetica Neue">Helvetica Neue</option>
+                            <option value="Impact">Impact</option>
+                            <option value="Lucida Grande">Lucida Grande</option>
+                            <option value="Lucida Sans">Lucida Sans</option>
+                            <option value="Tahoma">Tahoma</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Trebuchet MS">Trebuchet MS</option>
+                            <option value="Verdana">Verdana</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="inspector-section-row inspector-section-levelstyle">
+                    <td>Font size:</td>
+                    <td>
+                        <input type="number" id="level-style-font-size" min="6" max="120" step="1" style="width:52px" />
+                    </td>
+                </tr>
+                <tr class="inspector-section-row inspector-section-levelstyle inspector-group-end">
+                    <td>Font style:</td>
+                    <td>
+                        <div class="buttonset buttons-very-small buttons-less-padding">
+                            <input type="checkbox" id="level-style-font-bold"/>
+                            <label for="level-style-font-bold" id="level-style-label-font-bold">B</label>
+                            <input type="checkbox" id="level-style-font-italic"/>
+                            <label for="level-style-font-italic" id="level-style-label-font-italic"><i>I</i></label>
+                            <input type="checkbox" id="level-style-font-underline"/>
+                            <label for="level-style-font-underline" id="level-style-label-font-underline"><u>U</u></label>
+                            <input type="checkbox" id="level-style-font-linethrough"/>
+                            <label for="level-style-font-linethrough" id="level-style-label-font-linethrough"><s>S</s></label>
+                        </div>
+                    </td>
+                </tr>
 				<tr class="inspector-section-title-row">
-                    <td colspan="2">Branch settings</td>
+                <td colspan="2">Branch Settings</td>
                 </tr>
                 <tr class="inspector-section-row inspector-section-branch inspector-group-start">
                     <td>Line width:</td>
@@ -386,7 +443,7 @@
                     </td>
                 </tr>
                 <tr class="inspector-section-title-row">
-                    <td colspan="2">Node appearance</td>
+                    <td colspan="2">Node Appearance</td>
                 </tr>
                 <tr class="inspector-section-row inspector-section-node inspector-group-start">
                     <td>Border:</td>
@@ -419,7 +476,7 @@
 					</td>
                 </tr>
                 <tr class="inspector-section-title-row">
-                    <td colspan="2">Mind map background</td>
+                    <td colspan="2">Mind Map Background</td>
                 </tr>
                 <tr class="inspector-section-row inspector-section-map inspector-group-start">
                     <td>Enable grid:</td>

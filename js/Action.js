@@ -93,7 +93,16 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
     }, this.event = [mindmaps.Event.NODE_FONT_CHANGED, n], this.undo = function() {
         return new mindmaps.action.ChangeNodeFontSizeAction(n, -t)
     }
-}, mindmaps.action.ChangeNodeFontSizeAction.prototype = new mindmaps.action.Action, mindmaps.action.DecreaseNodeFontSizeAction = function(n) {
+}, mindmaps.action.ChangeNodeFontSizeAction.prototype = new mindmaps.action.Action, mindmaps.action.SetNodeFontSizeAction = function(n, t) {
+    var o = n.getPluginData("style", "font"),
+        i = o.size;
+    this.execute = function() {
+        if (t === o.size) return !1;
+        o.size = t, n.setPluginData("style", "font", o), mindmaps.isMapLoadingConfirmationRequired = !0
+    }, this.event = [mindmaps.Event.NODE_FONT_CHANGED, n], this.undo = function() {
+        return new mindmaps.action.SetNodeFontSizeAction(n, i)
+    }
+}, mindmaps.action.SetNodeFontSizeAction.prototype = new mindmaps.action.Action, mindmaps.action.DecreaseNodeFontSizeAction = function(n) {
     return new mindmaps.action.ChangeNodeFontSizeAction(n, -4)
 }, mindmaps.action.IncreaseNodeFontSizeAction = function(n) {
     return new mindmaps.action.ChangeNodeFontSizeAction(n, 4)

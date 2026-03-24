@@ -226,6 +226,10 @@ mindmaps.MainViewController = function (eventBus, mindmapModel, commandRegistry)
         var $sidebar = ensureFormatSidebar();
         $sidebar.empty().append(inspectorView.getContent());
 
+        var levelStylesPresenter = new mindmaps.LevelStylesPresenter(
+            eventBus, mindmapModel, inspectorView.getContent());
+        levelStylesPresenter.go();
+
         setFormatSidebarVisible(false);
 
         var formatSidebarCommand = commandRegistry.get(mindmaps.FormatSidebarCommand);

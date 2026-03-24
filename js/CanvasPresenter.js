@@ -94,6 +94,15 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         }), e.subscribe(mindmaps.Event.NODE_LINE_WIDTH_CHANGED, function(e) {
             for (var n = e; !n.isRoot();) t.updateNode(n), n = n.getParent()
         }), e.subscribe(mindmaps.Event.NODE_CREATED, function(e) {
+            var doc = o.getDocument();
+            if (doc && doc.mindmap) {
+                var ls = doc.mindmap.getLevelStyle(e.getDepth());
+                if (ls) {
+                    var lsFont = e.getPluginData("style", "font");
+                    $.extend(lsFont, ls);
+                    e.setPluginData("style", "font", lsFont);
+                }
+            }
             t.createNode(e);
             for (var n = e; !n.isRoot();) t.updateNode(n), n = n.getParent();
             if (mindmaps.responsive.isTouchDevice || mindmaps.mode.inHD) {

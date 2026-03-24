@@ -565,7 +565,27 @@ textarea,
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+  text-transform: none;
+}
+
+#inspector-table .inspector-collapsible-title td {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-left: 18px;
+}
+
+#inspector-table .inspector-collapsible-title td::before {
+  content: "▾";
+  position: absolute;
+  left: 2px;
+  top: 4px;
+  font-size: 11px;
+  color: #5c6775;
+}
+
+#inspector-table .inspector-collapsible-title[data-collapsed="true"] td::before {
+  content: "▸";
 }
 
 #inspector-table .inspector-section-row td {
