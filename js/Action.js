@@ -236,9 +236,41 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
     }, this.event = [mindmaps.Event.CONNECTION_COLOR_CHANGED, n], this.undo = function() {
         return new mindmaps.action.SetConnectStyleAction(n, t, e)
     }
-}, mindmaps.action.SetConnectStyleAction.prototype = new mindmaps.action.Action, mindmaps.action.ConnectTwoNodesAction = function(n, t, o, i, e) {
+}, mindmaps.action.SetConnectStyleAction.prototype = new mindmaps.action.Action, mindmaps.action.SetConnectAnchorAction = function(n, t, anchor) {
+    var r = mindmaps.getConnectedNodes().filter(function(o) {
+        return o.from == n.id && o.to == t.id || o.from == t.id && o.to == n.id
+    });
+    var c = { toAnchorX: null, toAnchorY: null, fromAnchorX: null, fromAnchorY: null };
+    if (r.length) {
+        c.toAnchorX = "number" == typeof r[0].toAnchorX ? r[0].toAnchorX : null;
+        c.toAnchorY = "number" == typeof r[0].toAnchorY ? r[0].toAnchorY : null;
+        c.fromAnchorX = "number" == typeof r[0].fromAnchorX ? r[0].fromAnchorX : null;
+        c.fromAnchorY = "number" == typeof r[0].fromAnchorY ? r[0].fromAnchorY : null
+    }
     this.execute = function() {
-        return console.log(n.id + " to " + t.id), console.log("ConnectTwoNodesAction "), mindmaps.addTwoNodes(n, t, o, i, e)
+        var r = mindmaps.getConnectedNodes().filter(function(o) {
+            return o.from == n.id && o.to == t.id || o.from == t.id && o.to == n.id
+        });
+        if (!r.length) return !1;
+        var u = anchor || {};
+        if ("toAnchorX" in u || "toAnchorY" in u) {
+            r[0].toAnchorX = ("number" == typeof u.toAnchorX && isFinite(u.toAnchorX)) ? u.toAnchorX : null;
+            r[0].toAnchorY = ("number" == typeof u.toAnchorY && isFinite(u.toAnchorY)) ? u.toAnchorY : null
+        }
+        if ("fromAnchorX" in u || "fromAnchorY" in u) {
+            r[0].fromAnchorX = ("number" == typeof u.fromAnchorX && isFinite(u.fromAnchorX)) ? u.fromAnchorX : null;
+            r[0].fromAnchorY = ("number" == typeof u.fromAnchorY && isFinite(u.fromAnchorY)) ? u.fromAnchorY : null
+        }
+        var f = mindmaps.getConnectedNodes().filter(function(o) {
+            return !(o.from == t.id && o.to == n.id || o.from == n.id && o.to == t.id)
+        });
+        f.push(r[0]), mindmaps.setConnectedNodes(f), mindmaps.isMapLoadingConfirmationRequired = !0
+    }, this.event = [mindmaps.Event.CONNECTION_COLOR_CHANGED, n], this.undo = function() {
+        return new mindmaps.action.SetConnectAnchorAction(n, t, c)
+    }
+}, mindmaps.action.SetConnectAnchorAction.prototype = new mindmaps.action.Action, mindmaps.action.ConnectTwoNodesAction = function(n, t, o, i, e, r) {
+    this.execute = function() {
+        return console.log(n.id + " to " + t.id), console.log("ConnectTwoNodesAction "), mindmaps.addTwoNodes(n, t, o, i, e, r)
     }, this.event = [mindmaps.Event.TWO_NODES_CONNECTED, n, t], this.undo = function() {
         return new mindmaps.action.ConnectNodeRemoveClickAction(n, t)
     }
@@ -255,7 +287,12 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
         });
         $("#node-" + cfnode.from).length && $("#node-connector-canvas-" + cfnode.from + "-" + cfnode.canvasId).length && ($("#node-connector-canvas-" + cfnode.from + "-" + cfnode.canvasId).remove(), console.log("removed canvas")), mindmaps.setConnectedNodes(i), mindmaps.isMapLoadingConfirmationRequired = !0, $("#node-connect-styles-row").hide(), $("#inspector-button-connect-node-remove").hide()
     }, this.event = [mindmaps.Event.TWO_NODES_DISCONNECTED, n, t], this.undo = function() {
-        return new mindmaps.action.ConnectTwoNodesAction(n, t, cfnode.style, cfnode.color, cfnode.arrow)
+        return new mindmaps.action.ConnectTwoNodesAction(n, t, cfnode.style, cfnode.color, cfnode.arrow, {
+            toAnchorX: "number" == typeof cfnode.toAnchorX ? cfnode.toAnchorX : null,
+            toAnchorY: "number" == typeof cfnode.toAnchorY ? cfnode.toAnchorY : null,
+            fromAnchorX: "number" == typeof cfnode.fromAnchorX ? cfnode.fromAnchorX : null,
+            fromAnchorY: "number" == typeof cfnode.fromAnchorY ? cfnode.fromAnchorY : null
+        })
     }
 }, mindmaps.action.ConnectNodeRemoveClickAction.prototype = new mindmaps.action.Action, mindmaps.action.SetFontColorAction = function(n, t) {
     var o = n.getPluginData("style", "font"),

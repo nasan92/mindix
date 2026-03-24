@@ -151,6 +151,212 @@ mindmaps.DefaultCanvasView = function() {
         return Math.max(e, Math.min(t, n || r))
     }
 
+    function q(e, t, n) {
+        if (!isFinite(e)) {
+            return t
+        }
+        return Math.max(t, Math.min(n, e))
+    }
+
+    function U(e) {
+        if (!e || !e.length) {
+            return null
+        }
+        var t = e.attr("id") || "";
+        var n = t.match(/^node-connector-canvas-(.+)-(\d+)$/);
+        if (!n) {
+            return null
+        }
+        var r = n[1];
+        var i = parseInt(n[2], 10);
+        if (!isFinite(i)) {
+            return null
+        }
+        var s = mindmaps.getConnectedNodes().filter(function(e) {
+            return String(e.from) === String(r) && parseInt(e.canvasId, 10) === i
+        });
+        return s.length ? s[0] : null
+    }
+
+    function V(e) {
+        var t = $("#node-" + e.from);
+        var n = $("#node-" + e.to);
+        if (!t.length || !n.length) {
+            return null
+        }
+        var r = t.offset();
+        var i = n.offset();
+        var s = t.outerWidth() || 1;
+        var o = t.outerHeight() || 1;
+        var u = n.outerWidth() || 1;
+        var a = n.outerHeight() || 1;
+        if ("number" == typeof e.toAnchorX && "number" == typeof e.toAnchorY) {
+            return {
+                x: i.left + q(e.toAnchorX, -.15, 1.15) * u,
+                y: i.top + q(e.toAnchorY, -.15, 1.15) * a
+            }
+        }
+        if ("number" == typeof e.fromAnchorX && "number" == typeof e.fromAnchorY) {
+            return {
+                x: i.left + u / 2,
+                y: i.top + a / 2
+            }
+        }
+        var f = r.left - i.left;
+        var l = r.top - i.top;
+        var c;
+        var h;
+        var p;
+        var d;
+        var v;
+        var m;
+        var g = f + u / 2 < s / 2;
+        if (g) {
+            var y = Math.abs(f);
+            if (y > u) {
+                p = y - u + 1;
+                c = u;
+                v = true
+            } else {
+                c = -f;
+                p = u + f;
+                v = false
+            }
+        } else {
+            if (f > s) {
+                p = f - s + 1;
+                c = s - f;
+                v = false
+            } else {
+                p = s - f;
+                c = 0;
+                v = true
+            }
+        }
+        if (p < 5) {
+            p = 5
+        }
+        var b = l + a < o;
+        if (b) {
+            h = a;
+            d = -l - h;
+            m = true
+        } else {
+            h = o - l;
+            d = -h;
+            m = false
+        }
+        if (d < 5) {
+            d = 5
+        }
+        if (!p && !d) {
+            return {
+                x: i.left + u / 2,
+                y: i.top + a / 2
+            }
+        }
+        var w = v ? p : 0;
+        var E = v ? 0 : p;
+        var S = m ? d : 0;
+        var x = m ? 0 : d;
+        return {
+            x: r.left + c + w,
+            y: r.top + h + S
+        }
+    }
+
+    function W(e) {
+        var t = $("#node-" + e.from);
+        var n = $("#node-" + e.to);
+        if (!t.length || !n.length) {
+            return null
+        }
+        var r = t.offset();
+        var i = n.offset();
+        var s = t.outerWidth() || 1;
+        var o = t.outerHeight() || 1;
+        var u = n.outerWidth() || 1;
+        var a = n.outerHeight() || 1;
+        if ("number" == typeof e.fromAnchorX && "number" == typeof e.fromAnchorY) {
+            return {
+                x: r.left + q(e.fromAnchorX, -.15, 1.15) * s,
+                y: r.top + q(e.fromAnchorY, -.15, 1.15) * o
+            }
+        }
+        if ("number" == typeof e.toAnchorX && "number" == typeof e.toAnchorY) {
+            var tx = i.left + q(e.toAnchorX, -.15, 1.15) * u;
+            var ty = i.top + q(e.toAnchorY, -.15, 1.15) * a;
+            var cx = r.left + s / 2;
+            var cy = r.top + o / 2;
+            var ddx = tx - cx;
+            var ddy = ty - cy;
+            if (!ddx && !ddy) return {x: cx, y: cy};
+            var oox = ddx ? s / 2 / Math.abs(ddx) : 1e9;
+            var ooy = ddy ? o / 2 / Math.abs(ddy) : 1e9;
+            var aa = Math.min(oox, ooy);
+            return {x: cx + ddx * aa, y: cy + ddy * aa}
+        }
+        var f = r.left - i.left;
+        var l = r.top - i.top;
+        var c;
+        var h;
+        var p;
+        var d;
+        var v;
+        var m;
+        var g = f + u / 2 < s / 2;
+        if (g) {
+            var y = Math.abs(f);
+            if (y > u) {
+                p = y - u + 1;
+                c = u;
+                v = true
+            } else {
+                c = -f;
+                p = u + f;
+                v = false
+            }
+        } else {
+            if (f > s) {
+                p = f - s + 1;
+                c = s - f;
+                v = false
+            } else {
+                p = s - f;
+                c = 0;
+                v = true
+            }
+        }
+        if (p < 5) {
+            p = 5
+        }
+        var b = l + a < o;
+        if (b) {
+            h = a;
+            d = -l - h;
+            m = true
+        } else {
+            h = o - l;
+            d = -h;
+            m = false
+        }
+        if (d < 5) {
+            d = 5
+        }
+        if (!p && !d) {
+            return {
+                x: r.left + s / 2,
+                y: r.top + o / 2
+            }
+        }
+        var E = v ? 0 : p;
+        var x = m ? 0 : d;
+        return {
+            x: r.left + c + E,
+            y: r.top + h + x
+        }
+    }
+
     function D(e) {
         var t = h(e);
         if (!t.length) {
@@ -401,11 +607,14 @@ mindmaps.DefaultCanvasView = function() {
         r.css("position", "relative").append(s)
     }
 
-    function p(t, n, r, i, s, u, a, f, l, c, h) {
-        var p = t[0];
-        var d = p.getContext("2d");
+    function p(t, n, r, i, s, u, a, f, l, c, h, conn) {
+        var m = t[0];
+        var d = m.getContext("2d");
         o.$canvas = t;
-        o.render(d, n, r, i, s, u, f, a, l, e.zoomFactor, c, h)
+        if (conn) {
+            conn._selected = !!(selectedConn && String(selectedConn.from) === String(conn.from) && selectedConn.canvasId === conn.canvasId)
+        }
+        o.render(d, n, r, i, s, u, f, a, l, e.zoomFactor, c, h, conn)
     }
 
     function d(e, t, n, r, i) {
@@ -416,13 +625,13 @@ mindmaps.DefaultCanvasView = function() {
             return t.from == e.id
         });
         s.forEach(function(s) {
-            if ($("#node-" + s.from).length) g($("#node-connector-canvas-" + s.from + "-" + s.canvasId), t, n, r, true, s.from, s.to, e.getRoot(), i, s.style, s.arrow, s.color)
+            if ($("#node-" + s.from).length) g($("#node-connector-canvas-" + s.from + "-" + s.canvasId), t, n, r, true, s.from, s.to, e.getRoot(), i, s.style, s.arrow, s.color, s)
         });
         s = mindmaps.getConnectedNodes().filter(function(t) {
             return t.to == e.id
         });
         s.forEach(function(s) {
-            if ($("#node-" + s.from).length) g($("#node-connector-canvas-" + s.from + "-" + s.canvasId), t, n, r, false, s.from, s.to, e.getRoot(), i, s.style, s.arrow, s.color)
+            if ($("#node-" + s.from).length) g($("#node-connector-canvas-" + s.from + "-" + s.canvasId), t, n, r, false, s.from, s.to, e.getRoot(), i, s.style, s.arrow, s.color, s)
         });
         if (i) e.forEachChild(function(e) {
             if (b == e.id) d(e, e.getDepth(), w, E, true);
@@ -439,7 +648,7 @@ mindmaps.DefaultCanvasView = function() {
         return n
     }
 
-    function m(e) {
+    function G(e) {
         tmp = e.getParent();
         while (tmp) {
             if (tmp.getPluginData("layout", "foldChildren")) return true;
@@ -448,12 +657,12 @@ mindmaps.DefaultCanvasView = function() {
         return false
     }
 
-    function g(e, t, n, r, i, s, o, u, a, f, l, h) {
+    function g(e, t, n, r, i, s, o, u, a, f, l, h, m) {
         a = a || false;
         s = v(u, s);
         o = v(u, o);
         if (!s || !o) return;
-        if (m(s) || m(o)) e.css("opacity", 0);
+        if (G(s) || G(o)) e.css("opacity", 0);
         else e.css("opacity", 1);
         if (a)
             if (b == s.id || b == o.id) a = false;
@@ -504,7 +713,7 @@ mindmaps.DefaultCanvasView = function() {
                 tmp = tmp.getParent()
             }
         }
-        p(e, t, d, y, g, S, c(o), c(s), h, f, l)
+        p(e, t, d, y, g, S, c(o), c(s), h, f, l, m)
     }
 
     function y(t, n, r, i, s, o, a) {
@@ -707,6 +916,8 @@ mindmaps.DefaultCanvasView = function() {
     var A = null;
     var N = null;
     var L = false;
+    var K = null;
+    var selectedConn = null;
     var I = null;
     var j = null;
     var n = new T(this);
@@ -750,6 +961,14 @@ mindmaps.DefaultCanvasView = function() {
             if (!$(n.target).closest("div.node-caption").length) {
                 B()
             }
+            if (!$(n.target).is("canvas[id^='node-connector-canvas-']")) {
+                if (selectedConn) {
+                    var sc = selectedConn;
+                    selectedConn = null;
+                    var sf = $("#node-" + sc.from).data("node");
+                    if (sf) e.redrawConnections(sf)
+                }
+            }
         });
         t.on("mousedown.canvasContextMenu", function(n) {
             if (n.which !== 1 || !A || !A.is(":visible")) {
@@ -762,9 +981,136 @@ mindmaps.DefaultCanvasView = function() {
         });
         t.delegate("div.node-caption", "mousedown", function(t) {
             var n = $(this).parent().data("node");
+            mindmaps.connectPendingAnchor = null;
             if (e.nodeMouseDown) {
                 e.nodeMouseDown(n)
             }
+        });
+        t.delegate("canvas[id^='node-connector-canvas-']", "mousedown", function(t) {
+            if (t.which !== 1) {
+                return
+            }
+            var n = U($(this));
+            if (!n) {
+                return
+            }
+            var oldSel = selectedConn;
+            var wasSame = oldSel && String(oldSel.from) === String(n.from) && oldSel.canvasId === n.canvasId;
+            selectedConn = n;
+            if (oldSel && !wasSame) {
+                var oldFrom = $("#node-" + oldSel.from).data("node");
+                if (oldFrom) e.redrawConnections(oldFrom)
+            }
+            var fromN = $("#node-" + n.from).data("node");
+            if (fromN) e.redrawConnections(fromN);
+            var vPt = V(n);
+            var wPt = W(n);
+            var dragType = null;
+            if (vPt && mindmaps.Util.distance(t.pageX - vPt.x, t.pageY - vPt.y) <= 18) {
+                dragType = "to"
+            } else if (wPt && mindmaps.Util.distance(t.pageX - wPt.x, t.pageY - wPt.y) <= 18) {
+                dragType = "from"
+            }
+            if (!dragType) {
+                return
+            }
+            t.preventDefault();
+            t.stopPropagation();
+            K = {
+                connection: n,
+                type: dragType,
+                startAnchorX: dragType === "to" ? ("number" == typeof n.toAnchorX ? n.toAnchorX : null) : ("number" == typeof n.fromAnchorX ? n.fromAnchorX : null),
+                startAnchorY: dragType === "to" ? ("number" == typeof n.toAnchorY ? n.toAnchorY : null) : ("number" == typeof n.fromAnchorY ? n.fromAnchorY : null),
+                moved: false
+            };
+            $("body").css("cursor", "crosshair");
+            $(document).on("mousemove.connectorAnchor", function(t) {
+                if (!K || !K.connection) {
+                    return
+                }
+                var nodeId = K.type === "to" ? K.connection.to : K.connection.from;
+                var anchor = $("#node-caption-" + nodeId);
+                if (!anchor.length) {
+                    anchor = $("#node-" + nodeId)
+                }
+                if (!anchor.length) {
+                    return
+                }
+                var r = anchor.offset();
+                var i = anchor.outerWidth() || 1;
+                var s = anchor.outerHeight() || 1;
+                var ax = q((t.pageX - r.left) / i, -.15, 1.15);
+                var ay = q((t.pageY - r.top) / s, -.15, 1.15);
+                if (K.type === "to") {
+                    K.connection.toAnchorX = ax;
+                    K.connection.toAnchorY = ay
+                } else {
+                    K.connection.fromAnchorX = ax;
+                    K.connection.fromAnchorY = ay
+                }
+                K.moved = true;
+                var o = $("#node-" + K.connection.from).data("node");
+                if (o) {
+                    e.redrawConnections(o)
+                }
+            });
+            $(document).on("mouseup.connectorAnchor", function() {
+                if (!K) {
+                    return
+                }
+                $(document).off("mousemove.connectorAnchor mouseup.connectorAnchor");
+                $("body").css("cursor", "");
+                var t = K;
+                K = null;
+                if (!t.connection || !t.moved) {
+                    return
+                }
+                var finalX, finalY;
+                if (t.type === "to") {
+                    finalX = t.connection.toAnchorX;
+                    finalY = t.connection.toAnchorY;
+                    t.connection.toAnchorX = t.startAnchorX;
+                    t.connection.toAnchorY = t.startAnchorY
+                } else {
+                    finalX = t.connection.fromAnchorX;
+                    finalY = t.connection.fromAnchorY;
+                    t.connection.fromAnchorX = t.startAnchorX;
+                    t.connection.fromAnchorY = t.startAnchorY
+                }
+                var fromNode = $("#node-" + t.connection.from).data("node");
+                var toNode = $("#node-" + t.connection.to).data("node");
+                if (fromNode && toNode && e.connectionAnchorMoved) {
+                    e.connectionAnchorMoved(fromNode, toNode, {
+                        type: t.type,
+                        anchorX: finalX,
+                        anchorY: finalY
+                    })
+                } else {
+                    if (t.type === "to") {
+                        t.connection.toAnchorX = finalX;
+                        t.connection.toAnchorY = finalY
+                    } else {
+                        t.connection.fromAnchorX = finalX;
+                        t.connection.fromAnchorY = finalY
+                    }
+                    mindmaps.isMapLoadingConfirmationRequired = !0
+                }
+            })
+        });
+        t.delegate("canvas[id^='node-connector-canvas-']", "mousemove", function(t) {
+            var n = U($(this));
+            if (!n) {
+                this.style.cursor = "";
+                return
+            }
+            var vPt = V(n);
+            var wPt = W(n);
+            var near = (vPt && mindmaps.Util.distance(t.pageX - vPt.x, t.pageY - vPt.y) <= 20) ||
+                       (wPt && mindmaps.Util.distance(t.pageX - wPt.x, t.pageY - wPt.y) <= 20);
+            this.style.cursor = near ? "crosshair" : ""
+        });
+        t.delegate("canvas[id^='node-connector-canvas-']", "mouseleave", function() {
+            this.style.cursor = ""
         });
         t.delegate("div.node-caption", "mouseup", function(t) {
             var n = $(this).parent().data("node");
@@ -1205,6 +1551,9 @@ mindmaps.DefaultCanvasView = function() {
                 S(e)
             })
         }
+    };
+    this.redrawConnections = function(e) {
+        d(e, e.getDepth(), e.getPluginData("layout", "offset").x, e.getPluginData("layout", "offset").y)
     };
     this.updateBranchColor = function(e, t) {
         var n = c(e);

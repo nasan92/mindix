@@ -90,7 +90,7 @@ mindmaps.ApplicationController = function() {
             n.go()
         }
     }
-    mindmaps.connectStartNode = null, mindmaps.connectMode = !1, mindmaps.connectSelected = !1;
+    mindmaps.connectStartNode = null, mindmaps.connectMode = !1, mindmaps.connectSelected = !1, mindmaps.connectPendingAnchor = null;
     var c = new mindmaps.EventBus,
         l = new mindmaps.ShortcutController,
         p = new mindmaps.CommandRegistry(l);
@@ -107,7 +107,7 @@ mindmaps.ApplicationController = function() {
         g.getDocument().setConnectedNodes(n)
     }, mindmaps.showErrorNotification = function(n) {
         c.publish(mindmaps.Event.NOTIFICATION_ERROR, n)
-    }, mindmaps.addTwoNodes = function(n, e, o, a, t) {
+    }, mindmaps.addTwoNodes = function(n, e, o, a, t, r) {
         if (n.id == e.id) return !1;
         if (g.getDocument().getConnectedNodes().filter(function(o) {
                 return o.from == n.id && o.to == e.id
@@ -132,7 +132,11 @@ mindmaps.ApplicationController = function() {
             canvasId: newid,
             style: o,
             color: a,
-            arrow: t
+            arrow: t,
+            toAnchorX: r && "number" == typeof r.toAnchorX ? r.toAnchorX : null,
+            toAnchorY: r && "number" == typeof r.toAnchorY ? r.toAnchorY : null,
+            fromAnchorX: r && "number" == typeof r.fromAnchorX ? r.fromAnchorX : null,
+            fromAnchorY: r && "number" == typeof r.fromAnchorY ? r.fromAnchorY : null
         }), $("#node-connect-styles-row").show(), $("#inspector-button-connect-node-remove").show(), console.log("connection added")
     }, this.init = function() {
         var n = p.get(mindmaps.NewDocumentCommand);
