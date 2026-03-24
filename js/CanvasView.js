@@ -266,6 +266,12 @@ mindmaps.DefaultCanvasView = function() {
     }
 
     function W(e) {
+        if (e && e._renderPoints && e._renderPoints.from) {
+            return {
+                x: e._renderPoints.from.x,
+                y: e._renderPoints.from.y
+            }
+        }
         var t = $("#node-" + e.from);
         var n = $("#node-" + e.to);
         if (!t.length || !n.length) {
@@ -357,6 +363,20 @@ mindmaps.DefaultCanvasView = function() {
         }
     }
 
+    function X(e, t) {
+        if (!e || !e._renderPoints) {
+            return null
+        }
+        var n = e._renderPoints[t];
+        if (!n) {
+            return null
+        }
+        return {
+            x: n.x,
+            y: n.y
+        }
+    }
+
     function D(e) {
         var t = h(e);
         if (!t.length) {
@@ -400,6 +420,12 @@ mindmaps.DefaultCanvasView = function() {
     }
 
     function B() {
+        if (e && e._renderPoints && e._renderPoints.to) {
+            return {
+                x: e._renderPoints.to.x,
+                y: e._renderPoints.to.y
+            }
+        }
         $(".node-image-selection").remove();
         j = null
     }
@@ -1005,11 +1031,17 @@ mindmaps.DefaultCanvasView = function() {
             if (fromN) e.redrawConnections(fromN);
             var vPt = V(n);
             var wPt = W(n);
+            var c1Pt = X(n, "c1");
+            var c2Pt = X(n, "c2");
             var dragType = null;
             if (vPt && mindmaps.Util.distance(t.pageX - vPt.x, t.pageY - vPt.y) <= 18) {
                 dragType = "to"
             } else if (wPt && mindmaps.Util.distance(t.pageX - wPt.x, t.pageY - wPt.y) <= 18) {
                 dragType = "from"
+            } else if (c1Pt && mindmaps.Util.distance(t.pageX - c1Pt.x, t.pageY - c1Pt.y) <= 18) {
+                dragType = "curve1"
+            } else if (c2Pt && mindmaps.Util.distance(t.pageX - c2Pt.x, t.pageY - c2Pt.y) <= 18) {
+                dragType = "curve2"
             }
             if (!dragType) {
                 return
@@ -1019,13 +1051,67 @@ mindmaps.DefaultCanvasView = function() {
             K = {
                 connection: n,
                 type: dragType,
-                startAnchorX: dragType === "to" ? ("number" == typeof n.toAnchorX ? n.toAnchorX : null) : ("number" == typeof n.fromAnchorX ? n.fromAnchorX : null),
-                startAnchorY: dragType === "to" ? ("number" == typeof n.toAnchorY ? n.toAnchorY : null) : ("number" == typeof n.fromAnchorY ? n.fromAnchorY : null),
+                startAnchorX: dragType === "to" ? ("number" == typeof n.toAnchorX ? n.toAnchorX : null) :
+                              dragType === "from" ? ("number" == typeof n.fromAnchorX ? n.fromAnchorX : null) :
+                              dragType === "curve1" ? ("number" == typeof n.curve1T ? n.curve1T : null) :
+                              ("number" == typeof n.curve2T ? n.curve2T : null),
+                startAnchorY: dragType === "to" ? ("number" == typeof n.toAnchorY ? n.toAnchorY : null) :
+                              dragType === "from" ? ("number" == typeof n.fromAnchorY ? n.fromAnchorY : null) :
+                              dragType === "curve1" ? ("number" == typeof n.curve1N ? n.curve1N : null) :
+                              ("number" == typeof n.curve2N ? n.curve2N : null),
+                linked: false,
+                startPairX: dragType === "curve1" ? ("number" == typeof n.curve2T ? n.curve2T : null) :
+                            dragType === "curve2" ? ("number" == typeof n.curve1T ? n.curve1T : null) : null,
+                startPairY: dragType === "curve1" ? ("number" == typeof n.curve2N ? n.curve2N : null) :
+                            dragType === "curve2" ? ("number" == typeof n.curve1N ? n.curve1N : null) : null,
+                movedPair: false,
                 moved: false
             };
             $("body").css("cursor", "crosshair");
             $(document).on("mousemove.connectorAnchor", function(t) {
                 if (!K || !K.connection) {
+                    return
+                }
+                var o = $("#node-" + K.connection.from).data("node");
+                if (K.type === "curve1" || K.type === "curve2") {
+                    var p1 = W(K.connection);
+                    var p2 = V(K.connection);
+                    if (!p1 || !p2) {
+                        return
+                    }
+                    var dx = p2.x - p1.x;
+                    var dy = p2.y - p1.y;
+                    var len = Math.sqrt(dx * dx + dy * dy) || 1;
+                    var ux = dx / len;
+                    var uy = dy / len;
+                    var nx = -uy;
+                    var ny = ux;
+                    var vx = t.pageX - p1.x;
+                    var vy = t.pageY - p1.y;
+                    var tt = q((vx * ux + vy * uy) / len, -4, 5);
+                    var nn = q((vx * nx + vy * ny) / len, -6, 6);
+                    var linkedNow = !!t.shiftKey;
+                    if (K.type === "curve1") {
+                        K.connection.curve1T = tt;
+                        K.connection.curve1N = nn;
+                        if (linkedNow) {
+                            K.connection.curve2T = 1 - tt;
+                            K.connection.curve2N = -nn;
+                            K.movedPair = true
+                        }
+                    } else {
+                        K.connection.curve2T = tt;
+                        K.connection.curve2N = nn;
+                        if (linkedNow) {
+                            K.connection.curve1T = 1 - tt;
+                            K.connection.curve1N = -nn;
+                            K.movedPair = true
+                        }
+                    }
+                    K.moved = true;
+                    if (o) {
+                        e.redrawConnections(o)
+                    }
                     return
                 }
                 var nodeId = K.type === "to" ? K.connection.to : K.connection.from;
@@ -1049,7 +1135,6 @@ mindmaps.DefaultCanvasView = function() {
                     K.connection.fromAnchorY = ay
                 }
                 K.moved = true;
-                var o = $("#node-" + K.connection.from).data("node");
                 if (o) {
                     e.redrawConnections(o)
                 }
@@ -1065,33 +1150,89 @@ mindmaps.DefaultCanvasView = function() {
                 if (!t.connection || !t.moved) {
                     return
                 }
+                var pairData = null;
                 var finalX, finalY;
                 if (t.type === "to") {
                     finalX = t.connection.toAnchorX;
                     finalY = t.connection.toAnchorY;
                     t.connection.toAnchorX = t.startAnchorX;
                     t.connection.toAnchorY = t.startAnchorY
-                } else {
+                } else if (t.type === "from") {
                     finalX = t.connection.fromAnchorX;
                     finalY = t.connection.fromAnchorY;
                     t.connection.fromAnchorX = t.startAnchorX;
                     t.connection.fromAnchorY = t.startAnchorY
+                } else if (t.type === "curve1") {
+                    finalX = t.connection.curve1T;
+                    finalY = t.connection.curve1N;
+                    if (t.movedPair) {
+                        pairData = {
+                            curve1T: t.connection.curve1T,
+                            curve1N: t.connection.curve1N,
+                            curve2T: t.connection.curve2T,
+                            curve2N: t.connection.curve2N
+                        }
+                    }
+                    t.connection.curve1T = t.startAnchorX;
+                    t.connection.curve1N = t.startAnchorY;
+                    if (t.movedPair) {
+                        t.connection.curve2T = t.startPairX;
+                        t.connection.curve2N = t.startPairY
+                    }
+                } else {
+                    finalX = t.connection.curve2T;
+                    finalY = t.connection.curve2N;
+                    if (t.movedPair) {
+                        pairData = {
+                            curve1T: t.connection.curve1T,
+                            curve1N: t.connection.curve1N,
+                            curve2T: t.connection.curve2T,
+                            curve2N: t.connection.curve2N
+                        }
+                    }
+                    t.connection.curve2T = t.startAnchorX;
+                    t.connection.curve2N = t.startAnchorY;
+                    if (t.movedPair) {
+                        t.connection.curve1T = t.startPairX;
+                        t.connection.curve1N = t.startPairY
+                    }
                 }
                 var fromNode = $("#node-" + t.connection.from).data("node");
                 var toNode = $("#node-" + t.connection.to).data("node");
                 if (fromNode && toNode && e.connectionAnchorMoved) {
-                    e.connectionAnchorMoved(fromNode, toNode, {
-                        type: t.type,
-                        anchorX: finalX,
-                        anchorY: finalY
-                    })
+                    if (pairData) {
+                        e.connectionAnchorMoved(fromNode, toNode, {
+                            type: "curvePair",
+                            curve1T: pairData.curve1T,
+                            curve1N: pairData.curve1N,
+                            curve2T: pairData.curve2T,
+                            curve2N: pairData.curve2N
+                        })
+                    } else {
+                        e.connectionAnchorMoved(fromNode, toNode, {
+                            type: t.type,
+                            anchorX: finalX,
+                            anchorY: finalY
+                        })
+                    }
                 } else {
                     if (t.type === "to") {
                         t.connection.toAnchorX = finalX;
                         t.connection.toAnchorY = finalY
-                    } else {
+                    } else if (t.type === "from") {
                         t.connection.fromAnchorX = finalX;
                         t.connection.fromAnchorY = finalY
+                    } else if (pairData) {
+                        t.connection.curve1T = pairData.curve1T;
+                        t.connection.curve1N = pairData.curve1N;
+                        t.connection.curve2T = pairData.curve2T;
+                        t.connection.curve2N = pairData.curve2N
+                    } else if (t.type === "curve1") {
+                        t.connection.curve1T = finalX;
+                        t.connection.curve1N = finalY
+                    } else {
+                        t.connection.curve2T = finalX;
+                        t.connection.curve2N = finalY
                     }
                     mindmaps.isMapLoadingConfirmationRequired = !0
                 }
@@ -1105,8 +1246,12 @@ mindmaps.DefaultCanvasView = function() {
             }
             var vPt = V(n);
             var wPt = W(n);
+            var c1Pt = X(n, "c1");
+            var c2Pt = X(n, "c2");
             var near = (vPt && mindmaps.Util.distance(t.pageX - vPt.x, t.pageY - vPt.y) <= 20) ||
-                       (wPt && mindmaps.Util.distance(t.pageX - wPt.x, t.pageY - wPt.y) <= 20);
+                       (wPt && mindmaps.Util.distance(t.pageX - wPt.x, t.pageY - wPt.y) <= 20) ||
+                       (c1Pt && mindmaps.Util.distance(t.pageX - c1Pt.x, t.pageY - c1Pt.y) <= 20) ||
+                       (c2Pt && mindmaps.Util.distance(t.pageX - c2Pt.x, t.pageY - c2Pt.y) <= 20);
             this.style.cursor = near ? "crosshair" : ""
         });
         t.delegate("canvas[id^='node-connector-canvas-']", "mouseleave", function() {

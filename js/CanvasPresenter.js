@@ -286,6 +286,17 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         if (r.type === "to") {
             anchor.toAnchorX = r.anchorX;
             anchor.toAnchorY = r.anchorY
+        } else if (r.type === "curvePair") {
+            anchor.curve1T = r.curve1T;
+            anchor.curve1N = r.curve1N;
+            anchor.curve2T = r.curve2T;
+            anchor.curve2N = r.curve2N
+        } else if (r.type === "curve1") {
+            anchor.curve1T = r.anchorX;
+            anchor.curve1N = r.anchorY
+        } else if (r.type === "curve2") {
+            anchor.curve2T = r.anchorX;
+            anchor.curve2N = r.anchorY
         } else {
             anchor.fromAnchorX = r.anchorX;
             anchor.fromAnchorY = r.anchorY

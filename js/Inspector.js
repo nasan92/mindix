@@ -5,6 +5,7 @@ mindmaps.InspectorView = function() {
         z = $("#inspector-input-font-size", o),
         t = o.find("#inspector-button-connection-arrow-change"),
         c = o.find("#inspector-button-connection-style-change"),
+        H = o.find("#inspector-button-connection-shape-change"),
         i = o.find("#inspector-button-border-style"),
         l = $("#inspector-button-line-width-decrease", o),
         a = $("#inspector-button-line-width-increase", o),
@@ -28,7 +29,7 @@ mindmaps.InspectorView = function() {
         P = $("#inspector-connection-color-picker", o),
         y = $("#inspector-border-background-color-picker", o),
         B = $("#inspector-map-background-color-picker", o),
-        E = [l, a, u, C, h, f, m, p, b, k, g, v, A, N, F],
+        E = [l, a, u, C, h, f, m, p, b, k, g, v, A, N, F, H],
         D = [S, x, w, y, P, B];
 
     function I() {
@@ -82,6 +83,8 @@ mindmaps.InspectorView = function() {
         z.val(e)
     }, this.setConnectStyle = function(e) {
         c.val(e)
+    }, this.setConnectShape = function(e) {
+        H.val(e)
     }, this.setConnectArrow = function(e) {
         t.val(e)
     }, this.setBoldCheckboxState = function(e) {
@@ -146,6 +149,8 @@ mindmaps.InspectorView = function() {
             console.log(n.val()), e.fontfaceChangeClicked && e.fontfaceChangeClicked(n.val())
         }), c.change(function() {
             console.log(c.val()), e.connectStyleChangeClicked && e.connectStyleChangeClicked(c.val())
+        }), H.change(function() {
+            console.log(H.val()), e.connectShapeChangeClicked && e.connectShapeChangeClicked(H.val())
         }), t.change(function() {
             console.log(t.val()), e.connectArrowChangeClicked && e.connectArrowChangeClicked(t.val())
         }), i.change(function() {
@@ -230,7 +235,15 @@ mindmaps.InspectorView = function() {
         var n = mindmaps.getConnectedNodes().filter(function(n) {
             return n.from == e.id && n.to == o.id || n.from == o.id && n.to == e.id
         });
-        n.length && (cfnode = n[0], t.setConnectStyle(cfnode.style), t.setConnectArrow(cfnode.arrow), t.setConnectColorPickerColor(cfnode.color))
+        if (n.length) {
+            cfnode = n[0];
+            var r = "solid" === cfnode.style || "dotted" === cfnode.style || "dashed" === cfnode.style ? cfnode.style : "dashed";
+            var i = "curved" === cfnode.shape || "curved" === cfnode.style ? "curved" : "straight";
+            t.setConnectStyle(r);
+            t.setConnectShape(i);
+            t.setConnectArrow(cfnode.arrow);
+            t.setConnectColorPickerColor(cfnode.color)
+        }
     }
 
     function i(e) {
@@ -274,6 +287,9 @@ mindmaps.InspectorView = function() {
         o.executeAction(n)
     }, t.connectStyleChangeClicked = function(e) {
         var n = new mindmaps.action.SetConnectStyleAction(o.selectedNode, mindmaps.connectStartNode, e);
+        o.executeAction(n)
+    }, t.connectShapeChangeClicked = function(e) {
+        var n = new mindmaps.action.SetConnectShapeAction(o.selectedNode, mindmaps.connectStartNode, e);
         o.executeAction(n)
     }, t.connectArrowChangeClicked = function(e) {
         console.log("arrow is " + e);
