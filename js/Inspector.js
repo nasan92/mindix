@@ -33,7 +33,7 @@ mindmaps.InspectorView = function() {
         D = [S, x, w, y, P, B];
 
     function I() {
-        var e = ["inspector-section-text", "inspector-section-branch", "inspector-section-node", "inspector-section-map"];
+        var e = ["inspector-section-text", "inspector-section-branch", "inspector-section-node", "inspector-section-map", "inspector-section-levelstyle"];
         e.forEach(function(e) {
             var n = $("#inspector-table tr.inspector-section-row." + e, o);
             n.removeClass("inspector-group-start inspector-group-end");
@@ -375,4 +375,110 @@ mindmaps.InspectorView = function() {
     }), this.go = function() {
         t.init()
     }
+};
+mindmaps.LevelStylesPresenter = function(eventBus, mindmapModel, $container) {
+    var depthSelect    = $container.find("#level-style-depth-select");
+    var fontFaceSelect = $container.find("#level-style-font-face");
+    var fontSizeInput  = $container.find("#level-style-font-size");
+    var fontBold       = $container.find("#level-style-font-bold");
+    var fontItalic     = $container.find("#level-style-font-italic");
+    var fontUnderline  = $container.find("#level-style-font-underline");
+    var fontLinethrough = $container.find("#level-style-font-linethrough");
+
+    var _syncing = false;
+
+    var _defaults = [
+        { fontfamily: 'Sans-serif', size: 20, weight: 'bold',   style: 'normal', decoration: 'none' },
+        { fontfamily: 'Sans-serif', size: 15, weight: 'normal', style: 'normal', decoration: 'none' },
+        { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' },
+        { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' },
+        { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' }
+    ];
+
+    function getDepth() { return parseInt(depthSelect.val(), 10); }
+
+    function effectiveStyle(depth) {
+        var mm = mindmapModel.getMindMap();
+        if (!mm) return _defaults[depth] || _defaults[4];
+        return mm.getLevelStyle(depth) || _defaults[depth] || _defaults[4];
+    }
+
+    function syncUI() {
+        var ls = effectiveStyle(getDepth());
+        _syncing = true;
+        fontFaceSelect.val(ls.fontfamily);
+        fontSizeInput.val(ls.size);
+        fontBold.prop('checked', ls.weight === 'bold').button('refresh');
+        fontItalic.prop('checked', ls.style === 'italic').button('refresh');
+        fontUnderline.prop('checked', ls.decoration === 'underline').button('refresh');
+        fontLinethrough.prop('checked', ls.decoration === 'line-through').button('refresh');
+        _syncing = false;
+    }
+
+    function applyPatch(patch) {
+        if (_syncing) return;
+        var mm = mindmapModel.getMindMap();
+        if (!mm) return;
+        var depth = getDepth();
+        mm.setLevelStyle(depth, patch);
+        mindmaps.isMapLoadingConfirmationRequired = true;
+        mm.root.forEachDescendant(function(node) {
+            var nd = node.getDepth();
+            var matches = (depth < 4 && nd === depth) || (depth === 4 && nd >= 4);
+            if (matches) {
+                var font = node.getPluginData("style", "font");
+                $.extend(font, patch);
+                node.setPluginData("style", "font", font);
+                eventBus.publish(mindmaps.Event.NODE_FONT_CHANGED, node);
+            }
+        });
+        if (depth === 0) {
+            var font = mm.root.getPluginData("style", "font");
+            $.extend(font, patch);
+            mm.root.setPluginData("style", "font", font);
+            eventBus.publish(mindmaps.Event.NODE_FONT_CHANGED, mm.root);
+        }
+    }
+
+    this.go = function() {
+        $container.find('.inspector-section-levelstyle .buttonset').buttonset();
+
+        depthSelect.change(function() { syncUI(); });
+
+        fontFaceSelect.change(function() {
+            if (_syncing) return;
+            applyPatch({ fontfamily: fontFaceSelect.val() });
+        });
+
+        fontSizeInput.on('change', function() {
+            if (_syncing) return;
+            var val = parseInt(fontSizeInput.val(), 10);
+            if (!isNaN(val) && val >= 6 && val <= 120) applyPatch({ size: val });
+        });
+
+        fontBold.click(function() {
+            if (_syncing) return;
+            applyPatch({ weight: $(this).prop('checked') ? 'bold' : 'normal' });
+        });
+
+        fontItalic.click(function() {
+            if (_syncing) return;
+            applyPatch({ style: $(this).prop('checked') ? 'italic' : 'normal' });
+        });
+
+        fontUnderline.click(function() {
+            if (_syncing) return;
+            applyPatch({ decoration: $(this).prop('checked') ? 'underline' : 'none' });
+        });
+
+        fontLinethrough.click(function() {
+            if (_syncing) return;
+            applyPatch({ decoration: $(this).prop('checked') ? 'line-through' : 'none' });
+        });
+
+        eventBus.subscribe(mindmaps.Event.DOCUMENT_OPENED, function() {
+            depthSelect.val('0');
+            syncUI();
+        });
+    };
 };
