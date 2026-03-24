@@ -248,7 +248,7 @@ mindmaps.ToolBarPresenter = function(e, t, n, r, i) {
     var y = o(g);
     m.add(y);
     n.addMenu(m);
-    var u = [mindmaps.CreateNodeCommand, mindmaps.CreateSiblingNodeCommand, mindmaps.DeleteNodeCommand];
+    var u = [mindmaps.CreateNodeCommand, mindmaps.CreateSiblingNodeCommand, mindmaps.DeleteNodeCommand, mindmaps.ConnectNodeCommand];
     var a = o(u);
     n.addButtonGroup(a, n.alignCenter);
     n.addButton(s(mindmaps.FormatSidebarCommand), n.alignRight);

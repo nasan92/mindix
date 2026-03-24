@@ -84,6 +84,13 @@ mindmaps.DeleteNodeCommand = function() {
     this.description = "Deletes a new node"
 };
 mindmaps.DeleteNodeCommand.prototype = new mindmaps.Command;
+mindmaps.ConnectNodeCommand = function() {
+    this.id = "CONNECT_NODE_COMMAND";
+    this.label = "Connect";
+    this.icon = "ui-icon-arrow-1-ne";
+    this.description = "Connect selected node to another node"
+};
+mindmaps.ConnectNodeCommand.prototype = new mindmaps.Command;
 mindmaps.EditNodeCaptionCommand = function() {
     this.id = "EDIT_NODE_CAPTION_COMMAND";
     this.shortcut = ["F2"];
