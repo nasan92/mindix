@@ -125,9 +125,9 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
             console.log("deleting node");
             var d = o.selectedNode;
             (e === d || e.isDescendant(d)) && o.selectNode(i), n(e), console.log("nodes is " + o.getDocument().getConnectedNodes().length), t.deleteNode(e), i.isLeaf() && t.removeFoldButton(i)
-        }), e.subscribe(mindmaps.Event.CONNECTED_TWO_NODES, function(e, n) {
+        }), e.subscribe(mindmaps.Event.CONNECTED_TWO_NODES, function(e, n, r) {
             console.log("connected " + e.getCaption() + "," + n.getCaption());
-            var t = new mindmaps.action.ConnectTwoNodesAction(e, n, "dashed", "#ff0000", "0");
+            var t = new mindmaps.action.ConnectTwoNodesAction(e, n, "dashed", "#ff0000", "0", r);
             o.executeAction(t)
         }), e.subscribe(mindmaps.Event.CONNECTION_COLOR_CHANGED, function() {}), e.subscribe(mindmaps.Event.NODE_SELECTED, r), e.subscribe(mindmaps.Event.NODE_OPENED, function(e) {
             e.forEachChild(function(e) {
@@ -280,6 +280,17 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         t.editNodeCaption(e)
     }, t.nodeDragged = function(e, n) {
         var t = new mindmaps.action.MoveNodeAction(e, n);
+        o.executeAction(t)
+    }, t.connectionAnchorMoved = function(e, n, r) {
+        var anchor = {};
+        if (r.type === "to") {
+            anchor.toAnchorX = r.anchorX;
+            anchor.toAnchorY = r.anchorY
+        } else {
+            anchor.fromAnchorX = r.anchorX;
+            anchor.fromAnchorY = r.anchorY
+        }
+        var t = new mindmaps.action.SetConnectAnchorAction(e, n, anchor);
         o.executeAction(t)
     }, t.nodeImageResizeStarted = function(e, n) {
         b[e.id] = g(n)

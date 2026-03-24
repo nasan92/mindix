@@ -384,7 +384,10 @@ mindmaps.InspectorView = function() {
     }), e.subscribe(mindmaps.Event.NODE_BRANCH_COLOR_CHANGED, function(e) {
         o.selectedNode === e && i(e)
     }), e.subscribe(mindmaps.Event.NODE_SELECTED, function(o) {
-        mindmaps.connectMode ? (e.publish(mindmaps.Event.CONNECTED_TWO_NODES, mindmaps.connectStartNode, o), mindmaps.connectSelected = !0, c(mindmaps.connectStartNode, o)) : (mindmaps.connectSelected = !1, $("#node-connect-styles-row").hide(), $("#inspector-button-connect-node-remove").hide()), i(o), mindmaps.connectMode = !1
+        if (mindmaps.connectMode) {
+            e.publish(mindmaps.Event.CONNECTED_TWO_NODES, mindmaps.connectStartNode, o, null), mindmaps.connectSelected = !0, c(mindmaps.connectStartNode, o)
+        } else mindmaps.connectSelected = !1, $("#node-connect-styles-row").hide(), $("#inspector-button-connect-node-remove").hide();
+        mindmaps.connectPendingAnchor = null, i(o), mindmaps.connectMode = !1
     }), e.subscribe(mindmaps.Event.DOCUMENT_OPENED, function() {
         t.setControlsEnabled(!0), s()
     }), e.subscribe(mindmaps.Event.DOCUMENT_CLOSED, function() {
