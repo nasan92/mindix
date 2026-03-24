@@ -46,6 +46,21 @@ mindmaps.InspectorView = function() {
         return "solid" === e || "dashed" === e || "none" === e ? e : "dashed"
     }
 
+    function R() {
+        var n = $("#inspector-table tr.inspector-section-title-row", o);
+        n.each(function(i) {
+            var n = $(this),
+                t = n.nextUntil("tr.inspector-section-title-row");
+            n.addClass("inspector-collapsible-title").attr("data-collapsed", "false");
+            n.off("click").on("click", function() {
+                var o = "true" === n.attr("data-collapsed");
+                n.attr("data-collapsed", o ? "false" : "true");
+                t.toggle(o);
+                I()
+            })
+        })
+    }
+
     this.getContent = function() {
         return o
     }, this.setControlsEnabled = function(e) {
@@ -204,7 +219,7 @@ mindmaps.InspectorView = function() {
             e.connectNodeRemoveButtonClicked && e.connectNodeRemoveButtonClicked()
         }), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(e) {
             e.inspectorAdviser && e.inspectorAdviser.onInit && e.inspectorAdviser.onInit($("#inspector-table", o))
-        }), I()
+        }), R(), I()
     }
 }, mindmaps.InspectorPresenter = function(e, o, n, t) {
     function M(e) {
