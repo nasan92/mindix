@@ -29,6 +29,7 @@ mindmaps.InspectorView = function() {
         P = $("#inspector-connection-color-picker", o),
         y = $("#inspector-border-background-color-picker", o),
         B = $("#inspector-map-background-color-picker", o),
+        j = $("#inspector-button-font-align-change", o),
         E = [l, a, u, C, h, f, m, p, b, k, g, v, A, N, F, H],
         D = [S, x, w, y, P, B],
         L = !1;
@@ -46,6 +47,10 @@ mindmaps.InspectorView = function() {
 
     function M(e) {
         return "solid" === e || "dashed" === e || "none" === e ? e : "dashed"
+    }
+
+    function V(e) {
+        return "left" === e || "center" === e || "right" === e ? e : "center"
     }
 
     function R() {
@@ -80,7 +85,7 @@ mindmaps.InspectorView = function() {
             e.button(o)
         }), D.forEach(function(o) {
             o.attr("disabled", e)
-        }), z.prop("disabled", !e), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(o) {
+        }), z.prop("disabled", !e), j.prop("disabled", !e), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(o) {
             o.inspectorAdviser && o.inspectorAdviser.setControlsEnabled && o.inspectorAdviser.setControlsEnabled(e)
         })
     }, this.setBorderText = function(e) {
@@ -91,6 +96,8 @@ mindmaps.InspectorView = function() {
         n.val(e)
     }, this.setFontSize = function(e) {
         z.val(e)
+    }, this.setFontAlign = function(e) {
+        j.val(V(e))
     }, this.setConnectStyle = function(e) {
         c.val(e)
     }, this.setConnectShape = function(e) {
@@ -202,6 +209,8 @@ mindmaps.InspectorView = function() {
                 var o = $(this).prop("checked");
                 e.mapGridCheckboxClicked(o)
             }
+        }), j.change(function() {
+            e.fontAlignChanged && e.fontAlignChanged(j.val())
         });
         var O = mindmaps.Util.getColorThemeNames();
         T.empty();
@@ -272,7 +281,7 @@ mindmaps.InspectorView = function() {
             n.style = "none"
         }
         n.visible = "none" !== n.style;
-        t.setBorderStyle(n.style), t.setBorderText(n.visible ? !0 : !1), t.setBoldCheckboxState("bold" === o.weight), t.setFontFace(o.fontfamily), t.setFontSize(o.size), t.setItalicCheckboxState("italic" === o.style), t.setUnderlineCheckboxState("underline" === o.decoration), t.setLinethroughCheckboxState("line-through" === o.decoration), t.setFontColorPickerColor(o.color), t.setBorderColorPickerColor(n.color), t.setBorderBackgroundColorPickerColor(n.background), t.setBranchColorPickerColor(e.getPluginData("style", "branchColor"))
+        t.setBorderStyle(n.style), t.setBorderText(n.visible ? !0 : !1), t.setBoldCheckboxState("bold" === o.weight), t.setFontFace(o.fontfamily), t.setFontSize(o.size), t.setFontAlign(o.align), t.setItalicCheckboxState("italic" === o.style), t.setUnderlineCheckboxState("underline" === o.decoration), t.setLinethroughCheckboxState("line-through" === o.decoration), t.setFontColorPickerColor(o.color), t.setBorderColorPickerColor(n.color), t.setBorderBackgroundColorPickerColor(n.background), t.setBranchColorPickerColor(e.getPluginData("style", "branchColor"))
     }
 
     function r() {
@@ -354,6 +363,10 @@ mindmaps.InspectorView = function() {
     }, t.fontItalicCheckboxClicked = function(e) {
         executeForSelection(function(t) {
             return new mindmaps.action.SetFontStyleAction(t, e)
+        })
+    }, t.fontAlignChanged = function(e) {
+        executeForSelection(function(t) {
+            return new mindmaps.action.SetFontAlignAction(t, e)
         })
     }, t.fontUnderlineCheckboxClicked = function(e) {
         executeForSelection(function(t) {
@@ -473,6 +486,7 @@ mindmaps.LevelStylesPresenter = function(eventBus, mindmapModel, $container) {
     var depthSelect    = $container.find("#level-style-depth-select");
     var fontFaceSelect = $container.find("#level-style-font-face");
     var fontSizeInput  = $container.find("#level-style-font-size");
+    var fontAlignSelect = $container.find("#level-style-font-align");
     var fontBold       = $container.find("#level-style-font-bold");
     var fontItalic     = $container.find("#level-style-font-italic");
     var fontUnderline  = $container.find("#level-style-font-underline");
@@ -481,12 +495,16 @@ mindmaps.LevelStylesPresenter = function(eventBus, mindmapModel, $container) {
     var _syncing = false;
 
     var _defaults = [
-        { fontfamily: 'Sans-serif', size: 20, weight: 'bold',   style: 'normal', decoration: 'none' },
-        { fontfamily: 'Sans-serif', size: 15, weight: 'normal', style: 'normal', decoration: 'none' },
-        { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' },
-        { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' },
-        { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' }
+        { fontfamily: 'Sans-serif', size: 20, weight: 'bold',   style: 'normal', decoration: 'none', align: 'center' },
+        { fontfamily: 'Sans-serif', size: 15, weight: 'normal', style: 'normal', decoration: 'none', align: 'center' },
+        { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none', align: 'center' },
+        { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none', align: 'center' },
+        { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none', align: 'center' }
     ];
+
+    function normalizeAlign(value) {
+        return value === 'left' || value === 'center' || value === 'right' ? value : 'center';
+    }
 
     function getDepth() { return parseInt(depthSelect.val(), 10); }
 
@@ -501,6 +519,7 @@ mindmaps.LevelStylesPresenter = function(eventBus, mindmapModel, $container) {
         _syncing = true;
         fontFaceSelect.val(ls.fontfamily);
         fontSizeInput.val(ls.size);
+        fontAlignSelect.val(normalizeAlign(ls.align));
         fontBold.prop('checked', ls.weight === 'bold').button('refresh');
         fontItalic.prop('checked', ls.style === 'italic').button('refresh');
         fontUnderline.prop('checked', ls.decoration === 'underline').button('refresh');
@@ -547,6 +566,11 @@ mindmaps.LevelStylesPresenter = function(eventBus, mindmapModel, $container) {
             if (_syncing) return;
             var val = parseInt(fontSizeInput.val(), 10);
             if (!isNaN(val) && val >= 6 && val <= 120) applyPatch({ size: val });
+        });
+
+        fontAlignSelect.change(function() {
+            if (_syncing) return;
+            applyPatch({ align: normalizeAlign(fontAlignSelect.val()) });
         });
 
         fontBold.click(function() {

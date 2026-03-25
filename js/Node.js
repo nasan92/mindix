@@ -10,6 +10,7 @@ mindmaps.Node = function() {
         style: "normal",
         weight: "normal",
         decoration: "none",
+        align: "center",
         fontfamily: "sans-serif",
         size: 15,
         color: "#000000"

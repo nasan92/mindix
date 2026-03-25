@@ -153,7 +153,16 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
     }, this.event = [mindmaps.Event.NODE_FONT_CHANGED, n], this.undo = function() {
         return new mindmaps.action.SetFontDecorationAction(n, i)
     }
-}, mindmaps.action.SetFontDecorationAction.prototype = new mindmaps.action.Action, mindmaps.action.SetBorderBackgroundColorAction = function(n, t) {
+}, mindmaps.action.SetFontDecorationAction.prototype = new mindmaps.action.Action, mindmaps.action.SetFontAlignAction = function(n, t) {
+    var o = n.getPluginData("style", "font"),
+        i = "left" === o.align || "center" === o.align || "right" === o.align ? o.align : "center";
+    this.execute = function() {
+        var e = "left" === t || "center" === t || "right" === t ? t : "center";
+        return e === i ? !1 : (o.align = e, n.setPluginData("style", "font", o), void(mindmaps.isMapLoadingConfirmationRequired = !0))
+    }, this.event = [mindmaps.Event.NODE_FONT_CHANGED, n], this.undo = function() {
+        return new mindmaps.action.SetFontAlignAction(n, i)
+    }
+}, mindmaps.action.SetFontAlignAction.prototype = new mindmaps.action.Action, mindmaps.action.SetBorderBackgroundColorAction = function(n, t) {
     var o = n.getPluginData("style", "border") || {
             visible: !1,
             style: "none",
@@ -415,7 +424,7 @@ mindmaps.action = {}, mindmaps.action.Action = function() {}, mindmaps.action.Ac
     var t = n.getPluginData("style", "font"),
         o = this;
     n.forEachDescendant(function(n) {
-        o.addAction(new mindmaps.action.SetFontWeightAction(n, "bold" === t.weight)), o.addAction(new mindmaps.action.SetFontStyleAction(n, "italic" === t.style)), o.addAction(new mindmaps.action.SetFontDecorationAction(n, t.decoration))
+        o.addAction(new mindmaps.action.SetFontWeightAction(n, "bold" === t.weight)), o.addAction(new mindmaps.action.SetFontStyleAction(n, "italic" === t.style)), o.addAction(new mindmaps.action.SetFontDecorationAction(n, t.decoration)), o.addAction(new mindmaps.action.SetFontAlignAction(n, t.align))
     })
 }, mindmaps.action.SetChildrenFontStyleAction.prototype = new mindmaps.action.CompositeAction, mindmaps.action.SetChildrenFontFaceAction = function(n) {
     mindmaps.action.CompositeAction.call(this);

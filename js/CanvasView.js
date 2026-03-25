@@ -798,6 +798,8 @@ mindmaps.DefaultCanvasView = function() {
             this.node = o;
             n = true;
             var a = o.getPluginData("image", "data");
+            var p = o.getPluginData("style", "font") || {};
+            var v = "left" === p.align || "center" === p.align || "right" === p.align ? p.align : "center";
             this.$text = h(o);
             this.$cancelArea = u;
             this.text = this.$text.text();
@@ -815,12 +817,12 @@ mindmaps.DefaultCanvasView = function() {
             if (a) {
                 if (a.align == "bottom") this.$text.css({
                     "padding-top": "0px",
-                    "text-align": "center"
+                    "text-align": v
                 });
                 if (a.align == "top") this.$text.css({
                     height: f.fontH,
                     "padding-top": "" + this.zoomFactor * a.height + "px",
-                    "text-align": "center"
+                    "text-align": v
                 });
                 if (a.align == "left") this.$text.css({
                     width: f.width,
@@ -832,13 +834,17 @@ mindmaps.DefaultCanvasView = function() {
                     width: f.width,
                     height: f.height,
                     "padding-top": "0px",
-                    "text-align": "center"
+                    "text-align": v
                 });
                 if (a.align == "right") this.$text.css({
                     width: f.width,
                     height: f.height,
                     "padding-top": "0px",
                     "text-align": "left"
+                })
+            } else {
+                this.$text.css({
+                    "text-align": v
                 })
             }
         };
@@ -1726,6 +1732,7 @@ mindmaps.DefaultCanvasView = function() {
         var r = h(e);
         r.find(".node-image-selection").remove();
         var i = e.getPluginData("style", "font");
+        var textAlign = "left" === i.align || "center" === i.align || "right" === i.align ? i.align : "center";
         var o = e.getPluginData("style", "border") || {
             visible: false,
             style: "none",
@@ -1766,14 +1773,14 @@ mindmaps.DefaultCanvasView = function() {
                 width: f.width,
                 height: f.height - this.zoomFactor * u.height,
                 "padding-top": "" + this.zoomFactor * u.height + "px",
-                "text-align": "center"
+                "text-align": textAlign
             });
             else if (u.align == "center") {
                 r.css({
                     width: f.width,
                     height: f.height,
                     "padding-top": "0px",
-                    "text-align": "center"
+                    "text-align": textAlign
                 });
                 if (u.height > f.fontH) r.css({
                     "padding-top": "" + (f.height / 2 - f.fontH / 2 - 1) + "px",
@@ -1783,7 +1790,7 @@ mindmaps.DefaultCanvasView = function() {
                 width: f.width,
                 height: f.height,
                 "padding-top": "0px",
-                "text-align": "center"
+                "text-align": textAlign
             });
             else if (u.align == "right") r.css({
                 width: f.width,
@@ -1801,7 +1808,7 @@ mindmaps.DefaultCanvasView = function() {
             width: f.width,
             height: f.height,
             "padding-top": "0px",
-            "text-align": "center"
+            "text-align": textAlign
         });
         if (u) {
             r.css("background", bkgrnd);
