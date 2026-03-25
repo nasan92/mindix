@@ -63,7 +63,7 @@ mindmaps.StaticCanvasRenderer = function() {
 			//if($("#node-" + cfnode.from).length)
 				//offsetX = node.getPluginData("layout","offset").x;
 				//offsetY = node.getPluginData("layout","offset").y;
-				drawConnector(ctx, depth, node.getPluginData("layout","offset").x, node.getPluginData("layout","offset").y, true, cfnode.from,cfnode.to, node.getRoot(), false, cfnode.style, cfnode.arrow, cfnode.color);
+        drawConnector(ctx, depth, node.getPluginData("layout","offset").x, node.getPluginData("layout","offset").y, true, cfnode.from,cfnode.to, node.getRoot(), false, cfnode.style, cfnode.arrow, cfnode.color, cfnode);
         });
 		
 		/*
@@ -100,7 +100,7 @@ mindmaps.StaticCanvasRenderer = function() {
         return $("#node-" + node.id);
     }
 	
-  function drawConnector(ctx, depth, offsetX, offsetY, fromConnection, node, node2, root, dragging, style, arrow, color){
+  function drawConnector(ctx, depth, offsetX, offsetY, fromConnection, node, node2, root, dragging, style, arrow, color, connector){
 
 		dragging = dragging || false;
 		node = getNodeFromId(root, node);
@@ -185,7 +185,7 @@ mindmaps.StaticCanvasRenderer = function() {
 					 // position and draw connection
 					    ctx.save();
 					 drawConnectorLineCanvas(ctx, depth, node1FullOffX, node1FullOffY, node2FullOffX, node2FullOffY,  $getNode(node2), $getNode(node),
-					color, style, arrow);
+          color, style, arrow, connector);
 					//connectorDrawer.render(ctx, depth, node1FullOffX, node1FullOffY, node2FullOffX, node2FullOffY, $getNode(node2), $getNode(node),
             //color, zoomFactor, style, arrow);
 			
@@ -194,15 +194,19 @@ mindmaps.StaticCanvasRenderer = function() {
     ctx.restore();
 	}
 
-		function drawConnectorLineCanvas(ctx, depth, node1FullOffX, node1FullOffY, node2FullOffX, node2FullOffY, $node, $parent, color, style, arrow) {
+    function drawConnectorLineCanvas(ctx, depth, node1FullOffX, node1FullOffY, node2FullOffX, node2FullOffY, $node, $parent, color, style, arrow, connector) {
         //var canvas = $canvas[0];
         //var ctx = canvas.getContext("2d");
+
+		var exportConnector = connector ? $.extend({}, connector, {
+			_selected: false
+		}) : connector;
 
 
         // set $canvas for beforeDraw() callback.
         connectorDrawer.$canvas = $canvas;
         connectorDrawer.render(ctx, depth, node1FullOffX, node1FullOffY, node2FullOffX, node2FullOffY, $parent, $node,
-            color, zoomFactor, style, arrow);
+	            color, zoomFactor, style, arrow, exportConnector);
     }
 	
   /**

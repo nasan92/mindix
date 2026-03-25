@@ -327,6 +327,16 @@
 						                        </div>
                     </td>
                 </tr>
+                <tr class="inspector-section-row inspector-section-text inspector-group-end">
+                    <td>Text align:</td>
+                    <td>
+                        <select id="inspector-button-font-align-change">
+                            <option value="left">Left</option>
+                            <option value="center">Center</option>
+                            <option value="right">Right</option>
+                        </select>
+                    </td>
+                </tr>
                 <tr class="inspector-section-title-row">
                     <td colspan="2">Level Text Styles</td>
                 </tr>
@@ -373,7 +383,7 @@
                         <input type="number" id="level-style-font-size" min="6" max="120" step="1" style="width:52px" />
                     </td>
                 </tr>
-                <tr class="inspector-section-row inspector-section-levelstyle inspector-group-end">
+                <tr class="inspector-section-row inspector-section-levelstyle">
                     <td>Font style:</td>
                     <td>
                         <div class="buttonset buttons-very-small buttons-less-padding">
@@ -386,6 +396,16 @@
                             <input type="checkbox" id="level-style-font-linethrough"/>
                             <label for="level-style-font-linethrough" id="level-style-label-font-linethrough"><s>S</s></label>
                         </div>
+                    </td>
+                </tr>
+                <tr class="inspector-section-row inspector-section-levelstyle inspector-group-end">
+                    <td>Text align:</td>
+                    <td>
+                        <select id="level-style-font-align">
+                            <option value="left">Left</option>
+                            <option value="center">Center</option>
+                            <option value="right">Right</option>
+                        </select>
                     </td>
                 </tr>
 				<tr class="inspector-section-title-row">
@@ -421,6 +441,10 @@
 							<option value="solid">Solid</option>
 							<option value="dotted">Dotted</option>
 						</select>
+                        <select id="inspector-button-connection-shape-change">
+                            <option value="straight">Straight</option>
+                            <option value="curved">Curved</option>
+                        </select>
                         <select id="inspector-button-connection-arrow-change">
 							<option value="0">No Arrow</option>
 							<option value="1">Single</option>
