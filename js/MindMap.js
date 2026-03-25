@@ -10,6 +10,7 @@ mindmaps.MindMap = function(e) {
         this.root.setPluginData("style", "font", {
             style: "normal",
             weight: "bold",
+            align: "center",
             fontfamily: "sans-serif",
             decoration: "none",
             size: 20,
@@ -59,11 +60,11 @@ mindmaps.MindMap.prototype.setLevelStyle = function(depth, patch) {
     var key = String(depth >= 4 ? 4 : depth);
     if (!this.levelStyles[key]) {
         var defaults = [
-            { fontfamily: 'Sans-serif', size: 20, weight: 'bold', style: 'normal', decoration: 'none' },
-            { fontfamily: 'Sans-serif', size: 15, weight: 'normal', style: 'normal', decoration: 'none' },
-            { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' },
-            { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' },
-            { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none' }
+            { fontfamily: 'Sans-serif', size: 20, weight: 'bold', style: 'normal', decoration: 'none', align: 'center' },
+            { fontfamily: 'Sans-serif', size: 15, weight: 'normal', style: 'normal', decoration: 'none', align: 'center' },
+            { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none', align: 'center' },
+            { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none', align: 'center' },
+            { fontfamily: 'Sans-serif', size: 13, weight: 'normal', style: 'normal', decoration: 'none', align: 'center' }
         ];
         this.levelStyles[key] = $.extend({}, defaults[parseInt(key, 10)] || defaults[4]);
     }
