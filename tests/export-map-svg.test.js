@@ -295,9 +295,50 @@ function testNodeUrlsAreClickableInSvg() {
   assert(rects >= 3, "Expected at least 3 rectangles (background + nodes)");
 }
 
+function testCurvedConnectionsRenderAsSvgPaths() {
+  const root = makeNode("root", "Root", {
+    layout: { offset: { x: 0, y: 0 } }
+  });
+  const childA = makeNode("a", "Alpha", {
+    layout: { offset: { x: 180, y: 80 } }
+  });
+  const childB = makeNode("b", "Beta", {
+    layout: { offset: { x: -180, y: 120 } }
+  });
+  root.addChild(childA);
+  root.addChild(childB);
+
+  const doc = {
+    mindmap: {
+      getRoot() {
+        return root;
+      }
+    },
+    getConnectedNodes() {
+      return [{
+        from: "a",
+        to: "b",
+        style: "solid",
+        shape: "curved",
+        arrow: "2",
+        color: "#0055aa",
+        curve1T: 0.2,
+        curve1N: 0.35,
+        curve2T: 0.8,
+        curve2N: -0.3
+      }];
+    }
+  };
+
+  const svg = buildRenderer().render(doc);
+  assert(svg.includes('stroke="#0055aa"'), "Expected curved connector stroke color in SVG");
+  assert(svg.includes(' C '), "Expected cubic bezier command for curved connector");
+  assert(svg.includes('<polygon '), "Expected arrow polygons for curved connector");
+}
+
 
 (function run() {
-  const tests = [testBasicVectorOutput, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg];
+  const tests = [testBasicVectorOutput, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg, testCurvedConnectionsRenderAsSvgPaths];
   let passed = 0;
 
   tests.forEach((fn) => {
