@@ -254,6 +254,114 @@ mindmaps.StaticSVGRenderer = function() {
         }
     }
 
+    function clampRatio(value, min, max) {
+        if (!isFinite(value)) {
+            return min
+        }
+        return Math.max(min, Math.min(max, value))
+    }
+
+    function getNodeRect(node) {
+        var position = getPositionSafe(node);
+        var textMetrics = node.textMetrics;
+        if (node.isRoot()) {
+            return {
+                x: position.x - textMetrics.width / 2 - 4,
+                y: position.y + 16,
+                w: textMetrics.width + 8,
+                h: textMetrics.height + 8
+            }
+        }
+        return {
+            x: position.x - 4,
+            y: position.y - 4,
+            w: textMetrics.width + 8,
+            h: textMetrics.height + 8
+        }
+    }
+
+    function getRectCenter(rect) {
+        return {
+            x: rect.x + rect.w / 2,
+            y: rect.y + rect.h / 2
+        }
+    }
+
+    function projectRectEdge(rect, targetPoint) {
+        var center = getRectCenter(rect);
+        var deltaX = targetPoint.x - center.x;
+        var deltaY = targetPoint.y - center.y;
+        if (!deltaX && !deltaY) {
+            return center
+        }
+        var scaleX = deltaX ? rect.w / 2 / Math.abs(deltaX) : Number.POSITIVE_INFINITY;
+        var scaleY = deltaY ? rect.h / 2 / Math.abs(deltaY) : Number.POSITIVE_INFINITY;
+        var scale = Math.min(scaleX, scaleY);
+        return {
+            x: center.x + deltaX * scale,
+            y: center.y + deltaY * scale
+        }
+    }
+
+    function getCurveControlPoints(startPoint, endPoint, connector) {
+        var deltaX = endPoint.x - startPoint.x;
+        var deltaY = endPoint.y - startPoint.y;
+        var length = Math.sqrt(deltaX * deltaX + deltaY * deltaY) || 1;
+        var unitX = deltaX / length;
+        var unitY = deltaY / length;
+        var normalX = -unitY;
+        var normalY = unitX;
+        var curve1T = connector && typeof connector.curve1T == "number" ? connector.curve1T : .28;
+        var curve1N = connector && typeof connector.curve1N == "number" ? connector.curve1N : .22;
+        var curve2T = connector && typeof connector.curve2T == "number" ? connector.curve2T : .72;
+        var curve2N = connector && typeof connector.curve2N == "number" ? connector.curve2N : -.22;
+        return {
+            c1: {
+                x: startPoint.x + deltaX * curve1T + normalX * (curve1N * length),
+                y: startPoint.y + deltaY * curve1T + normalY * (curve1N * length)
+            },
+            c2: {
+                x: startPoint.x + deltaX * curve2T + normalX * (curve2N * length),
+                y: startPoint.y + deltaY * curve2T + normalY * (curve2N * length)
+            }
+        }
+    }
+
+    function getConnectorGeometry(fromNode, toNode, connector) {
+        var fromRect = getNodeRect(fromNode);
+        var toRect = getNodeRect(toNode);
+        var hasManualToAnchor = connector && typeof connector.toAnchorX == "number" && typeof connector.toAnchorY == "number";
+        var hasManualFromAnchor = connector && typeof connector.fromAnchorX == "number" && typeof connector.fromAnchorY == "number";
+        var sourcePoint;
+        var targetPoint;
+
+        if (hasManualToAnchor) {
+            targetPoint = {
+                x: toRect.x + clampRatio(connector.toAnchorX, -.15, 1.15) * toRect.w,
+                y: toRect.y + clampRatio(connector.toAnchorY, -.15, 1.15) * toRect.h
+            }
+        } else {
+            targetPoint = getRectCenter(toRect)
+        }
+
+        if (hasManualFromAnchor) {
+            sourcePoint = {
+                x: fromRect.x + clampRatio(connector.fromAnchorX, -.15, 1.15) * fromRect.w,
+                y: fromRect.y + clampRatio(connector.fromAnchorY, -.15, 1.15) * fromRect.h
+            }
+        } else {
+            sourcePoint = projectRectEdge(fromRect, targetPoint)
+        }
+
+        var isCurved = connector && connector.shape == "curved";
+        return {
+            from: sourcePoint,
+            to: targetPoint,
+            curve: isCurved ? getCurveControlPoints(sourcePoint, targetPoint, connector) : null,
+            isCurved: isCurved
+        }
+    }
+
     function createArrow(e, t, n, r) {
         var i = n - e;
         var s = r - t;
@@ -274,6 +382,13 @@ mindmaps.StaticSVGRenderer = function() {
         var g = p - f * h;
         var y = d - l * h;
         return n + "," + r + " " + v + "," + m + " " + g + "," + y
+    }
+
+    function createArrowFromVector(x, y, deltaX, deltaY) {
+        if (!deltaX && !deltaY) {
+            return ""
+        }
+        return createArrow(x - deltaX, y - deltaY, x, y)
     }
 
     function quoteAttr(e) {
@@ -461,15 +576,10 @@ mindmaps.StaticSVGRenderer = function() {
                 if (!fromNode || !toNode) {
                     return
                 }
-                var fromCenter = getNodeCenter(fromNode);
-                var toCenter = getNodeCenter(toNode);
+                var geometry = getConnectorGeometry(fromNode, toNode, connector);
                 var color = connector.color || "#000000";
 
                 var lineAttrs = {
-                    x1: fromCenter.x,
-                    y1: fromCenter.y,
-                    x2: toCenter.x,
-                    y2: toCenter.y,
                     stroke: color,
                     "stroke-width": 2,
                     "stroke-linecap": "round"
@@ -478,10 +588,29 @@ mindmaps.StaticSVGRenderer = function() {
                 if (dash) {
                     lineAttrs["stroke-dasharray"] = dash
                 }
-                addSelfTag("line", lineAttrs);
+
+                if (geometry.isCurved && geometry.curve) {
+                    addPath("M " + geometry.from.x + " " + geometry.from.y + " C " + geometry.curve.c1.x + " " + geometry.curve.c1.y + ", " + geometry.curve.c2.x + " " + geometry.curve.c2.y + ", " + geometry.to.x + " " + geometry.to.y, $.extend({}, lineAttrs, {
+                        fill: "none"
+                    }))
+                } else {
+                    addSelfTag("line", $.extend({}, lineAttrs, {
+                        x1: geometry.from.x,
+                        y1: geometry.from.y,
+                        x2: geometry.to.x,
+                        y2: geometry.to.y
+                    }))
+                }
 
                 if (connector.arrow == "2") {
-                    var backArrow = createArrow(toCenter.x, toCenter.y, fromCenter.x, fromCenter.y);
+                    var backVector = geometry.curve ? {
+                        x: geometry.curve.c1.x - geometry.from.x,
+                        y: geometry.curve.c1.y - geometry.from.y
+                    } : {
+                        x: geometry.from.x - geometry.to.x,
+                        y: geometry.from.y - geometry.to.y
+                    };
+                    var backArrow = createArrowFromVector(geometry.from.x, geometry.from.y, backVector.x, backVector.y);
                     if (backArrow) {
                         addSelfTag("polygon", {
                             points: backArrow,
@@ -490,7 +619,14 @@ mindmaps.StaticSVGRenderer = function() {
                     }
                 }
                 if (connector.arrow == "1" || connector.arrow == "2") {
-                    var frontArrow = createArrow(fromCenter.x, fromCenter.y, toCenter.x, toCenter.y);
+                    var frontVector = geometry.curve ? {
+                        x: geometry.to.x - geometry.curve.c2.x,
+                        y: geometry.to.y - geometry.curve.c2.y
+                    } : {
+                        x: geometry.to.x - geometry.from.x,
+                        y: geometry.to.y - geometry.from.y
+                    };
+                    var frontArrow = createArrowFromVector(geometry.to.x, geometry.to.y, frontVector.x, frontVector.y);
                     if (frontArrow) {
                         addSelfTag("polygon", {
                             points: frontArrow,
