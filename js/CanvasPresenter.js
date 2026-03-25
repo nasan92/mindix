@@ -129,7 +129,7 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
             console.log("connected " + e.getCaption() + "," + n.getCaption());
             var t = new mindmaps.action.ConnectTwoNodesAction(e, n, "dashed", "#ff0000", "0", r);
             o.executeAction(t)
-        }), e.subscribe(mindmaps.Event.CONNECTION_COLOR_CHANGED, function() {}), e.subscribe(mindmaps.Event.NODE_SELECTED, r), e.subscribe(mindmaps.Event.NODE_OPENED, function(e) {
+        }), e.subscribe(mindmaps.Event.CONNECTION_COLOR_CHANGED, function() {}), e.subscribe(mindmaps.Event.NODE_SELECTION_CHANGED, r), e.subscribe(mindmaps.Event.NODE_OPENED, function(e) {
             e.forEachChild(function(e) {
                 i(e)
             }), t.openNode(e)
@@ -228,6 +228,10 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         });
         return t
     }
+
+    function C(e, n) {
+        return (n || []).indexOf(e) !== -1
+    }
     this.init = function() {
         var e = n.get(mindmaps.EditNodeCaptionCommand);
         e.setHandler(this.editNodeCaption.bind(this));
@@ -241,8 +245,18 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
             var n = new mindmaps.action.ToggleNodeFoldAction(e);
             o.executeAction(n)
         },
-        r = function(e, n) {
-            t.selectedNode = e, n && t.unhighlightNode(n), t.highlightNode(e)
+        r = function(e, n, r) {
+            t.selectedNode = r || null;
+            (n || []).forEach(function(n) {
+                if (!C(n, e)) {
+                    t.unhighlightNode(n)
+                }
+            });
+            (e || []).forEach(function(e) {
+                if (!C(e, n)) {
+                    t.highlightNode(e)
+                }
+            })
         };
     t.mouseWheeled = function(e) {
         t.stopEditNodeCaption(), e > 0 ? i.zoomIn(.1) : 0 > e && i.zoomOut(.1)
@@ -274,11 +288,17 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         t.isNodeDragging() || c.isDragging() || c.attachToNode(e)
     }, t.nodeCaptionMouseOver = function(e) {
         t.isNodeDragging() || c.isDragging() || c.attachToNode(e)
-    }, t.nodeMouseDown = function(e) {
+    }, t.nodeMouseDown = function(e, n) {
         if (!mindmaps.connectMode) {
             mindmaps.connectSelected = !1
         }
-        t.hideNodeContextMenu(), o.selectNode(e), c.attachToNode(e)
+        t.hideNodeContextMenu();
+        if (n && (n.metaKey || n.ctrlKey) && !mindmaps.connectMode) {
+            o.toggleNodeSelection(e)
+        } else {
+            o.selectNode(e)
+        }
+        c.attachToNode(e)
     }, t.connectionSelected = function(fromNode, toNode, conn) {
         mindmaps.connectMode = !1;
         mindmaps.connectStartNode = toNode;

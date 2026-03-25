@@ -1009,7 +1009,11 @@ mindmaps.DefaultCanvasView = function() {
             var n = $(this).parent().data("node");
             mindmaps.connectPendingAnchor = null;
             if (e.nodeMouseDown) {
-                e.nodeMouseDown(n)
+                e.nodeMouseDown(n, {
+                    metaKey: !!t.metaKey,
+                    ctrlKey: !!t.ctrlKey,
+                    shiftKey: !!t.shiftKey
+                })
             }
         });
         t.delegate("canvas[id^='node-connector-canvas-']", "mousedown", function(t) {

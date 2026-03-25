@@ -30,7 +30,8 @@ mindmaps.InspectorView = function() {
         y = $("#inspector-border-background-color-picker", o),
         B = $("#inspector-map-background-color-picker", o),
         E = [l, a, u, C, h, f, m, p, b, k, g, v, A, N, F, H],
-        D = [S, x, w, y, P, B];
+        D = [S, x, w, y, P, B],
+        L = !1;
 
     function I() {
         var e = ["inspector-section-text", "inspector-section-branch", "inspector-section-node", "inspector-section-map", "inspector-section-levelstyle"];
@@ -60,6 +61,15 @@ mindmaps.InspectorView = function() {
                 I()
             })
         })
+    }
+
+    function U(e, n) {
+        L = !0;
+        try {
+            e.val(n).change()
+        } finally {
+            L = !1
+        }
     }
 
     this.getContent = function() {
@@ -96,21 +106,19 @@ mindmaps.InspectorView = function() {
     }, this.setLinethroughCheckboxState = function(e) {
         f.prop("checked", e).button("refresh")
     }, this.setBorderBackgroundColorPickerColor = function(e) {
-        y.val(e).change()
-    }, this.setBorderBackgroundColorPickerColor = function(e) {
-        y.val(e).change()
+        U(y, e)
     }, this.setBorderColorPickerColor = function(e) {
-        w.val(e).change()
+        U(w, e)
     }, this.setConnectColorPickerColor = function(e) {
-        P.val(e).change()
+        U(P, e)
     }, this.setMapGridEnabled = function(e) {
         F.prop("checked", !!e).button("refresh")
     }, this.setMapBackgroundColorPickerColor = function(e) {
-        B.val(e).change()
+        U(B, e)
     }, this.setBranchColorPickerColor = function(e) {
-        S.val(e).change()
+        U(S, e)
     }, this.setFontColorPickerColor = function(e) {
-        x.val(e).change()
+        U(x, e)
     }, this.setCurrentTheme = function(e) {
         T.val(e)
     }, this.refreshColorPickers = function() {
@@ -122,6 +130,9 @@ mindmaps.InspectorView = function() {
                 colors: n
             });
             o.on("change", function() {
+                if (L) {
+                    return
+                }
                 var n = $(this).val();
                 n && t && t(n)
             })
@@ -284,9 +295,28 @@ mindmaps.InspectorView = function() {
         t.setMapGridEnabled(e.gridEnabled);
         t.setMapBackgroundColorPickerColor(e.color)
     }
-    t.fontfaceChangeClicked = function(e) {
-        var n = new mindmaps.action.ChangeNodeFontFaceAction(o.selectedNode, e);
+
+    function getSelectionTargets() {
+        var e = o.getSelectedNodes ? o.getSelectedNodes() : [];
+        if (!e.length && o.selectedNode) {
+            e = [o.selectedNode]
+        }
+        return e.filter(function(e) {
+            return !!e
+        })
+    }
+
+    function executeForSelection(e) {
+        var n = new mindmaps.action.CompositeAction;
+        getSelectionTargets().forEach(function(t) {
+            n.addAction(e(t))
+        });
         o.executeAction(n)
+    }
+    t.fontfaceChangeClicked = function(e) {
+        executeForSelection(function(t) {
+            return new mindmaps.action.ChangeNodeFontFaceAction(t, e)
+        })
     }, t.connectStyleChangeClicked = function(e) {
         var n = new mindmaps.action.SetConnectStyleAction(o.selectedNode, mindmaps.connectStartNode, e);
         o.executeAction(n)
@@ -298,46 +328,61 @@ mindmaps.InspectorView = function() {
         var n = new mindmaps.action.SetConnectArrowAction(o.selectedNode, mindmaps.connectStartNode, e);
         o.executeAction(n)
     }, t.borderStyleChangeClicked = function(e) {
-        var n = new mindmaps.action.ChangeNodeBorderStyleAction(o.selectedNode, e);
-        o.executeAction(n)
+        executeForSelection(function(t) {
+            return new mindmaps.action.ChangeNodeBorderStyleAction(t, e)
+        })
     }, t.fontSizeChanged = function(e) {
-        var n = new mindmaps.action.SetNodeFontSizeAction(o.selectedNode, e);
-        o.executeAction(n)
+        executeForSelection(function(t) {
+            return new mindmaps.action.SetNodeFontSizeAction(t, e)
+        })
     }, t.fontSizeDecreaseButtonClicked = function() {
-        var e = new mindmaps.action.DecreaseNodeFontSizeAction(o.selectedNode);
-        o.executeAction(e)
+        executeForSelection(function(e) {
+            return new mindmaps.action.DecreaseNodeFontSizeAction(e)
+        })
     }, t.lineWidthDecreaseButtonClicked = function() {
-        var e = new mindmaps.action.DecreaseNodeLineWidthAction(o.selectedNode);
-        o.executeAction(e)
+        executeForSelection(function(e) {
+            return new mindmaps.action.DecreaseNodeLineWidthAction(e)
+        })
     }, t.lineWidthIncreaseButtonClicked = function() {
-        var e = new mindmaps.action.IncreaseNodeLineWidthAction(o.selectedNode);
-        o.executeAction(e)
+        executeForSelection(function(e) {
+            return new mindmaps.action.IncreaseNodeLineWidthAction(e)
+        })
     }, t.fontBoldCheckboxClicked = function(e) {
-        var n = new mindmaps.action.SetFontWeightAction(o.selectedNode, e);
-        o.executeAction(n)
+        executeForSelection(function(t) {
+            return new mindmaps.action.SetFontWeightAction(t, e)
+        })
     }, t.fontItalicCheckboxClicked = function(e) {
-        var n = new mindmaps.action.SetFontStyleAction(o.selectedNode, e);
-        o.executeAction(n)
+        executeForSelection(function(t) {
+            return new mindmaps.action.SetFontStyleAction(t, e)
+        })
     }, t.fontUnderlineCheckboxClicked = function(e) {
-        var n = new mindmaps.action.SetFontDecorationAction(o.selectedNode, e ? "underline" : "none");
-        o.executeAction(n)
+        executeForSelection(function(t) {
+            return new mindmaps.action.SetFontDecorationAction(t, e ? "underline" : "none")
+        })
     }, t.fontLinethroughCheckboxClicked = function(e) {
-        var n = new mindmaps.action.SetFontDecorationAction(o.selectedNode, e ? "line-through" : "none");
-        o.executeAction(n)
+        executeForSelection(function(t) {
+            return new mindmaps.action.SetFontDecorationAction(t, e ? "line-through" : "none")
+        })
     }, t.branchColorPicked = function(e) {
-        var n = new mindmaps.action.SetBranchColorAction(o.selectedNode, e);
-        o.executeAction(n)
+        executeForSelection(function(t) {
+            return new mindmaps.action.SetBranchColorAction(t, e)
+        })
     }, t.branchColorPreview = function(n) {
-        e.publish(mindmaps.Event.NODE_BRANCH_COLOR_PREVIEW, o.selectedNode, n)
+        getSelectionTargets().forEach(function(t) {
+            e.publish(mindmaps.Event.NODE_BRANCH_COLOR_PREVIEW, t, n)
+        })
     }, t.fontColorPicked = function(e) {
-        var n = new mindmaps.action.SetFontColorAction(o.selectedNode, e);
-        o.executeAction(n)
+        executeForSelection(function(t) {
+            return new mindmaps.action.SetFontColorAction(t, e)
+        })
     }, t.borderBackgroundColorPicked = function(e) {
-        var n = new mindmaps.action.SetBorderBackgroundColorAction(o.selectedNode, e);
-        o.executeAction(n)
+        executeForSelection(function(t) {
+            return new mindmaps.action.SetBorderBackgroundColorAction(t, e)
+        })
     }, t.borderColorPicked = function(e) {
-        var n = new mindmaps.action.SetBorderColorAction(o.selectedNode, e);
-        o.executeAction(n)
+        executeForSelection(function(t) {
+            return new mindmaps.action.SetBorderColorAction(t, e)
+        })
     }, t.connectColorPicked = function(e) {
         var n = new mindmaps.action.SetConnectColorAction(o.selectedNode, mindmaps.connectStartNode, e);
         o.executeAction(n)
@@ -367,7 +412,9 @@ mindmaps.InspectorView = function() {
         t.refreshColorPickers();
         t.setCurrentTheme(r)
     }, t.fontColorPreview = function(n) {
-        e.publish(mindmaps.Event.NODE_FONT_COLOR_PREVIEW, o.selectedNode, n)
+        getSelectionTargets().forEach(function(t) {
+            e.publish(mindmaps.Event.NODE_FONT_COLOR_PREVIEW, t, n)
+        })
     }, t.branchColorChildrenButtonClicked = function() {
         var e = new mindmaps.action.SetChildrenBranchColorAction(o.selectedNode);
         o.executeAction(e)

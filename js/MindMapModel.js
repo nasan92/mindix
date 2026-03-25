@@ -5,6 +5,35 @@ mindmaps.MindMapModel = function(e, t, n) {
     this.document = null;
     this.linkedFileHandle = null;
     this.selectedNode = null;
+    this.selectedNodes = [];
+
+    function sameSelection(e, t) {
+        if (e.length !== t.length) {
+            return false;
+        }
+        return e.every(function(e, n) {
+            return e === t[n];
+        });
+    }
+
+    function normalizeSelection(e, t) {
+        var n = [];
+        (e || []).forEach(function(e) {
+            if (e && n.indexOf(e) === -1) {
+                n.push(e);
+            }
+        });
+        if (t && n.indexOf(t) === -1) {
+            n.push(t);
+        }
+        if (!t && n.length) {
+            t = n[n.length - 1];
+        }
+        return {
+            selectedNodes: n,
+            selectedNode: t || null
+        };
+    }
 
     function scheduleLinkedFileSave() {
         if (!r.linkedFileHandle || !r.document) {
@@ -25,6 +54,8 @@ mindmaps.MindMapModel = function(e, t, n) {
     this.setDocument = function(t) {
         this.document = t;
         this.linkedFileHandle = null;
+        this.selectedNode = null;
+        this.selectedNodes = [];
         if (linkedSaveTimeoutId) {
             clearTimeout(linkedSaveTimeoutId);
             linkedSaveTimeoutId = null;
@@ -129,13 +160,43 @@ mindmaps.MindMapModel = function(e, t, n) {
         var e = new mindmaps.action.ConnectNodeClickAction(this.selectedNode, !0);
         this.executeAction(e)
     };
-    this.selectNode = function(t) {
-        if (t === this.selectedNode) {
+    this.getSelectedNodes = function() {
+        return this.selectedNodes.slice()
+    };
+    this.setSelectedNodes = function(t, n) {
+        var r = normalizeSelection(t, n);
+        var i = this.selectedNode;
+        var s = this.selectedNodes.slice();
+        if (i === r.selectedNode && sameSelection(s, r.selectedNodes)) {
             return
         }
-        var n = this.selectedNode;
-        this.selectedNode = t;
-        e.publish(mindmaps.Event.NODE_SELECTED, t, n)
+        this.selectedNode = r.selectedNode;
+        this.selectedNodes = r.selectedNodes;
+        if (i !== r.selectedNode) {
+            e.publish(mindmaps.Event.NODE_SELECTED, r.selectedNode, i)
+        }
+        e.publish(mindmaps.Event.NODE_SELECTION_CHANGED, r.selectedNodes.slice(), s, r.selectedNode, i)
+    };
+    this.selectNode = function(t) {
+        this.setSelectedNodes(t ? [t] : [], t)
+    };
+    this.toggleNodeSelection = function(e) {
+        if (!e) {
+            return
+        }
+        var t = this.selectedNodes.slice();
+        var n = t.indexOf(e);
+        if (n === -1) {
+            t.push(e);
+            this.setSelectedNodes(t, e);
+            return
+        }
+        if (t.length === 1) {
+            this.setSelectedNodes(t, e);
+            return
+        }
+        t.splice(n, 1);
+        this.setSelectedNodes(t, this.selectedNode === e ? t[t.length - 1] : this.selectedNode)
     };
     this.selectParent = function() {
         if (r.selectedNode) {
