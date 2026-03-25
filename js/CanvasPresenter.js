@@ -125,11 +125,11 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
             console.log("deleting node");
             var d = o.selectedNode;
             (e === d || e.isDescendant(d)) && o.selectNode(i), n(e), console.log("nodes is " + o.getDocument().getConnectedNodes().length), t.deleteNode(e), i.isLeaf() && t.removeFoldButton(i)
-        }), e.subscribe(mindmaps.Event.CONNECTED_TWO_NODES, function(e, n) {
+        }), e.subscribe(mindmaps.Event.CONNECTED_TWO_NODES, function(e, n, r) {
             console.log("connected " + e.getCaption() + "," + n.getCaption());
-            var t = new mindmaps.action.ConnectTwoNodesAction(e, n, "dashed", "#ff0000", "0");
+            var t = new mindmaps.action.ConnectTwoNodesAction(e, n, "dashed", "#ff0000", "0", r);
             o.executeAction(t)
-        }), e.subscribe(mindmaps.Event.CONNECTION_COLOR_CHANGED, function() {}), e.subscribe(mindmaps.Event.NODE_SELECTED, r), e.subscribe(mindmaps.Event.NODE_OPENED, function(e) {
+        }), e.subscribe(mindmaps.Event.CONNECTION_COLOR_CHANGED, function() {}), e.subscribe(mindmaps.Event.NODE_SELECTION_CHANGED, r), e.subscribe(mindmaps.Event.NODE_OPENED, function(e) {
             e.forEachChild(function(e) {
                 i(e)
             }), t.openNode(e)
@@ -228,6 +228,10 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         });
         return t
     }
+
+    function C(e, n) {
+        return (n || []).indexOf(e) !== -1
+    }
     this.init = function() {
         var e = n.get(mindmaps.EditNodeCaptionCommand);
         e.setHandler(this.editNodeCaption.bind(this));
@@ -241,8 +245,18 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
             var n = new mindmaps.action.ToggleNodeFoldAction(e);
             o.executeAction(n)
         },
-        r = function(e, n) {
-            t.selectedNode = e, n && t.unhighlightNode(n), t.highlightNode(e)
+        r = function(e, n, r) {
+            t.selectedNode = r || null;
+            (n || []).forEach(function(n) {
+                if (!C(n, e)) {
+                    t.unhighlightNode(n)
+                }
+            });
+            (e || []).forEach(function(e) {
+                if (!C(e, n)) {
+                    t.highlightNode(e)
+                }
+            })
         };
     t.mouseWheeled = function(e) {
         t.stopEditNodeCaption(), e > 0 ? i.zoomIn(.1) : 0 > e && i.zoomOut(.1)
@@ -274,12 +288,50 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         t.isNodeDragging() || c.isDragging() || c.attachToNode(e)
     }, t.nodeCaptionMouseOver = function(e) {
         t.isNodeDragging() || c.isDragging() || c.attachToNode(e)
-    }, t.nodeMouseDown = function(e) {
-        t.hideNodeContextMenu(), o.selectNode(e), c.attachToNode(e)
+    }, t.nodeMouseDown = function(e, n) {
+        if (!mindmaps.connectMode) {
+            mindmaps.connectSelected = !1
+        }
+        t.hideNodeContextMenu();
+        if (n && (n.metaKey || n.ctrlKey) && !mindmaps.connectMode) {
+            o.toggleNodeSelection(e)
+        } else {
+            o.selectNode(e)
+        }
+        c.attachToNode(e)
+    }, t.connectionSelected = function(fromNode, toNode, conn) {
+        mindmaps.connectMode = !1;
+        mindmaps.connectStartNode = toNode;
+        mindmaps.connectSelected = !0;
+        o.selectNode(fromNode);
+        c.attachToNode(fromNode);
+        e.publish(mindmaps.Event.CONNECTION_SELECTED, fromNode, toNode, conn)
     }, t.nodeDoubleClicked = function(e) {
         t.editNodeCaption(e)
     }, t.nodeDragged = function(e, n) {
         var t = new mindmaps.action.MoveNodeAction(e, n);
+        o.executeAction(t)
+    }, t.connectionAnchorMoved = function(e, n, r) {
+        var anchor = {};
+        if (r.type === "to") {
+            anchor.toAnchorX = r.anchorX;
+            anchor.toAnchorY = r.anchorY
+        } else if (r.type === "curvePair") {
+            anchor.curve1T = r.curve1T;
+            anchor.curve1N = r.curve1N;
+            anchor.curve2T = r.curve2T;
+            anchor.curve2N = r.curve2N
+        } else if (r.type === "curve1") {
+            anchor.curve1T = r.anchorX;
+            anchor.curve1N = r.anchorY
+        } else if (r.type === "curve2") {
+            anchor.curve2T = r.anchorX;
+            anchor.curve2N = r.anchorY
+        } else {
+            anchor.fromAnchorX = r.anchorX;
+            anchor.fromAnchorY = r.anchorY
+        }
+        var t = new mindmaps.action.SetConnectAnchorAction(e, n, anchor);
         o.executeAction(t)
     }, t.nodeImageResizeStarted = function(e, n) {
         b[e.id] = g(n)

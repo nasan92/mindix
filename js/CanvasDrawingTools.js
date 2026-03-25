@@ -30,7 +30,7 @@ mindmaps.CanvasDrawingUtil = {
 };
 mindmaps.CanvasConnectorDrawer = function() {
     this.beforeDraw = function(e, t, n, r) {};
-    this.render = function(e, t, n, r, i, s, o, u, a, f, l, c) {
+    this.render = function(e, t, n, r, i, s, o, u, a, f, l, c, h) {
         function D(e, t) {
             try {
                 e.setLineDash(t)
@@ -41,113 +41,14 @@ mindmaps.CanvasConnectorDrawer = function() {
             } finally {}
         }
 
-        function P(e, t, n, r) {
-            this.x1 = e;
-            this.y1 = t;
-            this.x2 = n;
-            this.y2 = r
-        }
-        e.save();
-        i = i * f;
-        s = s * f;
-        n = n * f;
-        r = r * f;
-        n = n - i;
-        r = r - s;
-        offsetX = n;
-        offsetY = r;
-        var h = u.width();
-        var p = o.width();
-        var d = u.innerHeight();
-        var v = o.innerHeight();
-        var m, g;
-        var y = false;
-        var b, w, E, S;
-        var x;
-        var T = offsetX + p / 2 < h / 2;
-        if (T) {
-            var N = Math.abs(offsetX);
-            if (N > p) {
-                E = N - p + 1;
-                b = p;
-                m = true
-            } else {
-                b = -offsetX;
-                E = p + offsetX;
-                m = false;
-                y = true
+        function P(e, t, n) {
+            if (!isFinite(e)) {
+                return t
             }
-        } else {
-            if (offsetX > h) {
-                E = offsetX - h + 1;
-                b = h - offsetX;
-                m = false
-            } else {
-                E = h - offsetX;
-                b = 0;
-                m = true;
-                y = true
-            }
+            return Math.max(t, Math.min(n, e))
         }
-        var C = 5;
-        var k = C / 2;
-        if (E < C) {
-            E = C
-        }
-        var L = offsetY + v < d;
-        if (L) {
-            w = v;
-            S = -offsetY - w;
-            g = true
-        } else {
-            w = d - offsetY;
-            S = -w;
-            g = false
-        }
-        var C = 5;
-        var k = C / 2;
-        if (S < C) {
-            S = C
-        }
-        this.beforeDraw(E, S, b, w);
-        var A, O, M, _;
-        if (m) {
-            A = 0;
-            M = E
-        } else {
-            A = E;
-            M = 0
-        }
-        if (g) {
-            O = 0;
-            _ = S
-        } else {
-            O = S;
-            _ = 0
-        }
-        e.lineWidth = 1;
-        e.strokeStyle = a;
-        e.fillStyle = a;
-        P.prototype.drawWithArrowheads = function(e, t) {
-            e.strokeStyle = t;
-            e.fillStyle = t;
-            e.lineWidth = 2;
-            e.beginPath();
-            e.moveTo(this.x1, this.y1);
-            e.lineTo(this.x2, this.y2);
-            e.stroke();
-            if (c == "2") {
-                var n = Math.atan((this.y2 - this.y1) / (this.x2 - this.x1));
-                n += (this.x2 > this.x1 ? -90 : 90) * Math.PI / 180;
-                this.drawArrowhead(e, this.x1, this.y1, n)
-            }
-            if (c == "2" || c == "1") {
-                var r = Math.atan((this.y2 - this.y1) / (this.x2 - this.x1));
-                r += (this.x2 > this.x1 ? 90 : -90) * Math.PI / 180;
-                this.drawArrowhead(e, this.x2, this.y2, r)
-            }
-        };
-        P.prototype.drawArrowhead = function(e, t, n, r) {
+
+        function O(t, n, r) {
             e.save();
             e.beginPath();
             e.translate(t, n);
@@ -158,17 +59,286 @@ mindmaps.CanvasConnectorDrawer = function() {
             e.closePath();
             e.restore();
             e.fill()
+        }
+
+        function N(t, n) {
+            e.save();
+            e.beginPath();
+            e.fillStyle = "#4A90E2";
+            e.strokeStyle = "#1a6fc4";
+            e.lineWidth = 3;
+            e.shadowColor = "rgba(0, 0, 0, 0.28)";
+            e.shadowBlur = 5;
+            e.arc(t, n, 7, 0, Math.PI * 2, false);
+            e.fill();
+            e.stroke();
+            e.restore()
+        }
+
+        function M(e, t) {
+            var n = e.x + e.w / 2;
+            var r = e.y + e.h / 2;
+            var i = t.x - n;
+            var s = t.y - r;
+            if (!i && !s) {
+                return {
+                    x: n,
+                    y: r
+                }
+            }
+            var o = i ? e.w / 2 / Math.abs(i) : Number.POSITIVE_INFINITY;
+            var u = s ? e.h / 2 / Math.abs(s) : Number.POSITIVE_INFINITY;
+            var a = Math.min(o, u);
+            return {
+                x: n + i * a,
+                y: r + s * a
+            }
+        }
+
+        function C(t, n, r, i, s) {
+            var o = r - t;
+            var u = i - n;
+            var a = Math.sqrt(o * o + u * u) || 1;
+            var f = o / a;
+            var l = u / a;
+            var c = -l;
+            var h = f;
+            var p = s && "number" == typeof s.curve1T ? s.curve1T : .28;
+            var d = s && "number" == typeof s.curve1N ? s.curve1N : .22;
+            var v = s && "number" == typeof s.curve2T ? s.curve2T : .72;
+            var m = s && "number" == typeof s.curve2N ? s.curve2N : -.22;
+            return {
+                c1: {
+                    x: t + o * p + c * (d * a),
+                    y: n + u * p + h * (d * a)
+                },
+                c2: {
+                    x: t + o * v + c * (m * a),
+                    y: n + u * v + h * (m * a)
+                }
+            }
+        }
+
+        function B(t, n, r, i, s, o, u) {
+            if (!u || !u.length || !s) {
+                return
+            }
+            var a = u.offset();
+            if (!a) {
+                return
+            }
+            s._renderPoints = {
+                from: {
+                    x: a.left + t,
+                    y: a.top + n
+                },
+                to: {
+                    x: a.left + r,
+                    y: a.top + i
+                }
+            };
+            if (o) {
+                s._renderPoints.c1 = {
+                    x: a.left + o.c1.x,
+                    y: a.top + o.c1.y
+                };
+                s._renderPoints.c2 = {
+                    x: a.left + o.c2.x,
+                    y: a.top + o.c2.y
+                }
+            }
+        }
+
+        function _(t, n, r, i, s) {
+            e.strokeStyle = a;
+            e.fillStyle = a;
+            e.lineWidth = 2;
+            if (lineStyle == "dashed") D(e, [8]);
+            else if (lineStyle == "dotted") D(e, [3]);
+            else if (lineStyle == "solid") D(e, [0]);
+            else D(e, []);
+            e.beginPath();
+            e.moveTo(t, n);
+            var h = null;
+            if (isCurved) {
+                h = C(t, n, r, i, s);
+                e.bezierCurveTo(h.c1.x, h.c1.y, h.c2.x, h.c2.y, r, i)
+            } else {
+                e.lineTo(r, i)
+            }
+            e.stroke();
+            var p = {
+                x: r - t,
+                y: i - n
+            };
+            var d = {
+                x: p.x,
+                y: p.y
+            };
+            var v = {
+                x: p.x,
+                y: p.y
+            };
+            if (h) {
+                d = {
+                    x: h.c1.x - t,
+                    y: h.c1.y - n
+                };
+                v = {
+                    x: r - h.c2.x,
+                    y: i - h.c2.y
+                }
+            }
+            if (c == "2") {
+                var m = Math.atan2(d.y, d.x) - Math.PI / 2;
+                O(t, n, m)
+            }
+            if (c == "2" || c == "1") {
+                var g = Math.atan2(v.y, v.x) + Math.PI / 2;
+                O(r, i, g)
+            }
+            return h
+        }
+
+        function oldRender() {
+            var eOffsetX = n - i;
+            var eOffsetY = r - s;
+            var fromWidth = u.width();
+            var toWidth = o.width();
+            var fromHeight = u.innerHeight();
+            var toHeight = o.innerHeight();
+            var fromLeft;
+            var fromTop;
+            var width;
+            var height;
+            var startAtLeft;
+            var startAtTop;
+            var toLeft = eOffsetX + toWidth / 2 < fromWidth / 2;
+            if (toLeft) {
+                var absX = Math.abs(eOffsetX);
+                if (absX > toWidth) {
+                    width = absX - toWidth + 1;
+                    fromLeft = toWidth;
+                    startAtLeft = true
+                } else {
+                    fromLeft = -eOffsetX;
+                    width = toWidth + eOffsetX;
+                    startAtLeft = false
+                }
+            } else {
+                if (eOffsetX > fromWidth) {
+                    width = eOffsetX - fromWidth + 1;
+                    fromLeft = fromWidth - eOffsetX;
+                    startAtLeft = false
+                } else {
+                    width = fromWidth - eOffsetX;
+                    fromLeft = 0;
+                    startAtLeft = true
+                }
+            }
+            if (width < 5) {
+                width = 5
+            }
+            var toAbove = eOffsetY + toHeight < fromHeight;
+            if (toAbove) {
+                fromTop = toHeight;
+                height = -eOffsetY - fromTop;
+                startAtTop = true
+            } else {
+                fromTop = fromHeight - eOffsetY;
+                height = -fromTop;
+                startAtTop = false
+            }
+            if (height < 5) {
+                height = 5
+            }
+            this.beforeDraw(width, height, fromLeft, fromTop);
+            var startX = startAtLeft ? 0 : width;
+            var endX = startAtLeft ? width : 0;
+            var startY = startAtTop ? 0 : height;
+            var endY = startAtTop ? height : 0;
+            var curve = _(startX, startY, endX, endY, h);
+            B(startX, startY, endX, endY, h, curve, this.$canvas);
+            if (h && h._selected) {
+                N(startX, startY);
+                N(endX, endY);
+                if (isCurved && curve) {
+                    N(curve.c1.x, curve.c1.y);
+                    N(curve.c2.x, curve.c2.y)
+                }
+            }
+        }
+
+        e.save();
+        i = i * f;
+        s = s * f;
+        n = n * f;
+        r = r * f;
+
+        var isCurved = h && "curved" == h.shape || "curved" == l;
+        var lineStyle = l;
+        if ("dashed" != lineStyle && "dotted" != lineStyle && "solid" != lineStyle) {
+            lineStyle = "dashed"
+        }
+
+        var hasManualToAnchor = h && "number" == typeof h.toAnchorX && "number" == typeof h.toAnchorY;
+        var hasManualFromAnchor = h && "number" == typeof h.fromAnchorX && "number" == typeof h.fromAnchorY;
+        var hasManualAnchor = hasManualToAnchor || hasManualFromAnchor;
+        if (!hasManualAnchor && !isCurved) {
+            oldRender.call(this);
+            e.restore();
+            return
+        }
+
+        var fromRect = {
+            x: 0,
+            y: 0,
+            w: u.outerWidth() || u.width() || 1,
+            h: u.innerHeight() || u.height() || 1
         };
-        var H = A;
-        var B = O;
-        var j = M;
-        var F = _;
-        e.strokeStyle = a;
-        if (l == "dashed") D(e, [8]);
-        else if (l == "dotted") D(e, [3]);
-        else if (l == "solid") D(e, [0]);
-        var I = new P(H, B, j, F);
-        I.drawWithArrowheads(e, a);
+        var toRect = {
+            x: i - n,
+            y: s - r,
+            w: o.outerWidth() || o.width() || 1,
+            h: o.innerHeight() || o.height() || 1
+        };
+        var targetPoint = hasManualToAnchor
+            ? { x: toRect.x + P(h.toAnchorX, -.15, 1.15) * toRect.w, y: toRect.y + P(h.toAnchorY, -.15, 1.15) * toRect.h }
+            : { x: toRect.x + toRect.w / 2, y: toRect.y + toRect.h / 2 };
+        var sourcePoint = hasManualFromAnchor
+            ? { x: P(h.fromAnchorX, -.15, 1.15) * fromRect.w, y: P(h.fromAnchorY, -.15, 1.15) * fromRect.h }
+            : M(fromRect, targetPoint);
+        var curveAbs = isCurved ? C(sourcePoint.x, sourcePoint.y, targetPoint.x, targetPoint.y, h) : null;
+        var padding = isCurved ? 40 : 20;
+        var minX = Math.min(sourcePoint.x, targetPoint.x);
+        var maxX = Math.max(sourcePoint.x, targetPoint.x);
+        var minY = Math.min(sourcePoint.y, targetPoint.y);
+        var maxY = Math.max(sourcePoint.y, targetPoint.y);
+        if (curveAbs) {
+            minX = Math.min(minX, curveAbs.c1.x, curveAbs.c2.x);
+            maxX = Math.max(maxX, curveAbs.c1.x, curveAbs.c2.x);
+            minY = Math.min(minY, curveAbs.c1.y, curveAbs.c2.y);
+            maxY = Math.max(maxY, curveAbs.c1.y, curveAbs.c2.y)
+        }
+        var left = minX - padding;
+        var top = minY - padding;
+        var width = Math.max(2, maxX - minX + 2 * padding);
+        var height = Math.max(2, maxY - minY + 2 * padding);
+        this.beforeDraw(width, height, left, top);
+        var sourceX = sourcePoint.x - left;
+        var sourceY = sourcePoint.y - top;
+        var targetX = targetPoint.x - left;
+        var targetY = targetPoint.y - top;
+        var curve = _(sourceX, sourceY, targetX, targetY, h);
+        B(sourceX, sourceY, targetX, targetY, h, curve, this.$canvas);
+        if (h && h._selected) {
+            N(sourceX, sourceY);
+            N(targetX, targetY);
+            if (isCurved && curve) {
+                N(curve.c1.x, curve.c1.y);
+                N(curve.c2.x, curve.c2.y)
+            }
+        }
         e.restore()
     }
 };
