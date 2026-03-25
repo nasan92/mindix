@@ -3,6 +3,7 @@ mindmaps.Event = {
     DOCUMENT_SAVED: "DocumentSavedEvent",
     DOCUMENT_CLOSED: "DocumentClosedEvent",
     NODE_SELECTED: "NodeSelectedEvent",
+    NODE_SELECTION_CHANGED: "NodeSelectionChangedEvent",
     NODE_DESELECTED: "NodeDeselectedEvent",
     NODE_MOVED: "NodeMovedEvent",
     NODE_TEXT_CAPTION_CHANGED: "NodeTextCaptionChangedEvent",
