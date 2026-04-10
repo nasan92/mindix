@@ -336,9 +336,30 @@ function testCurvedConnectionsRenderAsSvgPaths() {
   assert(svg.includes('<polygon '), "Expected arrow polygons for curved connector");
 }
 
+function testRootMultiLineTextUsesZeroCoordinates() {
+  const root = makeNode("root", "ERKENNTNISTHEORIE\nDenkrichtungen", {
+    layout: { offset: { x: 0, y: 0 } }
+  });
+
+  const doc = {
+    mindmap: {
+      getRoot() {
+        return root;
+      }
+    },
+    getConnectedNodes() {
+      return [];
+    }
+  };
+
+  const svg = buildRenderer().render(doc);
+  assert(svg.includes('x="0" y="0" width="'), "Expected root SVG background to use zero coordinates");
+  assert(svg.includes('<tspan x="0" y="32">ERKENNTNISTHEORIE</tspan>'), "Expected first root-line tspan to preserve x coordinate");
+  assert(svg.includes('<tspan x="0" y="47">Denkrichtungen</tspan>'), "Expected second root-line tspan to preserve x coord");
+}
 
 (function run() {
-  const tests = [testBasicVectorOutput, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg, testCurvedConnectionsRenderAsSvgPaths];
+  const tests = [testBasicVectorOutput, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg, testCurvedConnectionsRenderAsSvgPaths, testRootMultiLineTextUsesZeroCoordinates];
   let passed = 0;
 
   tests.forEach((fn) => {
