@@ -78,7 +78,7 @@ mindmaps.StaticSVGRenderer = function() {
     };
 
     function escapeXml(e) {
-        return String(e || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&apos;")
+        return String(e == null ? "" : e).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&apos;")
     }
 
     function toNumber(e, t) {
@@ -154,10 +154,14 @@ mindmaps.StaticSVGRenderer = function() {
                 metrics = mindmaps.TextMetrics.getTextMetrics(e, 1)
             } catch (r) {
                 var caption = e.getCaption ? e.getCaption() : "";
+                var textLines = (caption || "").split(/\r\n|\r|\n/g);
+                var maxLineLength = Math.max.apply(Math, textLines.map(function(line) {
+                    return String(line || "").length
+                }));
                 metrics = {
-                    width: Math.max(40, String(caption || "").length * 8),
-                    height: 24,
-                    fontW: Math.max(40, String(caption || "").length * 8),
+                    width: Math.max(40, maxLineLength * 8),
+                    height: Math.max(24, textLines.length * 15),
+                    fontW: Math.max(40, maxLineLength * 8),
                     fontH: 16
                 }
             }
