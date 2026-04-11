@@ -1308,6 +1308,12 @@ mindmaps.DefaultCanvasView = function() {
                 B()
             }
         });
+        t.on("contextmenu", function(evt) {
+            if (!$(evt.target).closest("div.node-caption").length) {
+                evt.preventDefault();
+                return false
+            }
+        });
         t.delegate("div.node-caption", "contextmenu", function(t) {
             var n = $(this).parent().data("node");
             if (e.nodeContextMenuRequested) {
@@ -1337,12 +1343,19 @@ mindmaps.DefaultCanvasView = function() {
             }
             return false
         });
-        this.$getContainer().bind("mousewheel", function(t) {
-            var n = t.originalEvent.wheelDelta || -t.originalEvent.detail;
-            if (e.mouseWheeled) {
-                e.mouseWheeled(n)
+        this.$getContainer()[0].addEventListener("wheel", function(t) {
+            t.preventDefault();
+            if (t.ctrlKey) {
+                // Pinch-to-zoom gesture (trackpad pinch or Ctrl+scroll)
+                var delta = -t.deltaY;
+                if (e.mouseWheeled) { e.mouseWheeled(delta); }
+            } else {
+                // Two-finger pan (trackpad) or regular scroll
+                var container = e.$getContainer()[0];
+                container.scrollLeft += t.deltaX;
+                container.scrollTop += t.deltaY;
             }
-        });
+        }, { passive: false });
         if (mindmaps.responsive.isTouchDevice) {
             this.$getContainer().hammer({}).bind("transform", function(t) {
                 console.log(t);

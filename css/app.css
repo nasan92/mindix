@@ -237,6 +237,11 @@ html {
     overflow: hidden
 }
 
+#canvas-container.is-panning,
+#canvas-container.is-panning * {
+    cursor: grabbing !important
+}
+
 #drawing-area {
     position: absolute;
     background-color: #fff;
