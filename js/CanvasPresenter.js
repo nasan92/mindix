@@ -299,6 +299,22 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
             o.selectNode(e)
         }
         c.attachToNode(e)
+    }, t.canvasMarqueeSelect = function(nodes) {
+        t.stopEditNodeCaption();
+        if (nodes.length === 0) {
+            o.selectNode(null);
+        } else {
+            o.setSelectedNodes(nodes, nodes[0]);
+        }
+    }, t.canvasBackgroundClick = function() {
+        t.stopEditNodeCaption();
+        // Directly unhighlight any visually selected nodes before clearing the model.
+        // This handles model/visual desync and ensures updateNode is called so branch lines redraw correctly.
+        $(".node-caption.selected").each(function() {
+            var node = $("#node-" + this.id.replace("node-caption-", "")).data("node");
+            if (node) t.unhighlightNode(node);
+        });
+        o.selectNode(null);
     }, t.connectionSelected = function(fromNode, toNode, conn) {
         mindmaps.connectMode = !1;
         mindmaps.connectStartNode = toNode;
