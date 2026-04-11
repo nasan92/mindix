@@ -191,38 +191,39 @@ mindmaps.StaticSVGRenderer = function() {
     }
 
     function getMindMapDimensions(e) {
-        var t = 0,
-            n = 0,
-            r = 0,
-            i = 0;
-        var s = 50;
+        var minX = Infinity,
+            minY = Infinity,
+            maxX = -Infinity,
+            maxY = -Infinity;
+        var margin = 50;
 
-        function o(e) {
-            var s = getPositionSafe(e);
-            var o = e.textMetrics;
-            if (s.x < t) {
-                t = s.x
+        function updateBounds(node) {
+            var pos = getPositionSafe(node);
+            var metrics = node.textMetrics;
+            if (pos.x < minX) {
+                minX = pos.x
             }
-            if (s.x + o.width > r) {
-                r = s.x + o.width
+            if (pos.x + metrics.width > maxX) {
+                maxX = pos.x + metrics.width
             }
-            if (s.y < n) {
-                n = s.y
+            if (pos.y < minY) {
+                minY = pos.y
             }
-            if (s.y + e.outerHeight() > i) {
-                i = s.y + e.outerHeight()
+            if (pos.y + node.outerHeight() > maxY) {
+                maxY = pos.y + node.outerHeight()
             }
         }
 
-        o(e);
-        e.forEachDescendant(function(e) {
-            o(e)
+        updateBounds(e);
+        e.forEachDescendant(function(node) {
+            updateBounds(node)
         });
-        var u = Math.max(Math.abs(r), Math.abs(t));
-        var a = Math.max(Math.abs(i), Math.abs(n));
         return {
-            width: 2 * u + s,
-            height: 2 * a + s
+            width: maxX - minX + margin,
+            height: maxY - minY + margin,
+            minX: minX,
+            minY: minY,
+            margin: margin
         }
     }
 
@@ -847,7 +848,7 @@ mindmaps.StaticSVGRenderer = function() {
             fill: "white"
         });
         openTag("g", {
-            transform: "translate(" + dimensions.width / 2 + " " + dimensions.height / 2 + ")"
+            transform: "translate(" + (-dimensions.minX + dimensions.margin / 2) + " " + (-dimensions.minY + dimensions.margin / 2) + ")"
         });
 
         drawAllBranches(root);
