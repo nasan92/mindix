@@ -1823,6 +1823,8 @@ mindmaps.DefaultCanvasView = function() {
                     "border-style": o.style,
                     "border-color": o.color
                 })
+            } else {
+                r.css("border-style", "none");
             }
             if (borderVisible) {
                 $("#inspector-border-color-picker").removeAttr("disabled")

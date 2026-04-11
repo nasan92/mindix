@@ -78,7 +78,7 @@ mindmaps.StaticSVGRenderer = function() {
     };
 
     function escapeXml(e) {
-        return String(e || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&apos;")
+        return String(e == null ? "" : e).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&apos;")
     }
 
     function toNumber(e, t) {
@@ -154,10 +154,14 @@ mindmaps.StaticSVGRenderer = function() {
                 metrics = mindmaps.TextMetrics.getTextMetrics(e, 1)
             } catch (r) {
                 var caption = e.getCaption ? e.getCaption() : "";
+                var textLines = (caption || "").split(/\r\n|\r|\n/g);
+                var maxLineLength = Math.max.apply(Math, textLines.map(function(line) {
+                    return String(line || "").length
+                }));
                 metrics = {
-                    width: Math.max(40, String(caption || "").length * 8),
-                    height: 24,
-                    fontW: Math.max(40, String(caption || "").length * 8),
+                    width: Math.max(40, maxLineLength * 8),
+                    height: Math.max(24, textLines.length * 15),
+                    fontW: Math.max(40, maxLineLength * 8),
                     fontH: 16
                 }
             }
@@ -187,38 +191,39 @@ mindmaps.StaticSVGRenderer = function() {
     }
 
     function getMindMapDimensions(e) {
-        var t = 0,
-            n = 0,
-            r = 0,
-            i = 0;
-        var s = 50;
+        var minX = Infinity,
+            minY = Infinity,
+            maxX = -Infinity,
+            maxY = -Infinity;
+        var margin = 50;
 
-        function o(e) {
-            var s = getPositionSafe(e);
-            var o = e.textMetrics;
-            if (s.x < t) {
-                t = s.x
+        function updateBounds(node) {
+            var pos = getPositionSafe(node);
+            var metrics = node.textMetrics;
+            if (pos.x < minX) {
+                minX = pos.x
             }
-            if (s.x + o.width > r) {
-                r = s.x + o.width
+            if (pos.x + metrics.width > maxX) {
+                maxX = pos.x + metrics.width
             }
-            if (s.y < n) {
-                n = s.y
+            if (pos.y < minY) {
+                minY = pos.y
             }
-            if (s.y + e.outerHeight() > i) {
-                i = s.y + e.outerHeight()
+            if (pos.y + node.outerHeight() > maxY) {
+                maxY = pos.y + node.outerHeight()
             }
         }
 
-        o(e);
-        e.forEachDescendant(function(e) {
-            o(e)
+        updateBounds(e);
+        e.forEachDescendant(function(node) {
+            updateBounds(node)
         });
-        var u = Math.max(Math.abs(r), Math.abs(t));
-        var a = Math.max(Math.abs(i), Math.abs(n));
         return {
-            width: 2 * u + s,
-            height: 2 * a + s
+            width: maxX - minX + margin,
+            height: maxY - minY + margin,
+            minX: minX,
+            minY: minY,
+            margin: margin
         }
     }
 
@@ -831,8 +836,7 @@ mindmaps.StaticSVGRenderer = function() {
         openTag("svg", {
             xmlns: "http://www.w3.org/2000/svg",
             "xmlns:xlink": "http://www.w3.org/1999/xlink",
-            width: dimensions.width,
-            height: dimensions.height,
+            width: "100%",
             viewBox: "0 0 " + dimensions.width + " " + dimensions.height
         });
         addSelfTag("rect", {
@@ -843,7 +847,7 @@ mindmaps.StaticSVGRenderer = function() {
             fill: "white"
         });
         openTag("g", {
-            transform: "translate(" + dimensions.width / 2 + " " + dimensions.height / 2 + ")"
+            transform: "translate(" + (-dimensions.minX + dimensions.margin / 2) + " " + (-dimensions.minY + dimensions.margin / 2) + ")"
         });
 
         drawAllBranches(root);
