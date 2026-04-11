@@ -208,6 +208,31 @@ function testBasicVectorOutput() {
   assert(!svg.includes('<image href="data:image/png'), "Should not contain PNG fallback image wrapper");
 }
 
+function testExportUsesTightBoundsForRightSideMaps() {
+  const root = makeNode("root", "Root", {
+    layout: { offset: { x: 0, y: 0 } }
+  });
+  const child = makeNode("child", "Alpha", {
+    layout: { offset: { x: 500, y: 20 } }
+  });
+  root.addChild(child);
+
+  const doc = {
+    mindmap: {
+      getRoot() {
+        return root;
+      }
+    },
+    getConnectedNodes() {
+      return [];
+    }
+  };
+
+  const svg = buildRenderer().render(doc);
+  assert(svg.includes('viewBox="0 0 590'), "Expected tight width for right-side only layout");
+  assert(svg.includes('transform="translate(25 '), "Expected minimal left padding instead of centering the whole map");
+}
+
 function testMalformedDataDoesNotThrow() {
   const root = makeNode("root", "Root", {
     layout: { offset: { x: 0, y: 0 } },
@@ -336,9 +361,30 @@ function testCurvedConnectionsRenderAsSvgPaths() {
   assert(svg.includes('<polygon '), "Expected arrow polygons for curved connector");
 }
 
+function testRootMultiLineTextUsesZeroCoordinates() {
+  const root = makeNode("root", "ERKENNTNISTHEORIE\nDenkrichtungen", {
+    layout: { offset: { x: 0, y: 0 } }
+  });
+
+  const doc = {
+    mindmap: {
+      getRoot() {
+        return root;
+      }
+    },
+    getConnectedNodes() {
+      return [];
+    }
+  };
+
+  const svg = buildRenderer().render(doc);
+  assert(svg.includes('x="0" y="0" width="'), "Expected root SVG background to use zero coordinates");
+  assert(svg.includes('<tspan x="0" y="32">ERKENNTNISTHEORIE</tspan>'), "Expected first root-line tspan to preserve x coordinate");
+  assert(svg.includes('<tspan x="0" y="47">Denkrichtungen</tspan>'), "Expected second root-line tspan to preserve x coord");
+}
 
 (function run() {
-  const tests = [testBasicVectorOutput, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg, testCurvedConnectionsRenderAsSvgPaths];
+  const tests = [testBasicVectorOutput, testExportUsesTightBoundsForRightSideMaps, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg, testCurvedConnectionsRenderAsSvgPaths, testRootMultiLineTextUsesZeroCoordinates];
   let passed = 0;
 
   tests.forEach((fn) => {

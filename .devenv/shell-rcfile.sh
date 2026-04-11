@@ -154,7 +154,7 @@ export PATH="$_DEVENV_PATH"
 
 __devenv_reload_apply() {
     # Source new environment if a reload is pending
-    if [ -f "/var/folders/00/6mt4rpt10cx7gs354g0g326m0000gn/T/devenv-reload-76511.sh" ]; then
+    if [ -f "/var/folders/00/6mt4rpt10cx7gs354g0g326m0000gn/T/devenv-reload-32988.sh" ]; then
         # Reverse previous diff to restore base environment
         __devenv_apply_reverse_diff
 
@@ -164,8 +164,8 @@ __devenv_reload_apply() {
         __devenv_capture_env > "$before_file"
 
         # Source new devenv environment
-        source "/var/folders/00/6mt4rpt10cx7gs354g0g326m0000gn/T/devenv-reload-76511.sh"
-        rm -f "/var/folders/00/6mt4rpt10cx7gs354g0g326m0000gn/T/devenv-reload-76511.sh"
+        source "/var/folders/00/6mt4rpt10cx7gs354g0g326m0000gn/T/devenv-reload-32988.sh"
+        rm -f "/var/folders/00/6mt4rpt10cx7gs354g0g326m0000gn/T/devenv-reload-32988.sh"
 
         # Compute and store new diff (in _DEVENV_DIFF env var)
         __devenv_compute_diff "$before_file"
