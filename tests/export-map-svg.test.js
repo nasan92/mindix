@@ -208,6 +208,31 @@ function testBasicVectorOutput() {
   assert(!svg.includes('<image href="data:image/png'), "Should not contain PNG fallback image wrapper");
 }
 
+function testExportUsesTightBoundsForRightSideMaps() {
+  const root = makeNode("root", "Root", {
+    layout: { offset: { x: 0, y: 0 } }
+  });
+  const child = makeNode("child", "Alpha", {
+    layout: { offset: { x: 500, y: 20 } }
+  });
+  root.addChild(child);
+
+  const doc = {
+    mindmap: {
+      getRoot() {
+        return root;
+      }
+    },
+    getConnectedNodes() {
+      return [];
+    }
+  };
+
+  const svg = buildRenderer().render(doc);
+  assert(svg.includes('viewBox="0 0 590'), "Expected tight width for right-side only layout");
+  assert(svg.includes('transform="translate(25 '), "Expected minimal left padding instead of centering the whole map");
+}
+
 function testMalformedDataDoesNotThrow() {
   const root = makeNode("root", "Root", {
     layout: { offset: { x: 0, y: 0 } },
@@ -359,7 +384,7 @@ function testRootMultiLineTextUsesZeroCoordinates() {
 }
 
 (function run() {
-  const tests = [testBasicVectorOutput, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg, testCurvedConnectionsRenderAsSvgPaths, testRootMultiLineTextUsesZeroCoordinates];
+  const tests = [testBasicVectorOutput, testExportUsesTightBoundsForRightSideMaps, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg, testCurvedConnectionsRenderAsSvgPaths, testRootMultiLineTextUsesZeroCoordinates];
   let passed = 0;
 
   tests.forEach((fn) => {

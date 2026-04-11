@@ -261,34 +261,28 @@ mindmaps.StaticCanvasRenderer = function() {
    * @returns {object} with properties width and height
    */
   function getMindMapDimensions(root) {
-    var pos = root.getPosition();
-    var left = 0, top = 0, right = 0, bottom = 0;
-    var padding = 50;
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    var margin = 50;
 
     function checkDimensions(node) {
       var pos = node.getPosition();
       var tm = node.textMetrics;
 
-      if (pos.x < left) {
-        left = pos.x;
+      if (pos.x < minX) {
+        minX = pos.x;
       }
 
-      if (pos.x + tm.width > right) {
-        right = pos.x + tm.width;
+      if (pos.x + tm.width > maxX) {
+        maxX = pos.x + tm.width;
       }
 
-      if (pos.y < top) {
-        top = pos.y;
+      if (pos.y < minY) {
+        minY = pos.y;
       }
 
-      if (pos.y + node.outerHeight() > bottom) {
-        bottom = pos.y + node.outerHeight();
+      if (pos.y + node.outerHeight() > maxY) {
+        maxY = pos.y + node.outerHeight();
       }
-		console.log('left ' + left);
-		console.log('right ' + right);
-		console.log('top ' + top);
-		console.log('bottom ' + bottom);
-		
     }
 
     checkDimensions(root);
@@ -296,14 +290,12 @@ mindmaps.StaticCanvasRenderer = function() {
       checkDimensions(node);
     });
 
-    // find the longest offset to either side and use twice the length for
-    // canvas width
-    var horizontal = Math.max(Math.abs(right), Math.abs(left));
-    var vertical = Math.max(Math.abs(bottom), Math.abs(top));
-
     return {
-      width : 2 * horizontal + padding,
-      height : 2 * vertical + padding
+      width : maxX - minX + margin,
+      height : maxY - minY + margin,
+      minX : minX,
+      minY : minY,
+      margin : margin
     };
   }
 
@@ -375,9 +367,9 @@ mindmaps.StaticCanvasRenderer = function() {
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, width, height);
 
-    // Apply scale transformation
+    // Apply scale transformation and align the map to the top-left with padding
     ctx.scale(scale, scale);
-    ctx.translate(dimensions.width / 2, dimensions.height / 2);
+    ctx.translate(-dimensions.minX + dimensions.margin / 2, -dimensions.minY + dimensions.margin / 2);
 
     // render in two passes: 1. lines, 2. captions. because we have
     // no z-index, captions should not be covered by lines
