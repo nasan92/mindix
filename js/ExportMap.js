@@ -836,8 +836,7 @@ mindmaps.StaticSVGRenderer = function() {
         openTag("svg", {
             xmlns: "http://www.w3.org/2000/svg",
             "xmlns:xlink": "http://www.w3.org/1999/xlink",
-            width: dimensions.width,
-            height: dimensions.height,
+            width: "100%",
             viewBox: "0 0 " + dimensions.width + " " + dimensions.height
         });
         addSelfTag("rect", {
