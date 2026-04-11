@@ -1344,6 +1344,18 @@ mindmaps.DefaultCanvasView = function() {
             return false
         });
         this.$getContainer()[0].addEventListener("wheel", function(t) {
+            // If the event originated inside a scrollable child (e.g. format sidebar),
+            // let the browser handle it so that element can scroll normally.
+            var el = t.target;
+            var canvasContainer = e.$getContainer()[0];
+            while (el && el !== canvasContainer) {
+                var style = window.getComputedStyle(el);
+                var oy = style.overflowY;
+                if ((oy === "auto" || oy === "scroll") && el.scrollHeight > el.clientHeight) {
+                    return;
+                }
+                el = el.parentElement;
+            }
             t.preventDefault();
             if (t.ctrlKey) {
                 // Pinch-to-zoom gesture (trackpad pinch or Ctrl+scroll)
@@ -1351,9 +1363,8 @@ mindmaps.DefaultCanvasView = function() {
                 if (e.mouseWheeled) { e.mouseWheeled(delta); }
             } else {
                 // Two-finger pan (trackpad) or regular scroll
-                var container = e.$getContainer()[0];
-                container.scrollLeft += t.deltaX;
-                container.scrollTop += t.deltaY;
+                canvasContainer.scrollLeft += t.deltaX;
+                canvasContainer.scrollTop += t.deltaY;
             }
         }, { passive: false });
         if (mindmaps.responsive.isTouchDevice) {
