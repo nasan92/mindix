@@ -1011,6 +1011,90 @@ mindmaps.DefaultCanvasView = function() {
             }
             e.hideNodeContextMenu()
         });
+        // Marquee (rubber-band) selection
+        (function() {
+            var marqueeEl = null;
+            var marqueeActive = false;
+            var MARQUEE_THRESHOLD = 4;
+
+            function getMarqueeEl() {
+                if (!marqueeEl) {
+                    marqueeEl = $("<div/>", { id: "canvas-marquee" }).appendTo("body");
+                }
+                return marqueeEl;
+            }
+
+            function showMarquee(left, top, width, height) {
+                getMarqueeEl().css({ display: "block", left: left, top: top, width: width, height: height });
+            }
+
+            function hideMarquee() {
+                if (marqueeEl) marqueeEl.hide();
+                marqueeActive = false;
+            }
+
+            function getNodesInRect(rect) {
+                var nodes = [];
+                $(".node-caption").each(function() {
+                    var r = this.getBoundingClientRect();
+                    if (r.right >= rect.left && r.left <= rect.right &&
+                        r.bottom >= rect.top && r.top <= rect.bottom) {
+                        var node = $(this).parent().data("node");
+                        if (node) nodes.push(node);
+                    }
+                });
+                return nodes;
+            }
+
+            t.on("mousedown.marqueeSelection", function(startEvt) {
+                if (startEvt.which !== 1) return;
+                if (mindmaps.connectMode) return;
+                if ($(startEvt.target).closest(
+                    "div.node-container, .node-image-selection, .node-image-corner, canvas[id^='node-connector-canvas-']"
+                ).length) return;
+
+                var startX = startEvt.clientX;
+                var startY = startEvt.clientY;
+                marqueeActive = false;
+
+                function onMove(moveEvt) {
+                    var dx = moveEvt.clientX - startX;
+                    var dy = moveEvt.clientY - startY;
+                    if (!marqueeActive && Math.abs(dx) < MARQUEE_THRESHOLD && Math.abs(dy) < MARQUEE_THRESHOLD) return;
+                    marqueeActive = true;
+                    showMarquee(
+                        Math.min(startX, moveEvt.clientX),
+                        Math.min(startY, moveEvt.clientY),
+                        Math.abs(dx),
+                        Math.abs(dy)
+                    );
+                }
+
+                function finish() {
+                    $(document).off("mousemove.marquee mouseup.marquee keydown.marquee");
+                    if (marqueeActive) {
+                        var rect = getMarqueeEl()[0].getBoundingClientRect();
+                        var nodes = getNodesInRect(rect);
+                        if (e.canvasMarqueeSelect) e.canvasMarqueeSelect(nodes);
+                        hideMarquee();
+                    } else {
+                        if (e.canvasBackgroundClick) e.canvasBackgroundClick();
+                    }
+                }
+
+                function cancel() {
+                    $(document).off("mousemove.marquee mouseup.marquee keydown.marquee");
+                    hideMarquee();
+                }
+
+                $(document)
+                    .on("mousemove.marquee", onMove)
+                    .on("mouseup.marquee", finish)
+                    .on("keydown.marquee", function(keyEvt) {
+                        if (keyEvt.keyCode === 27) cancel();
+                    });
+            });
+        })();
         t.delegate("div.node-caption", "mousedown", function(t) {
             var n = $(this).parent().data("node");
             mindmaps.connectPendingAnchor = null;
