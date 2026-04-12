@@ -1582,13 +1582,17 @@ mindmaps.DefaultCanvasView = function() {
                 top: this.zoomFactor * l,
                 "border-bottom": g
             });
+            var dragStartOffset = { x: 0, y: 0 };
             h.one("mouseenter", function() {
                 h.draggable({
                     handle: "div.node-caption:first",
                     start: function() {
-                        t = true
+                        t = true;
+                        var offset = n.getPluginData("layout", "offset");
+                        dragStartOffset.x = offset ? offset.x : 0;
+                        dragStartOffset.y = offset ? offset.y : 0;
                     },
-                    drag: function(t, s) {
+                    drag: function(_evt, s) {
                         var o = s.position.left / e.zoomFactor;
                         var u = s.position.top / e.zoomFactor;
                         var a = n.getPluginData("style", "branchColor");
@@ -1598,6 +1602,32 @@ mindmaps.DefaultCanvasView = function() {
                         w = o;
                         E = u;
                         d(n, i, o, u, true);
+                        var selNodes = e.getSelectedNodes ? e.getSelectedNodes() : [];
+                        if (selNodes.length > 1 && selNodes.indexOf(n) !== -1) {
+                            var deltaX = o - dragStartOffset.x;
+                            var deltaY = u - dragStartOffset.y;
+                            selNodes.forEach(function(selNode) {
+                                if (selNode.id === n.id) return;
+                                var par = selNode.getParent();
+                                while (par) {
+                                    if (selNodes.indexOf(par) !== -1) return;
+                                    par = par.getParent();
+                                }
+                                var selOffset = selNode.getPluginData("layout", "offset");
+                                var selNewX = selOffset.x + deltaX;
+                                var selNewY = selOffset.y + deltaY;
+                                var selEl = $("#node-" + selNode.id);
+                                selEl.css({
+                                    left: selNewX * e.zoomFactor,
+                                    top: selNewY * e.zoomFactor
+                                });
+                                var selParent = selNode.getParent();
+                                if (selParent) {
+                                    y(f(selNode), selNode.getDepth(), selNewX, selNewY, selEl, c(selParent), selNode.getPluginData("style", "branchColor"));
+                                }
+                                d(selNode, selNode.getDepth(), selNewX, selNewY, true);
+                            });
+                        }
                         if (e.nodeDragging) {
                             e.nodeDragging()
                         }
