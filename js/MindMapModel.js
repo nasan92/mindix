@@ -95,6 +95,14 @@ mindmaps.MindMapModel = function(e, t, n) {
         a.setHandler(this.selectSiblingN.bind(this));
         var f = t.get(mindmaps.SelectSiblingPrevNodeCommand);
         f.setHandler(this.selectSiblingP.bind(this));
+        var boldCmd = t.get(mindmaps.ToggleFontBoldCommand);
+        boldCmd.setHandler(this.toggleFontBold.bind(this));
+        var italicCmd = t.get(mindmaps.ToggleFontItalicCommand);
+        italicCmd.setHandler(this.toggleFontItalic.bind(this));
+        var underlineCmd = t.get(mindmaps.ToggleFontUnderlineCommand);
+        underlineCmd.setHandler(this.toggleFontUnderline.bind(this));
+        var linethroughCmd = t.get(mindmaps.ToggleFontLinethroughCommand);
+        linethroughCmd.setHandler(this.toggleFontLinethrough.bind(this));
         e.subscribe(mindmaps.Event.DOCUMENT_CLOSED, function() {
             n.setEnabled(false);
             i.setEnabled(false);
@@ -103,7 +111,11 @@ mindmaps.MindMapModel = function(e, t, n) {
             o.setEnabled(false);
             u.setEnabled(false);
             a.setEnabled(false);
-            f.setEnabled(false)
+            f.setEnabled(false);
+            boldCmd.setEnabled(false);
+            italicCmd.setEnabled(false);
+            underlineCmd.setEnabled(false);
+            linethroughCmd.setEnabled(false)
         });
         e.subscribe(mindmaps.Event.DOCUMENT_OPENED, function() {
             n.setEnabled(true);
@@ -113,7 +125,11 @@ mindmaps.MindMapModel = function(e, t, n) {
             o.setEnabled(true);
             u.setEnabled(true);
             a.setEnabled(true);
-            f.setEnabled(true)
+            f.setEnabled(true);
+            boldCmd.setEnabled(true);
+            italicCmd.setEnabled(true);
+            underlineCmd.setEnabled(true);
+            linethroughCmd.setEnabled(true)
         });
         e.subscribe(mindmaps.Event.NODE_SELECTED, function(e) {
             i.setEnabled(r.getParent(e));
@@ -283,6 +299,42 @@ mindmaps.MindMapModel = function(e, t, n) {
         }
         var n = new mindmaps.action.ChangeNodeCaptionAction(e, t);
         this.executeAction(n)
+    };
+    this.toggleFontBold = function() {
+        if (!r.selectedNode) return;
+        var isBold = r.selectedNode.getPluginData("style", "font").weight === "bold";
+        var composite = new mindmaps.action.CompositeAction;
+        r.selectedNodes.forEach(function(node) {
+            composite.addAction(new mindmaps.action.SetFontWeightAction(node, !isBold))
+        });
+        r.executeAction(composite)
+    };
+    this.toggleFontItalic = function() {
+        if (!r.selectedNode) return;
+        var isItalic = r.selectedNode.getPluginData("style", "font").style === "italic";
+        var composite = new mindmaps.action.CompositeAction;
+        r.selectedNodes.forEach(function(node) {
+            composite.addAction(new mindmaps.action.SetFontStyleAction(node, !isItalic))
+        });
+        r.executeAction(composite)
+    };
+    this.toggleFontUnderline = function() {
+        if (!r.selectedNode) return;
+        var isUnderline = r.selectedNode.getPluginData("style", "font").decoration === "underline";
+        var composite = new mindmaps.action.CompositeAction;
+        r.selectedNodes.forEach(function(node) {
+            composite.addAction(new mindmaps.action.SetFontDecorationAction(node, isUnderline ? "none" : "underline"))
+        });
+        r.executeAction(composite)
+    };
+    this.toggleFontLinethrough = function() {
+        if (!r.selectedNode) return;
+        var isLinethrough = r.selectedNode.getPluginData("style", "font").decoration === "line-through";
+        var composite = new mindmaps.action.CompositeAction;
+        r.selectedNodes.forEach(function(node) {
+            composite.addAction(new mindmaps.action.SetFontDecorationAction(node, isLinethrough ? "none" : "line-through"))
+        });
+        r.executeAction(composite)
     };
     this.executeAction = function(t) {
         if (t instanceof mindmaps.action.CompositeAction) {
