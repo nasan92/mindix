@@ -259,7 +259,9 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
             })
         };
     t.mouseWheeled = function(e) {
-        t.stopEditNodeCaption(), e > 0 ? i.zoomIn(.1) : 0 > e && i.zoomOut(.1)
+        t.stopEditNodeCaption();
+        var step = Math.min(Math.abs(e) * 0.004, 0.05);
+        e > 0 ? i.zoomIn(step) : 0 > e && i.zoomOut(step)
     }, t.pinch = function(e) {
         t.stopEditNodeCaption(), i.zoomByScale(e)
     }, t.tow_tap = function() {
@@ -295,10 +297,28 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         t.hideNodeContextMenu();
         if (n && (n.metaKey || n.ctrlKey) && !mindmaps.connectMode) {
             o.toggleNodeSelection(e)
+        } else if (o.selectedNodes && o.selectedNodes.length > 1 && o.selectedNodes.indexOf(e) !== -1) {
+            // Node is already part of a multi-selection — keep selection so all nodes can be dragged together
         } else {
             o.selectNode(e)
         }
         c.attachToNode(e)
+    }, t.canvasMarqueeSelect = function(nodes) {
+        t.stopEditNodeCaption();
+        if (nodes.length === 0) {
+            o.selectNode(null);
+        } else {
+            o.setSelectedNodes(nodes, nodes[0]);
+        }
+    }, t.canvasBackgroundClick = function() {
+        t.stopEditNodeCaption();
+        // Directly unhighlight any visually selected nodes before clearing the model.
+        // This handles model/visual desync and ensures updateNode is called so branch lines redraw correctly.
+        $(".node-caption.selected").each(function() {
+            var node = $("#node-" + this.id.replace("node-caption-", "")).data("node");
+            if (node) t.unhighlightNode(node);
+        });
+        o.selectNode(null);
     }, t.connectionSelected = function(fromNode, toNode, conn) {
         mindmaps.connectMode = !1;
         mindmaps.connectStartNode = toNode;
@@ -308,9 +328,26 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
         e.publish(mindmaps.Event.CONNECTION_SELECTED, fromNode, toNode, conn)
     }, t.nodeDoubleClicked = function(e) {
         t.editNodeCaption(e)
-    }, t.nodeDragged = function(e, n) {
-        var t = new mindmaps.action.MoveNodeAction(e, n);
-        o.executeAction(t)
+    }, t.getSelectedNodes = function() {
+        return o.selectedNodes;
+    }, t.nodeDragged = function(draggedNode, newPos) {
+        var selNodes = o.selectedNodes;
+        if (selNodes && selNodes.length > 1 && selNodes.indexOf(draggedNode) !== -1) {
+            var oldOffset = draggedNode.getPluginData("layout", "offset");
+            var deltaX = newPos.x - oldOffset.x;
+            var deltaY = newPos.y - oldOffset.y;
+            selNodes.forEach(function(node) {
+                var par = node.getParent();
+                while (par) {
+                    if (selNodes.indexOf(par) !== -1) return;
+                    par = par.getParent();
+                }
+                var nodeOffset = node.getPluginData("layout", "offset");
+                o.executeAction(new mindmaps.action.MoveNodeAction(node, new mindmaps.Point(nodeOffset.x + deltaX, nodeOffset.y + deltaY)));
+            });
+        } else {
+            o.executeAction(new mindmaps.action.MoveNodeAction(draggedNode, newPos));
+        }
     }, t.connectionAnchorMoved = function(e, n, r) {
         var anchor = {};
         if (r.type === "to") {
