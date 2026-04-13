@@ -259,7 +259,9 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
             })
         };
     t.mouseWheeled = function(e) {
-        t.stopEditNodeCaption(), e > 0 ? i.zoomIn(.1) : 0 > e && i.zoomOut(.1)
+        t.stopEditNodeCaption();
+        var step = Math.min(Math.abs(e) * 0.004, 0.05);
+        e > 0 ? i.zoomIn(step) : 0 > e && i.zoomOut(step)
     }, t.pinch = function(e) {
         t.stopEditNodeCaption(), i.zoomByScale(e)
     }, t.tow_tap = function() {
