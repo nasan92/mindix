@@ -211,4 +211,32 @@ mindmaps.ExportCommand = function() {
     this.label = "Export As Image...";
     this.description = "Export the mind map"
 };
-mindmaps.ExportCommand.prototype = new mindmaps.Command
+mindmaps.ExportCommand.prototype = new mindmaps.Command;
+mindmaps.ToggleFontBoldCommand = function() {
+    this.id = "TOGGLE_FONT_BOLD_COMMAND";
+    this.shortcut = ["ctrl+b", "meta+b"];
+    this.label = "Bold";
+    this.description = "Toggle bold on selected node(s)"
+};
+mindmaps.ToggleFontBoldCommand.prototype = new mindmaps.Command;
+mindmaps.ToggleFontItalicCommand = function() {
+    this.id = "TOGGLE_FONT_ITALIC_COMMAND";
+    this.shortcut = ["ctrl+i", "meta+i"];
+    this.label = "Italic";
+    this.description = "Toggle italic on selected node(s)"
+};
+mindmaps.ToggleFontItalicCommand.prototype = new mindmaps.Command;
+mindmaps.ToggleFontUnderlineCommand = function() {
+    this.id = "TOGGLE_FONT_UNDERLINE_COMMAND";
+    this.shortcut = ["ctrl+u", "meta+u"];
+    this.label = "Underline";
+    this.description = "Toggle underline on selected node(s)"
+};
+mindmaps.ToggleFontUnderlineCommand.prototype = new mindmaps.Command;
+mindmaps.ToggleFontLinethroughCommand = function() {
+    this.id = "TOGGLE_FONT_LINETHROUGH_COMMAND";
+    this.shortcut = ["ctrl+shift+x", "meta+shift+x"];
+    this.label = "Strikethrough";
+    this.description = "Toggle strikethrough on selected node(s)"
+};
+mindmaps.ToggleFontLinethroughCommand.prototype = new mindmaps.Command

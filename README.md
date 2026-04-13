@@ -67,6 +67,42 @@ Expected fields:
 - `indexedDbDocuments`: number of docs in IndexedDB
 - `localStorageDocuments`: number of legacy docs in localStorage
 
+## Keyboard Shortcuts
+
+### Node editing
+| Action | Mac | Windows/Linux |
+|---|---|---|
+| Create child node | Tab / Insert | Tab / Insert |
+| Create sibling node | Enter | Enter |
+| Delete node | Del / Backspace | Del / Backspace |
+| Edit node caption | F2 | F2 |
+| Toggle fold children | Space | Space |
+| **Bold** | **⌘B** | **Ctrl+B** |
+| *Italic* | **⌘I** | **Ctrl+I** |
+| Underline | **⌘U** | **Ctrl+U** |
+| Strikethrough | **⌘⇧X** | **Ctrl+Shift+X** |
+
+### Navigation
+| Action | Mac | Windows/Linux |
+|---|---|---|
+| Go to parent | — | — |
+| Go to first child | — | — |
+| Go to next sibling | — | — |
+| Go to prev sibling | — | — |
+
+### Document
+| Action | Mac | Windows/Linux |
+|---|---|---|
+| Save (browser storage) | ⌘S | Ctrl+S |
+| Save As… | ⌘A | Ctrl+A |
+| Open | ⌘O | Ctrl+O |
+| Print | ⌘P | Ctrl+P |
+| Undo | ⌘Z | Ctrl+Z |
+| Redo | ⌘⇧Z | Ctrl+Y |
+| Copy branch | ⌘C | Ctrl+C |
+| Cut branch | ⌘X | Ctrl+X |
+| Paste branch | ⌘V | Ctrl+V |
+
 ## Requirements
 
 - A simple web server to serve the app.
