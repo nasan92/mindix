@@ -1,5 +1,9 @@
 # Mindix (Mind Map Maker)
 
+## Attribution
+
+This project is based on [mindmaps](https://github.com/drichard/mindmaps) by [David Richard](https://github.com/drichard), which is the original open-source mind map application. The project was subsequently extended by [cormar](https://github.com/cormar/Mind-Map-Maker), and further developed in this fork.
+
 ## Development
 
 ### Requirements
