@@ -239,7 +239,7 @@ mindmaps.ToolBarPresenter = function(e, t, n, r, i) {
         })
     }
     var b = new mindmaps.ToolBarMenu("File", "ui-icon-document");
-    var w = [mindmaps.NewDocumentCommand, mindmaps.OpenDocumentCommand, mindmaps.SaveDocumentCommand, mindmaps.ImportMarkdownCommand, mindmaps.ExportCommand, mindmaps.PrintCommand, mindmaps.CloseDocumentCommand];
+    var w = [mindmaps.NewDocumentCommand, mindmaps.OpenDocumentCommand, mindmaps.SaveDocumentCommand, mindmaps.ImportMarkdownCommand, mindmaps.ExportCommand, mindmaps.ExportMarkdownCommand, mindmaps.PrintCommand, mindmaps.CloseDocumentCommand];
     var E = o(w);
     b.add(E);
     n.addMenu(b);

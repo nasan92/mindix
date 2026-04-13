@@ -70,6 +70,11 @@ mindmaps.ApplicationController = function() {
         n.go()
     }
 
+    function x() {
+        var n = new mindmaps.ExportMarkdownPresenter(c, g, new mindmaps.ExportMarkdownView);
+        n.go()
+    }
+
     function v() {
         if (mindmaps.isMapLoadingConfirmationRequired) $("#dialog-confirm").dialog({
             resizable: !1,
@@ -156,10 +161,12 @@ mindmaps.ApplicationController = function() {
         var f = p.get(mindmaps.CloseDocumentCommand);
         f.setHandler(a);
         var w = p.get(mindmaps.ExportCommand);
-        w.setHandler(d), c.subscribe(mindmaps.Event.DOCUMENT_CLOSED, function() {
-            h.setEnabled(!1), f.setEnabled(!1), w.setEnabled(!1), mindmaps.isMapLoadingConfirmationRequired = !1
+        w.setHandler(d);
+        var X = p.get(mindmaps.ExportMarkdownCommand);
+        X.setHandler(x), c.subscribe(mindmaps.Event.DOCUMENT_CLOSED, function() {
+            h.setEnabled(!1), f.setEnabled(!1), w.setEnabled(!1), X.setEnabled(!1), mindmaps.isMapLoadingConfirmationRequired = !1
         }), c.subscribe(mindmaps.Event.DOCUMENT_OPENED, function() {
-            h.setEnabled(!0), f.setEnabled(!0), w.setEnabled(!0), mindmaps.isMapLoadingConfirmationRequired = !1
+            h.setEnabled(!0), f.setEnabled(!0), w.setEnabled(!0), X.setEnabled(!0), mindmaps.isMapLoadingConfirmationRequired = !1
         })
     }, this.go = function() {
         var e = new mindmaps.MainViewController(c, g, p);

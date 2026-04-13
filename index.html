@@ -143,6 +143,16 @@
     </div>
 </script>
 
+<script id="template-export-markdown" type="text/x-jquery-tmpl">
+    <div id="export-markdown-dialog" class="file-dialog" title="Export as Markdown">
+        <h1>Export as Markdown</h1>
+
+        <p>Your mind map will be saved as <strong class="export-markdown-filename"></strong>.</p>
+
+        <textarea class="export-markdown-preview" rows="16" readonly style="width:100%;box-sizing:border-box;font-family:monospace;font-size:12px;resize:vertical;"></textarea>
+    </div>
+</script>
+
 <script id="template-urls-table-item" type="text/x-jquery-tmpl">
     <tr>
         <td><a class="url" href="${(url.substr(0,7) == 'http://' || url.substr(0,8) == 'https://' || url.substr(0,7) == 'file://')? url : 'http://'+url}" target="_blank">${url}</a></td>
@@ -726,6 +736,7 @@
 <script src="js/NewDocument.js"></script>
 <script src="js/OpenDocument.js?v=20260320e"></script>
 <script src="js/ImportMarkdown.js"></script>
+<script src="js/ExportMarkdown.js"></script>
 <script src="js/SaveDocument.js?v=20260320e"></script>
 <script src="js/MainViewController.js?v=20260320b"></script>
 <script src="js/Storage.js?v=20260320d"></script>
