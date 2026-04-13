@@ -469,7 +469,8 @@ mindmaps.StaticCanvasRenderer = function() {
       // ctx.strokeStyle = "#CCC";
       // ctx.strokeRect(0, 0, tm.width, tm.height);
 
-	  ctx.textAlign="center";
+	  var textAlign = (font.align === "left" || font.align === "right") ? font.align : "center";
+	  ctx.textAlign = textAlign;
       ctx.font = font.style + " " + font.weight + " " + font.size
           + "px " + font.fontfamily;
 
@@ -477,11 +478,13 @@ mindmaps.StaticCanvasRenderer = function() {
       var captionY = 0;
 
 
-      if (node.isRoot()) 
+      if (node.isRoot())
 	 {
         // TODO remove magic numbers
         captionX = 0;
         captionY = 20;
+        if (textAlign === "left") captionX = -tm.width / 2;
+        else if (textAlign === "right") captionX = tm.width / 2;
 
     if(borderVisible && borderStyle.style == 'dashed')
 			setLineDashCatch(ctx,[8]);
@@ -560,6 +563,8 @@ mindmaps.StaticCanvasRenderer = function() {
         // TODO remove magic numbers
         //captionX = 0;
         //captionY = 20;
+        if (textAlign === "left") captionX = 0;
+        else if (textAlign === "right") captionX = tm.width;
 
         // root box
     ctx.lineWidth = borderVisible ? 5.0 : 0;
