@@ -1011,6 +1011,90 @@ mindmaps.DefaultCanvasView = function() {
             }
             e.hideNodeContextMenu()
         });
+        // Marquee (rubber-band) selection
+        (function() {
+            var marqueeEl = null;
+            var marqueeActive = false;
+            var MARQUEE_THRESHOLD = 4;
+
+            function getMarqueeEl() {
+                if (!marqueeEl) {
+                    marqueeEl = $("<div/>", { id: "canvas-marquee" }).appendTo("body");
+                }
+                return marqueeEl;
+            }
+
+            function showMarquee(left, top, width, height) {
+                getMarqueeEl().css({ display: "block", left: left, top: top, width: width, height: height });
+            }
+
+            function hideMarquee() {
+                if (marqueeEl) marqueeEl.hide();
+                marqueeActive = false;
+            }
+
+            function getNodesInRect(rect) {
+                var nodes = [];
+                $(".node-caption").each(function() {
+                    var r = this.getBoundingClientRect();
+                    if (r.right >= rect.left && r.left <= rect.right &&
+                        r.bottom >= rect.top && r.top <= rect.bottom) {
+                        var node = $(this).parent().data("node");
+                        if (node) nodes.push(node);
+                    }
+                });
+                return nodes;
+            }
+
+            t.on("mousedown.marqueeSelection", function(startEvt) {
+                if (startEvt.which !== 1) return;
+                if (mindmaps.connectMode) return;
+                if ($(startEvt.target).closest(
+                    "div.node-container, .node-image-selection, .node-image-corner, canvas[id^='node-connector-canvas-']"
+                ).length) return;
+
+                var startX = startEvt.clientX;
+                var startY = startEvt.clientY;
+                marqueeActive = false;
+
+                function onMove(moveEvt) {
+                    var dx = moveEvt.clientX - startX;
+                    var dy = moveEvt.clientY - startY;
+                    if (!marqueeActive && Math.abs(dx) < MARQUEE_THRESHOLD && Math.abs(dy) < MARQUEE_THRESHOLD) return;
+                    marqueeActive = true;
+                    showMarquee(
+                        Math.min(startX, moveEvt.clientX),
+                        Math.min(startY, moveEvt.clientY),
+                        Math.abs(dx),
+                        Math.abs(dy)
+                    );
+                }
+
+                function finish() {
+                    $(document).off("mousemove.marquee mouseup.marquee keydown.marquee");
+                    if (marqueeActive) {
+                        var rect = getMarqueeEl()[0].getBoundingClientRect();
+                        var nodes = getNodesInRect(rect);
+                        if (e.canvasMarqueeSelect) e.canvasMarqueeSelect(nodes);
+                        hideMarquee();
+                    } else {
+                        if (e.canvasBackgroundClick) e.canvasBackgroundClick();
+                    }
+                }
+
+                function cancel() {
+                    $(document).off("mousemove.marquee mouseup.marquee keydown.marquee");
+                    hideMarquee();
+                }
+
+                $(document)
+                    .on("mousemove.marquee", onMove)
+                    .on("mouseup.marquee", finish)
+                    .on("keydown.marquee", function(keyEvt) {
+                        if (keyEvt.keyCode === 27) cancel();
+                    });
+            });
+        })();
         t.delegate("div.node-caption", "mousedown", function(t) {
             var n = $(this).parent().data("node");
             mindmaps.connectPendingAnchor = null;
@@ -1308,6 +1392,12 @@ mindmaps.DefaultCanvasView = function() {
                 B()
             }
         });
+        t.on("contextmenu", function(evt) {
+            if (!$(evt.target).closest("div.node-caption").length) {
+                evt.preventDefault();
+                return false
+            }
+        });
         t.delegate("div.node-caption", "contextmenu", function(t) {
             var n = $(this).parent().data("node");
             if (e.nodeContextMenuRequested) {
@@ -1337,12 +1427,30 @@ mindmaps.DefaultCanvasView = function() {
             }
             return false
         });
-        this.$getContainer().bind("mousewheel", function(t) {
-            var n = t.originalEvent.wheelDelta || -t.originalEvent.detail;
-            if (e.mouseWheeled) {
-                e.mouseWheeled(n)
+        this.$getContainer()[0].addEventListener("wheel", function(t) {
+            // If the event originated inside a scrollable child (e.g. format sidebar),
+            // let the browser handle it so that element can scroll normally.
+            var el = t.target;
+            var canvasContainer = e.$getContainer()[0];
+            while (el && el !== canvasContainer) {
+                var style = window.getComputedStyle(el);
+                var oy = style.overflowY;
+                if ((oy === "auto" || oy === "scroll") && el.scrollHeight > el.clientHeight) {
+                    return;
+                }
+                el = el.parentElement;
             }
-        });
+            t.preventDefault();
+            if (t.ctrlKey) {
+                // Pinch-to-zoom gesture (trackpad pinch or Ctrl+scroll)
+                var delta = -t.deltaY;
+                if (e.mouseWheeled) { e.mouseWheeled(delta); }
+            } else {
+                // Two-finger pan (trackpad) or regular scroll
+                canvasContainer.scrollLeft += t.deltaX;
+                canvasContainer.scrollTop += t.deltaY;
+            }
+        }, { passive: false });
         if (mindmaps.responsive.isTouchDevice) {
             this.$getContainer().hammer({}).bind("transform", function(t) {
                 console.log(t);
@@ -1474,13 +1582,17 @@ mindmaps.DefaultCanvasView = function() {
                 top: this.zoomFactor * l,
                 "border-bottom": g
             });
+            var dragStartOffset = { x: 0, y: 0 };
             h.one("mouseenter", function() {
                 h.draggable({
                     handle: "div.node-caption:first",
                     start: function() {
-                        t = true
+                        t = true;
+                        var offset = n.getPluginData("layout", "offset");
+                        dragStartOffset.x = offset ? offset.x : 0;
+                        dragStartOffset.y = offset ? offset.y : 0;
                     },
-                    drag: function(t, s) {
+                    drag: function(_evt, s) {
                         var o = s.position.left / e.zoomFactor;
                         var u = s.position.top / e.zoomFactor;
                         var a = n.getPluginData("style", "branchColor");
@@ -1490,6 +1602,32 @@ mindmaps.DefaultCanvasView = function() {
                         w = o;
                         E = u;
                         d(n, i, o, u, true);
+                        var selNodes = e.getSelectedNodes ? e.getSelectedNodes() : [];
+                        if (selNodes.length > 1 && selNodes.indexOf(n) !== -1) {
+                            var deltaX = o - dragStartOffset.x;
+                            var deltaY = u - dragStartOffset.y;
+                            selNodes.forEach(function(selNode) {
+                                if (selNode.id === n.id) return;
+                                var par = selNode.getParent();
+                                while (par) {
+                                    if (selNodes.indexOf(par) !== -1) return;
+                                    par = par.getParent();
+                                }
+                                var selOffset = selNode.getPluginData("layout", "offset");
+                                var selNewX = selOffset.x + deltaX;
+                                var selNewY = selOffset.y + deltaY;
+                                var selEl = $("#node-" + selNode.id);
+                                selEl.css({
+                                    left: selNewX * e.zoomFactor,
+                                    top: selNewY * e.zoomFactor
+                                });
+                                var selParent = selNode.getParent();
+                                if (selParent) {
+                                    y(f(selNode), selNode.getDepth(), selNewX, selNewY, selEl, c(selParent), selNode.getPluginData("style", "branchColor"));
+                                }
+                                d(selNode, selNode.getDepth(), selNewX, selNewY, true);
+                            });
+                        }
                         if (e.nodeDragging) {
                             e.nodeDragging()
                         }
