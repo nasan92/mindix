@@ -166,6 +166,13 @@ mindmaps.ImportMarkdownCommand = function() {
     this.description = "Import a markdown file as mind map"
 };
 mindmaps.ImportMarkdownCommand.prototype = new mindmaps.Command;
+mindmaps.ExportMarkdownCommand = function() {
+    this.id = "EXPORT_MARKDOWN_COMMAND";
+    this.label = "Export As Markdown...";
+    this.icon = "ui-icon-arrowthick-1-n";
+    this.description = "Export the mind map as a markdown file"
+};
+mindmaps.ExportMarkdownCommand.prototype = new mindmaps.Command;
 mindmaps.OpenDocumentCommand = function() {
     this.id = "OPEN_DOCUMENT_COMMAND";
     this.label = "Open...";

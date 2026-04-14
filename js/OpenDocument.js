@@ -124,6 +124,7 @@ mindmaps.OpenDocumentPresenter = function(e, t, n, r) {
         var i = r.target.files;
         var s = i[0];
         var o = new FileReader;
+        n.hideOpenDialog();
         o.onload = function() {
             try {
                 console.log(o.result);
@@ -137,14 +138,13 @@ mindmaps.OpenDocumentPresenter = function(e, t, n, r) {
             window.location.hash = "m:new-import-file";
             mindmaps.isMapLoadingConfirmationRequired = false;
             mindmaps.ignoreHashChange = true;
-            n.hideOpenDialog()
         };
         o.readAsText(s)
     };
     n.documentClicked = function(e) {
         mindmaps.Util.trackEvent("Clicks", "localstorage-open");
+        n.hideOpenDialog();
         t.setDocument(e);
-        n.hideOpenDialog()
     };
     n.deleteDocumentClicked = function(e) {
         mindmaps.LocalDocumentStorage.deleteDocument(e).then(function() {
@@ -166,6 +166,7 @@ mindmaps.OpenDocumentPresenter = function(e, t, n, r) {
             if (!handle) {
                 return
             }
+            n.hideOpenDialog();
             return mindmaps.LocalFileStorage.readDocument(handle).then(function(doc) {
                 if (!doc) {
                     throw new Error("File is not a valid mind map")
@@ -176,7 +177,6 @@ mindmaps.OpenDocumentPresenter = function(e, t, n, r) {
                 window.location.hash = "m:new-import-file";
                 mindmaps.isMapLoadingConfirmationRequired = false;
                 mindmaps.ignoreHashChange = true;
-                n.hideOpenDialog()
             })
         }).catch(function(err) {
             if (err && err.name === "AbortError") {
