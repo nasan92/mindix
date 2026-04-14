@@ -1,55 +1,192 @@
+/* ── Trigger swatch (the colored square shown in the inspector) ─────────── */
 div.colorPicker-picker {
     height: 28px;
     width: 28px;
     padding: 0 !important;
     border: 2px solid #ccc;
-    line-height: 16px;
-    float: left
-}
-
-div.colorPicker-palette {
-    width: 220px;
-    position: absolute;
-    border: 1px solid #598FEF;
-    background-color: #EFEFEF;
-    padding: 2px;
-    z-index: 2000
-}
-
-div.colorPicker-swatch {
-    height: 28px;
-    width: 28px;
-    border: 1px solid #000;
-    margin: 3px;
-    float: left;
+    border-radius: 4px;
     cursor: pointer;
-    line-height: 12px
+    float: left;
+    box-sizing: border-box;
 }
 
 #inspector-table div.colorPicker-picker {
     height: 22px;
     width: 22px;
-    padding: 0 !important;
-    border: 2px solid #ccc;
-    line-height: 16px;
-    float: left
 }
 
-.inspector div.colorPicker-swatch {
+/* ── Palette popup ──────────────────────────────────────────────────────── */
+div.colorPicker-palette {
+    position: absolute;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: 10px;
+    z-index: 2000;
+    width: 260px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 12px;
+}
+
+/* ── Color swatches ─────────────────────────────────────────────────────── */
+div.colorPicker-swatch {
     height: 22px;
     width: 22px;
-    border: 1px solid #000;
-    margin: 3px;
-    float: left;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
     cursor: pointer;
-    line-height: 12px
+    box-sizing: border-box;
+    transition: transform 0.1s, border-color 0.1s;
+    flex-shrink: 0;
 }
 
-div.colorPicker-palette.inspector {
-    width: 90px;
+div.colorPicker-swatch:hover {
+    border-color: #598FEF !important;
+    transform: scale(1.18);
+    z-index: 1;
+    position: relative;
+}
+
+/* ── Color grid (common colors + theme + recent) ────────────────────────── */
+.cp-color-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    padding: 2px 0;
+}
+
+/* ── Hex input row ──────────────────────────────────────────────────────── */
+.cp-hex-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.cp-hex-wrap {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    padding: 0 7px;
+    flex: 1;
+    background: #f9fafb;
+    height: 28px;
+    box-sizing: border-box;
+}
+
+.cp-hex-wrap:focus-within {
+    border-color: #598FEF;
+    background: #fff;
+}
+
+.cp-hash {
+    color: #9ca3af;
+    font-family: monospace;
+    font-size: 13px;
+    padding-right: 2px;
+    user-select: none;
+    line-height: 1;
+}
+
+.cp-hex-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: monospace;
+    font-size: 13px;
+    color: #111827;
+    width: 68px;
+    padding: 0;
+    line-height: 1;
+}
+
+.cp-preview-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    border: 1px solid #d1d5db;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+/* Color wheel button — conic gradient gives the rainbow disc look */
+.cp-wheel-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid #d1d5db;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    background: conic-gradient(
+        #ff0000, #ff8000, #ffff00, #80ff00,
+        #00ff00, #00ff80, #00ffff, #0080ff,
+        #0000ff, #8000ff, #ff00ff, #ff0080, #ff0000
+    );
+    transition: border-color 0.15s, transform 0.1s;
+    box-sizing: border-box;
+}
+
+.cp-wheel-btn:hover {
+    border-color: #598FEF;
+    transform: scale(1.1);
+}
+
+.cp-native-hidden {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    padding: 0;
+    border: none;
     position: absolute;
-    border: 1px solid #598FEF;
-    background-color: #EFEFEF;
-    padding: 2px;
-    z-index: 2000
+    pointer-events: none;
+}
+
+/* ── Collapsible sections ───────────────────────────────────────────────── */
+.cp-section {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 8px;
+    padding-top: 6px;
+}
+
+.cp-section-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 11px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding-bottom: 5px;
+    user-select: none;
+}
+
+.cp-section-header:hover {
+    color: #374151;
+}
+
+.cp-arrow {
+    font-size: 9px;
+    width: 10px;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.cp-section-body {
+    min-height: 8px;
+}
+
+.cp-empty-label {
+    color: #9ca3af;
+    font-style: italic;
+    font-size: 11px;
+    padding: 2px 0;
+    display: block;
 }
