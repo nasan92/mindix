@@ -21,6 +21,7 @@ mindmaps.InspectorView = function() {
         g = $("#inspector-button-border-color-children", o),
         A = $("#inspector-button-connect-node", o),
         N = $("#inspector-button-connect-node-remove", o),
+        Q = $("#inspector-button-auto-arrange", o).button(),
         T = $("#inspector-color-theme-select", o),
         F = $("#inspector-checkbox-map-grid", o),
         S = $("#inspector-branch-color-picker", o),
@@ -30,12 +31,12 @@ mindmaps.InspectorView = function() {
         y = $("#inspector-border-background-color-picker", o),
         B = $("#inspector-map-background-color-picker", o),
         j = $("#inspector-button-font-align-change", o),
-        E = [l, a, u, C, h, f, m, p, b, k, g, v, A, N, F, H],
+        E = [l, a, u, C, h, f, m, p, b, k, g, v, A, N, F],
         D = [S, x, w, y, P, B],
         L = !1;
 
     function I() {
-        var e = ["inspector-section-text", "inspector-section-branch", "inspector-section-node", "inspector-section-map", "inspector-section-levelstyle"];
+        var e = ["inspector-section-text", "inspector-section-branch", "inspector-section-node", "inspector-section-map", "inspector-section-levelstyle", "inspector-section-layout"];
         e.forEach(function(e) {
             var n = $("#inspector-table tr.inspector-section-row." + e, o);
             n.removeClass("inspector-group-start inspector-group-end");
@@ -85,7 +86,7 @@ mindmaps.InspectorView = function() {
             e.button(o)
         }), D.forEach(function(o) {
             o.attr("disabled", e)
-        }), z.prop("disabled", !e), j.prop("disabled", !e), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(o) {
+        }), z.prop("disabled", !e), j.prop("disabled", !e), H.prop("disabled", !e), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(o) {
             o.inspectorAdviser && o.inspectorAdviser.setControlsEnabled && o.inspectorAdviser.setControlsEnabled(e)
         })
     }, this.setBorderText = function(e) {
@@ -242,6 +243,8 @@ mindmaps.InspectorView = function() {
             e.connectNodeButtonClicked && e.connectNodeButtonClicked()
         }), N.click(function() {
             e.connectNodeRemoveButtonClicked && e.connectNodeRemoveButtonClicked()
+        }), Q.click(function() {
+            e.autoArrangeButtonClicked && e.autoArrangeButtonClicked()
         }), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(e) {
             e.inspectorAdviser && e.inspectorAdviser.onInit && e.inspectorAdviser.onInit($("#inspector-table", o))
         }), R(), I()
@@ -456,6 +459,11 @@ mindmaps.InspectorView = function() {
         o.executeAction(e)
     }, t.connectNodeRemoveButtonClicked = function() {
         var e = new mindmaps.action.ConnectNodeRemoveClickAction(o.selectedNode, mindmaps.connectStartNode);
+        o.executeAction(e)
+    }, t.autoArrangeButtonClicked = function() {
+        var n = o.getMindMap();
+        if (!n || !n.root) return;
+        var e = new mindmaps.action.AutoArrangeAction(n.root);
         o.executeAction(e)
     }, e.subscribe(mindmaps.Event.NODE_FONT_CHANGED, function(e) {
         o.selectedNode === e && i(e)

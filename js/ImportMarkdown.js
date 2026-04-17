@@ -1,3 +1,71 @@
+mindmaps.autoLayout = {
+    NODE_HEIGHT: 50,
+    CHILD_GAP: 22,
+    ROOT_X: 260,
+    LEVEL_X: 200,
+
+    getSubtreeHeight: function(node) {
+        var children = node.getChildren();
+        if (!children.length) return this.NODE_HEIGHT;
+        var total = 0;
+        var self = this;
+        children.forEach(function(child) {
+            total += self.getSubtreeHeight(child);
+        });
+        total += this.CHILD_GAP * (children.length - 1);
+        return total;
+    },
+
+    computePositions: function(rootNode) {
+        var positions = [];
+        var self = this;
+
+        function layoutSubtree(node, direction) {
+            var children = node.getChildren();
+            if (!children.length) return;
+            var heights = children.map(function(child) {
+                return self.getSubtreeHeight(child);
+            });
+            var total = heights.reduce(function(a, b) { return a + b; }, 0) + self.CHILD_GAP * (children.length - 1);
+            var y = -total / 2;
+            children.forEach(function(child, i) {
+                var center = y + heights[i] / 2;
+                positions.push({ node: child, point: new mindmaps.Point(direction * self.LEVEL_X, center) });
+                y += heights[i] + self.CHILD_GAP;
+                layoutSubtree(child, direction);
+            });
+        }
+
+        var children = rootNode.getChildren();
+        var rightGroup = [];
+        var leftGroup = [];
+        children.forEach(function(child, i) {
+            if (i % 2 === 0) rightGroup.push(child);
+            else leftGroup.push(child);
+        });
+
+        function placeGroup(group, direction) {
+            if (!group.length) return;
+            var heights = group.map(function(child) {
+                return self.getSubtreeHeight(child);
+            });
+            var total = heights.reduce(function(a, b) { return a + b; }, 0) + self.CHILD_GAP * (group.length - 1);
+            var y = -total / 2;
+            group.forEach(function(child, i) {
+                var center = y + heights[i] / 2;
+                positions.push({ node: child, point: new mindmaps.Point(direction * self.ROOT_X, center) });
+                y += heights[i] + self.CHILD_GAP;
+                layoutSubtree(child, direction);
+            });
+        }
+
+        placeGroup(rightGroup, 1);
+        placeGroup(leftGroup, -1);
+
+        return positions;
+    }
+};
+
 mindmaps.MarkdownImportParser = {
     parse: function(markdownText) {
         var parsed = this.parseHeadings(markdownText || "");
@@ -147,47 +215,14 @@ mindmaps.MarkdownImportParser = {
     },
 
     applyDefaultLayout: function(rootNode) {
-        function layoutChildren(node) {
-            var children = node.getChildren();
-            if (!children.length) {
-                return
+        var positions = mindmaps.autoLayout.computePositions(rootNode);
+        positions.forEach(function(p) {
+            p.node.setPluginData("layout", "offset", p.point);
+            var parent = p.node.getParent();
+            if (parent && !parent.isRoot()) {
+                p.node.setPluginData("style", "branchColor", parent.getPluginData("style", "branchColor"))
             }
-
-            if (node.isRoot()) {
-                var rightY = -60;
-                var leftY = -60;
-                var rightColumn = 0;
-                var leftColumn = 0;
-                var rootSpacingY = 95;
-
-                children.forEach(function(child, index) {
-                    var isRight = index % 2 === 0;
-                    if (isRight) {
-                        child.setPluginData("layout", "offset", new mindmaps.Point(220 + rightColumn * 40, rightY));
-                        rightY += rootSpacingY;
-                        rightColumn++
-                    } else {
-                        child.setPluginData("layout", "offset", new mindmaps.Point(-220 - leftColumn * 40, leftY));
-                        leftY += rootSpacingY;
-                        leftColumn++
-                    }
-                    layoutChildren(child)
-                });
-                return
-            }
-
-            var direction = node.getPluginData("layout", "offset").x >= 0 ? 1 : -1;
-            var childSpacingY = 80;
-            var startY = -((children.length - 1) * childSpacingY) / 2;
-
-            children.forEach(function(child, index) {
-                child.setPluginData("layout", "offset", new mindmaps.Point(direction * 180, startY + index * childSpacingY));
-                child.setPluginData("style", "branchColor", node.getPluginData("style", "branchColor"));
-                layoutChildren(child)
-            })
-        }
-
-        layoutChildren(rootNode)
+        })
     }
 };
 
