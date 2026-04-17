@@ -346,7 +346,30 @@ mindmaps.CanvasPresenter = function(e, n, o, t, i) {
                 o.executeAction(new mindmaps.action.MoveNodeAction(node, new mindmaps.Point(nodeOffset.x + deltaX, nodeOffset.y + deltaY)));
             });
         } else {
-            o.executeAction(new mindmaps.action.MoveNodeAction(draggedNode, newPos));
+            var oldOffset = draggedNode.getPluginData("layout", "offset");
+            var oldSign = oldOffset.x >= 0 ? 1 : -1;
+            var newSign = newPos.x >= 0 ? 1 : -1;
+            if (draggedNode.getDepth() === 1 && oldSign !== newSign && !draggedNode.isLeaf()) {
+                var descendants = [];
+                var flippedOffsets = [];
+                draggedNode.forEachDescendant(function(child) {
+                    var childOffset = child.getPluginData("layout", "offset");
+                    descendants.push(child);
+                    flippedOffsets.push(new mindmaps.Point(-childOffset.x, childOffset.y));
+                });
+                var composite = new mindmaps.action.CompositeAction();
+                composite.addAction(new mindmaps.action.MoveNodeAction(draggedNode, newPos));
+                descendants.forEach(function(child, idx) {
+                    composite.addAction(new mindmaps.action.MoveNodeAction(child, flippedOffsets[idx]));
+                });
+                o.executeAction(composite);
+                descendants.forEach(function(child) {
+                    t.positionNode(child);
+                    t.updateNode(child);
+                });
+            } else {
+                o.executeAction(new mindmaps.action.MoveNodeAction(draggedNode, newPos));
+            }
         }
     }, t.connectionAnchorMoved = function(e, n, r) {
         var anchor = {};
