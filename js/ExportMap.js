@@ -839,12 +839,13 @@ mindmaps.StaticSVGRenderer = function() {
             width: "100%",
             viewBox: "0 0 " + dimensions.width + " " + dimensions.height
         });
+        var bgData = document.mindmap.root.getPluginData("canvas", "background") || {};
         addSelfTag("rect", {
             x: 0,
             y: 0,
             width: dimensions.width,
             height: dimensions.height,
-            fill: "white"
+            fill: bgData.color || "#ffffff"
         });
         openTag("g", {
             transform: "translate(" + (-dimensions.minX + dimensions.margin / 2) + " " + (-dimensions.minY + dimensions.margin / 2) + ")"
