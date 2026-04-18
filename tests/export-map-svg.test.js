@@ -188,6 +188,7 @@ function testBasicVectorOutput() {
 
   const doc = {
     mindmap: {
+      root: root,
       getRoot() {
         return root;
       }
@@ -219,6 +220,7 @@ function testExportUsesTightBoundsForRightSideMaps() {
 
   const doc = {
     mindmap: {
+      root: root,
       getRoot() {
         return root;
       }
@@ -259,6 +261,7 @@ function testMalformedDataDoesNotThrow() {
 
   const doc = {
     mindmap: {
+      root: root,
       getRoot() {
         return root;
       }
@@ -294,6 +297,7 @@ function testNodeUrlsAreClickableInSvg() {
 
   const doc = {
     mindmap: {
+      root: root,
       getRoot() {
         return root;
       }
@@ -335,6 +339,7 @@ function testCurvedConnectionsRenderAsSvgPaths() {
 
   const doc = {
     mindmap: {
+      root: root,
       getRoot() {
         return root;
       }
@@ -361,6 +366,65 @@ function testCurvedConnectionsRenderAsSvgPaths() {
   assert(svg.includes('<polygon '), "Expected arrow polygons for curved connector");
 }
 
+function testBackgroundColorIsPreservedInSvgExport() {
+  const bgColor = "#aabbcc";
+  const root = makeNode("root", "Root", {
+    layout: { offset: { x: 0, y: 0 } },
+    canvas: { background: { color: bgColor } }
+  });
+  const child = makeNode("a", "Child", {
+    layout: { offset: { x: 180, y: 80 } }
+  });
+  root.addChild(child);
+
+  const doc = {
+    mindmap: {
+      root: root,
+      getRoot() {
+        return root;
+      }
+    },
+    getConnectedNodes() {
+      return [];
+    }
+  };
+
+  const svg = buildRenderer().render(doc);
+  // The canvas background rect is always the first <rect> in the SVG output
+  const firstRectMatch = svg.match(/<rect[^>]*>/);
+  assert(firstRectMatch, "Expected at least one rect element in SVG");
+  assert(
+    firstRectMatch[0].includes('fill="' + bgColor + '"'),
+    "Expected background rect to carry the set background color: " + bgColor + ", got: " + firstRectMatch[0]
+  );
+}
+
+function testDefaultBackgroundColorIsWhiteWhenNotSet() {
+  const root = makeNode("root", "Root", {
+    layout: { offset: { x: 0, y: 0 } }
+  });
+
+  const doc = {
+    mindmap: {
+      root: root,
+      getRoot() {
+        return root;
+      }
+    },
+    getConnectedNodes() {
+      return [];
+    }
+  };
+
+  const svg = buildRenderer().render(doc);
+  const firstRectMatch = svg.match(/<rect[^>]*>/);
+  assert(firstRectMatch, "Expected at least one rect element in SVG");
+  assert(
+    firstRectMatch[0].includes('fill="#ffffff"'),
+    "Expected background rect to default to #ffffff when no background color is set, got: " + firstRectMatch[0]
+  );
+}
+
 function testRootMultiLineTextUsesZeroCoordinates() {
   const root = makeNode("root", "ERKENNTNISTHEORIE\nDenkrichtungen", {
     layout: { offset: { x: 0, y: 0 } }
@@ -368,6 +432,7 @@ function testRootMultiLineTextUsesZeroCoordinates() {
 
   const doc = {
     mindmap: {
+      root: root,
       getRoot() {
         return root;
       }
@@ -384,7 +449,7 @@ function testRootMultiLineTextUsesZeroCoordinates() {
 }
 
 (function run() {
-  const tests = [testBasicVectorOutput, testExportUsesTightBoundsForRightSideMaps, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg, testCurvedConnectionsRenderAsSvgPaths, testRootMultiLineTextUsesZeroCoordinates];
+  const tests = [testBasicVectorOutput, testExportUsesTightBoundsForRightSideMaps, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg, testCurvedConnectionsRenderAsSvgPaths, testRootMultiLineTextUsesZeroCoordinates, testBackgroundColorIsPreservedInSvgExport, testDefaultBackgroundColorIsWhiteWhenNotSet];
   let passed = 0;
 
   tests.forEach((fn) => {
