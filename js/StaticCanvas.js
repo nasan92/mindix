@@ -363,8 +363,9 @@ mindmaps.StaticCanvasRenderer = function() {
     ctx.textBaseline = "top";
     ctx.textAlign = "center";
 
-    // fill background white
-    ctx.fillStyle = "white";
+    // fill background with configured color
+    var bgData = map.root.getPluginData("canvas", "background") || {};
+    ctx.fillStyle = bgData.color || "#ffffff";
     ctx.fillRect(0, 0, width, height);
 
     // Apply scale transformation and align the map to the top-left with padding
