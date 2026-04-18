@@ -3,7 +3,7 @@ PORT ?= 8080
 DOCROOT ?= .
 PID_FILE ?= .php-server.pid
 
-.PHONY: help check-php serve serve-bg stop test-svg-export
+.PHONY: help check-php serve serve-bg stop test-svg-export test test-e2e test-all install-playwright
 
 help:
 	@echo "Available targets:"
@@ -49,3 +49,24 @@ stop:
 
 test-svg-export:
 	node tests/export-map-svg.test.js
+
+# Run all Node.js unit tests (no server required)
+test:
+	node tests/export-map-svg.test.js
+	node tests/undo-manager.test.js
+	node tests/import-markdown.test.js
+	node tests/export-markdown.test.js
+	node tests/node-map.test.js
+	@echo ""
+	@echo "All unit tests passed."
+
+# Run Playwright E2E tests (requires: make serve-bg first)
+test-e2e:
+	npx playwright test
+
+# Run all tests: unit + E2E (requires: make serve-bg first)
+test-all: test test-e2e
+
+# Install Playwright browsers (run once after npm install)
+install-playwright:
+	npx playwright install --with-deps chromium
