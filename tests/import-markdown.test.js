@@ -1,33 +1,15 @@
-/**
- * Unit tests for MarkdownImportParser (parseHeadings + autoLayout)
- * and the full parse() pipeline.
- */
-
+const { test, describe } = require("node:test");
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Context builder ──────────────────────────────────────────────────────────
 
-/**
- * Builds a vm context that loads Point.js and ImportMarkdown.js together
- * with the minimal mindmaps stubs needed to call parseHeadings and
- * autoLayout.computePositions.
- *
- * The full parse() method also requires Document/Node/MindMap stubs.
- */
 function buildContext() {
-  const pointSrc = fs.readFileSync(
-    path.join(__dirname, "..", "js", "Point.js"),
-    "utf8"
-  );
-  const importSrc = fs.readFileSync(
-    path.join(__dirname, "..", "js", "ImportMarkdown.js"),
-    "utf8"
-  );
+  const pointSrc = fs.readFileSync(path.join(__dirname, "..", "js", "Point.js"), "utf8");
+  const importSrc = fs.readFileSync(path.join(__dirname, "..", "js", "ImportMarkdown.js"), "utf8");
 
-  // Minimal jQuery-like $.extend used by Node/MindMap setPluginData
   function shallowExtend(target) {
     for (let i = 1; i < arguments.length; i++) {
       const src = arguments[i] || {};
@@ -48,9 +30,8 @@ function buildContext() {
     return target;
   }
 
-  // Minimal Node implementation
   function makeMockNode(id) {
-    const node = {
+    return {
       id: id || "n" + Math.random().toString(36).slice(2),
       parent: null,
       children: [],
@@ -91,10 +72,8 @@ function buildContext() {
         this.pluginData[group][key] = val;
       },
     };
-    return node;
   }
 
-  // Minimal NodeMap
   function makeMockNodeMap() {
     return {
       _nodes: {},
@@ -104,7 +83,6 @@ function buildContext() {
     };
   }
 
-  // Minimal MindMap
   function makeMockMindMap(root) {
     const mm = {
       root,
@@ -116,7 +94,6 @@ function buildContext() {
     return mm;
   }
 
-  // Minimal Document
   function MockDocument() {
     const root = makeMockNode("root");
     root.text.caption = "Central Idea";
@@ -143,7 +120,7 @@ function buildContext() {
         getOrderedChildren: (node) => node.children,
       },
       migrations: [],
-      Node: null,   // set below after context is ready
+      Node: null,
       Document: MockDocument,
     },
     $: {
@@ -159,149 +136,119 @@ function buildContext() {
   vm.createContext(context);
   vm.runInContext(pointSrc, context);
   vm.runInContext(importSrc, context);
-
-  // Expose mock node constructor so parse() can use new mindmaps.Node
-  context.mindmaps.Node = function() { return makeMockNode(); };
-  context.mindmaps.Node.prototype = {};
-  // Override the mindmaps.Node constructor with one that returns a proper mock
-  // (using a factory attached to context that the vm code calls as `new mindmaps.Node`)
   context.mindmaps.Node = makeMockNode;
 
   return context;
 }
 
-// Extract just parseHeadings without running full parse
+// Build context once — the parser and autoLayout are stateless between calls
+const ctx = buildContext();
+const { MarkdownImportParser, autoLayout } = ctx.mindmaps;
+
 function parseHeadings(md) {
-  return buildContext().mindmaps.MarkdownImportParser.parseHeadings(md);
+  return MarkdownImportParser.parseHeadings(md);
 }
 
-// ─── parseHeadings tests ──────────────────────────────────────────────────────
+// ─── parseHeadings ────────────────────────────────────────────────────────────
 
-function testParseHeadingsBasicHierarchy() {
-  const result = parseHeadings("# Root\n## Branch A\n### Leaf 1\n## Branch B");
-  assert.strictEqual(result.rootCaption, "Root");
-  assert.strictEqual(result.headings.length, 3);
-  assert.strictEqual(result.headings[0].caption, "Branch A");
-  assert.strictEqual(result.headings[0].level, 2);
-  assert.strictEqual(result.headings[1].caption, "Leaf 1");
-  assert.strictEqual(result.headings[1].level, 3);
-  assert.strictEqual(result.headings[2].caption, "Branch B");
-  assert.strictEqual(result.headings[2].level, 2);
-}
+describe("parseHeadings", () => {
+  test("basic hierarchy", () => {
+    const result = parseHeadings("# Root\n## Branch A\n### Leaf 1\n## Branch B");
+    assert.strictEqual(result.rootCaption, "Root");
+    assert.strictEqual(result.headings.length, 3);
+    assert.strictEqual(result.headings[0].caption, "Branch A");
+    assert.strictEqual(result.headings[0].level, 2);
+    assert.strictEqual(result.headings[1].caption, "Leaf 1");
+    assert.strictEqual(result.headings[1].level, 3);
+    assert.strictEqual(result.headings[2].caption, "Branch B");
+    assert.strictEqual(result.headings[2].level, 2);
+  });
 
-function testParseHeadingsMultipleH1TreatedAsRootChildren() {
-  // Additional h1 headings after the first are treated as level-2 branches
-  const result = parseHeadings("# Main\n# Section Two\n## Sub");
-  assert.strictEqual(result.rootCaption, "Main");
-  // "Section Two" (level 1 → becomes level 2) and "Sub" (level 2) should appear
-  const captions = result.headings.map(h => h.caption);
-  assert(captions.includes("Section Two"), "Secondary h1 should be included as branch");
-  assert(captions.includes("Sub"));
-}
+  test("additional h1 headings are treated as root children", () => {
+    const result = parseHeadings("# Main\n# Section Two\n## Sub");
+    assert.strictEqual(result.rootCaption, "Main");
+    const captions = result.headings.map(h => h.caption);
+    assert(captions.includes("Section Two"), "Secondary h1 should be included as branch");
+    assert(captions.includes("Sub"));
+  });
 
-function testParseHeadingsReturnsRawLevels() {
-  // parseHeadings() returns raw heading levels as written in the markdown.
-  // Level clamping (max 4) only happens later in parse().
-  const result = parseHeadings("# Root\n## L2\n### L3\n#### L4\n##### L5\n###### L6");
-  // Spread into outer-context array to avoid vm cross-realm deepStrictEqual issues
-  const levels = Array.from(result.headings).map(h => h.level);
-  assert.deepStrictEqual(levels, [2, 3, 4, 5, 6], "parseHeadings must return raw markdown levels unchanged");
-}
+  test("returns raw heading levels unchanged", () => {
+    const result = parseHeadings("# Root\n## L2\n### L3\n#### L4\n##### L5\n###### L6");
+    const levels = Array.from(result.headings).map(h => h.level);
+    assert.deepStrictEqual(levels, [2, 3, 4, 5, 6], "parseHeadings must return raw markdown levels unchanged");
+  });
 
-function testParseHeadingsTrimsTrailingHashes() {
-  // ATX headings can have trailing hashes: ## Heading ##
-  const result = parseHeadings("# Root\n## Branch ## ");
-  assert.strictEqual(result.headings[0].caption, "Branch", "Trailing hashes must be stripped");
-}
+  test("trims trailing hashes from ATX headings", () => {
+    const result = parseHeadings("# Root\n## Branch ## ");
+    assert.strictEqual(result.headings[0].caption, "Branch", "Trailing hashes must be stripped");
+  });
 
-function testParseHeadingsIgnoresCodeBlocks() {
-  const md = [
-    "# Root",
-    "## Branch",
-    "```",
-    "# Inside code block — not a heading",
-    "```",
-    "## After code block",
-  ].join("\n");
-  const result = parseHeadings(md);
-  const captions = result.headings.map(h => h.caption);
-  assert(!captions.includes("Inside code block — not a heading"), "Code blocks must be skipped");
-  assert(captions.includes("After code block"));
-}
+  test("ignores headings inside code blocks", () => {
+    const md = ["# Root", "## Branch", "```", "# Inside code block — not a heading", "```", "## After code block"].join("\n");
+    const result = parseHeadings(md);
+    const captions = result.headings.map(h => h.caption);
+    assert(!captions.includes("Inside code block — not a heading"), "Code blocks must be skipped");
+    assert(captions.includes("After code block"));
+  });
 
-function testParseHeadingsWindowsLineEndings() {
-  const result = parseHeadings("# Root\r\n## Branch A\r\n### Leaf");
-  assert.strictEqual(result.rootCaption, "Root");
-  assert.strictEqual(result.headings.length, 2);
-}
+  test("handles Windows line endings", () => {
+    const result = parseHeadings("# Root\r\n## Branch A\r\n### Leaf");
+    assert.strictEqual(result.rootCaption, "Root");
+    assert.strictEqual(result.headings.length, 2);
+  });
 
-function testParseHeadingsThrowsWithNoHeadings() {
-  assert.throws(
-    () => parseHeadings("just plain text with no headings"),
-    /heading/i,
-    "Should throw when no markdown headings are found"
-  );
-}
+  test("throws when no headings are found", () => {
+    assert.throws(() => parseHeadings("just plain text with no headings"), /heading/i);
+  });
 
-function testParseHeadingsThrowsWithNoH1() {
-  assert.throws(
-    () => parseHeadings("## Branch\n### Leaf"),
-    /top-level heading/i,
-    "Should throw when there is no h1 heading"
-  );
-}
+  test("throws when there is no h1 heading", () => {
+    assert.throws(() => parseHeadings("## Branch\n### Leaf"), /top-level heading/i);
+  });
 
-function testParseHeadingsEmptyStringThrows() {
-  assert.throws(() => parseHeadings(""), /heading/i);
-}
+  test("throws on empty string", () => {
+    assert.throws(() => parseHeadings(""), /heading/i);
+  });
 
-function testParseHeadingsListItemsUnderHeading() {
-  const md = [
-    "# Root",
-    "## Topics",
-    "- Item A",
-    "- Item B",
-    "  - Nested",
-  ].join("\n");
-  const result = parseHeadings(md);
-  const captions = result.headings.map(h => h.caption);
-  assert(captions.includes("Item A"), "List items under heading should be parsed");
-  assert(captions.includes("Item B"));
-  assert(captions.includes("Nested"), "Nested list items should be parsed");
-}
+  test("parses list items under a heading", () => {
+    const md = ["# Root", "## Topics", "- Item A", "- Item B", "  - Nested"].join("\n");
+    const result = parseHeadings(md);
+    const captions = result.headings.map(h => h.caption);
+    assert(captions.includes("Item A"), "List items under heading should be parsed");
+    assert(captions.includes("Item B"));
+    assert(captions.includes("Nested"), "Nested list items should be parsed");
+  });
 
-function testParseHeadingsListItemsIgnoredBeforeFirstHeading() {
-  const md = "- orphan item\n# Root\n## Branch";
-  const result = parseHeadings(md);
-  const captions = result.headings.map(h => h.caption);
-  assert(!captions.includes("orphan item"), "List items before first heading must be ignored");
-}
+  test("ignores list items before the first heading", () => {
+    const result = parseHeadings("- orphan item\n# Root\n## Branch");
+    const captions = result.headings.map(h => h.caption);
+    assert(!captions.includes("orphan item"), "List items before first heading must be ignored");
+  });
 
-function testParseHeadingsNumberedLists() {
-  const md = "# Root\n## Items\n1. First\n2. Second";
-  const result = parseHeadings(md);
-  const captions = result.headings.map(h => h.caption);
-  assert(captions.includes("First"), "Numbered list items should be parsed");
-  assert(captions.includes("Second"));
-}
+  test("parses numbered list items", () => {
+    const result = parseHeadings("# Root\n## Items\n1. First\n2. Second");
+    const captions = result.headings.map(h => h.caption);
+    assert(captions.includes("First"), "Numbered list items should be parsed");
+    assert(captions.includes("Second"));
+  });
 
-function testParseHeadingsDeepNestingLevelsAreRelativeToParentHeading() {
-  const md = "# Root\n## Level2\n- L3 list\n  - L4 nested\n    - L5 deep";
-  const result = parseHeadings(md);
-  const l3 = result.headings.find(h => h.caption === "L3 list");
-  const l4 = result.headings.find(h => h.caption === "L4 nested");
-  const l5 = result.headings.find(h => h.caption === "L5 deep");
-  assert(l3, "Level 3 list item should exist");
-  assert(l4, "Level 4 nested list item should exist");
-  assert(l5, "Level 5 deep nested list item should exist");
-  assert(l3.level < l4.level, "Deeper list nesting = higher level number");
-  assert(l4.level < l5.level);
-}
+  test("deeply nested list items have increasing level numbers", () => {
+    const md = "# Root\n## Level2\n- L3 list\n  - L4 nested\n    - L5 deep";
+    const result = parseHeadings(md);
+    const l3 = result.headings.find(h => h.caption === "L3 list");
+    const l4 = result.headings.find(h => h.caption === "L4 nested");
+    const l5 = result.headings.find(h => h.caption === "L5 deep");
+    assert(l3, "Level 3 list item should exist");
+    assert(l4, "Level 4 nested list item should exist");
+    assert(l5, "Level 5 deep nested list item should exist");
+    assert(l3.level < l4.level, "Deeper list nesting = higher level number");
+    assert(l4.level < l5.level);
+  });
+});
 
-// ─── autoLayout tests ─────────────────────────────────────────────────────────
+// ─── autoLayout ───────────────────────────────────────────────────────────────
 
 function makeLayoutNode(id, childNodes) {
-  const node = {
+  return {
     id: id || "n-" + Math.random().toString(36).slice(2),
     children: childNodes || [],
     getChildren(recursive) {
@@ -311,127 +258,58 @@ function makeLayoutNode(id, childNodes) {
       return all;
     },
   };
-  return node;
 }
 
-function testAutoLayoutSingleChildGoesRight() {
-  const ctx = buildContext();
-  const { autoLayout } = ctx.mindmaps;
-  const child = makeLayoutNode("child");
-  const root = makeLayoutNode("root", [child]);
-  const positions = autoLayout.computePositions(root);
-  assert.strictEqual(positions.length, 1);
-  assert(positions[0].point.x > 0, "Single child should be placed on the right side");
-}
-
-function testAutoLayoutTwoChildrenBalancedLeftRight() {
-  const ctx = buildContext();
-  const { autoLayout } = ctx.mindmaps;
-  const a = makeLayoutNode("a");
-  const b = makeLayoutNode("b");
-  const root = makeLayoutNode("root", [a, b]);
-  const positions = autoLayout.computePositions(root);
-  assert.strictEqual(positions.length, 2);
-  const xValues = positions.map(p => p.point.x);
-  const hasRight = xValues.some(x => x > 0);
-  const hasLeft = xValues.some(x => x < 0);
-  assert(hasRight && hasLeft, "Two children should be split left and right");
-}
-
-function testAutoLayoutNoChildrenReturnsEmpty() {
-  const ctx = buildContext();
-  const { autoLayout } = ctx.mindmaps;
-  const root = makeLayoutNode("root", []);
-  const positions = autoLayout.computePositions(root);
-  // Use length check to avoid cross-realm Array prototype mismatch in deepStrictEqual
-  assert.strictEqual(Array.isArray(positions), true, "computePositions must return an array");
-  assert.strictEqual(positions.length, 0, "Root with no children returns empty positions");
-}
-
-function testAutoLayoutSubtreeHeightLeafIsNodeHeight() {
-  const ctx = buildContext();
-  const { autoLayout } = ctx.mindmaps;
-  const leaf = makeLayoutNode("leaf");
-  assert.strictEqual(autoLayout.getSubtreeHeight(leaf), autoLayout.NODE_HEIGHT);
-}
-
-function testAutoLayoutSubtreeHeightWithChildren() {
-  const ctx = buildContext();
-  const { autoLayout } = ctx.mindmaps;
-  const c1 = makeLayoutNode("c1");
-  const c2 = makeLayoutNode("c2");
-  const parent = makeLayoutNode("parent", [c1, c2]);
-  const expected = 2 * autoLayout.NODE_HEIGHT + autoLayout.CHILD_GAP * 1;
-  assert.strictEqual(autoLayout.getSubtreeHeight(parent), expected);
-}
-
-function testAutoLayoutPositionsIncludeGrandchildren() {
-  const ctx = buildContext();
-  const { autoLayout } = ctx.mindmaps;
-  const grandchild = makeLayoutNode("gc");
-  const child = makeLayoutNode("child", [grandchild]);
-  const root = makeLayoutNode("root", [child]);
-  const positions = autoLayout.computePositions(root);
-  // Both child and grandchild should get positions
-  assert.strictEqual(positions.length, 2, "Both child and grandchild must be positioned");
-  const ids = positions.map(p => p.node.id);
-  assert(ids.includes("child"));
-  assert(ids.includes("gc"));
-}
-
-function testAutoLayoutSymmetricChildrenAreCentered() {
-  const ctx = buildContext();
-  const { autoLayout } = ctx.mindmaps;
-  const c1 = makeLayoutNode("c1");
-  const c2 = makeLayoutNode("c2");
-  const c3 = makeLayoutNode("c3");
-  const c4 = makeLayoutNode("c4");
-  const root = makeLayoutNode("root", [c1, c2, c3, c4]);
-  const positions = autoLayout.computePositions(root);
-  // Positions should be symmetric: sum of all y values close to 0
-  const totalY = positions.reduce((sum, p) => sum + p.point.y, 0);
-  assert(Math.abs(totalY) < 1, `Y positions should be roughly symmetric around zero, got sum=${totalY}`);
-}
-
-// ─── Runner ───────────────────────────────────────────────────────────────────
-
-(function run() {
-  const tests = [
-    // parseHeadings
-    testParseHeadingsBasicHierarchy,
-    testParseHeadingsMultipleH1TreatedAsRootChildren,
-    testParseHeadingsReturnsRawLevels,
-    testParseHeadingsTrimsTrailingHashes,
-    testParseHeadingsIgnoresCodeBlocks,
-    testParseHeadingsWindowsLineEndings,
-    testParseHeadingsThrowsWithNoHeadings,
-    testParseHeadingsThrowsWithNoH1,
-    testParseHeadingsEmptyStringThrows,
-    testParseHeadingsListItemsUnderHeading,
-    testParseHeadingsListItemsIgnoredBeforeFirstHeading,
-    testParseHeadingsNumberedLists,
-    testParseHeadingsDeepNestingLevelsAreRelativeToParentHeading,
-    // autoLayout
-    testAutoLayoutSingleChildGoesRight,
-    testAutoLayoutTwoChildrenBalancedLeftRight,
-    testAutoLayoutNoChildrenReturnsEmpty,
-    testAutoLayoutSubtreeHeightLeafIsNodeHeight,
-    testAutoLayoutSubtreeHeightWithChildren,
-    testAutoLayoutPositionsIncludeGrandchildren,
-    testAutoLayoutSymmetricChildrenAreCentered,
-  ];
-
-  let passed = 0;
-  tests.forEach((fn) => {
-    try {
-      fn();
-      passed++;
-      console.log("PASS", fn.name);
-    } catch (err) {
-      console.error("FAIL", fn.name, "-", err.message);
-      process.exitCode = 1;
-    }
+describe("autoLayout", () => {
+  test("single child is placed on the right side", () => {
+    const root = makeLayoutNode("root", [makeLayoutNode("child")]);
+    const positions = autoLayout.computePositions(root);
+    assert.strictEqual(positions.length, 1);
+    assert(positions[0].point.x > 0, "Single child should be placed on the right side");
   });
 
-  console.log(`\nImportMarkdown: ${passed}/${tests.length} tests passed`);
-})();
+  test("two children are split left and right", () => {
+    const root = makeLayoutNode("root", [makeLayoutNode("a"), makeLayoutNode("b")]);
+    const positions = autoLayout.computePositions(root);
+    assert.strictEqual(positions.length, 2);
+    const xValues = positions.map(p => p.point.x);
+    assert(xValues.some(x => x > 0) && xValues.some(x => x < 0), "Two children should be split left and right");
+  });
+
+  test("root with no children returns empty positions", () => {
+    const positions = autoLayout.computePositions(makeLayoutNode("root", []));
+    assert.strictEqual(Array.isArray(positions), true);
+    assert.strictEqual(positions.length, 0);
+  });
+
+  test("subtree height of a leaf equals NODE_HEIGHT", () => {
+    assert.strictEqual(autoLayout.getSubtreeHeight(makeLayoutNode("leaf")), autoLayout.NODE_HEIGHT);
+  });
+
+  test("subtree height with children includes gaps", () => {
+    const parent = makeLayoutNode("parent", [makeLayoutNode("c1"), makeLayoutNode("c2")]);
+    const expected = 2 * autoLayout.NODE_HEIGHT + autoLayout.CHILD_GAP * 1;
+    assert.strictEqual(autoLayout.getSubtreeHeight(parent), expected);
+  });
+
+  test("positions include grandchildren", () => {
+    const grandchild = makeLayoutNode("gc");
+    const child = makeLayoutNode("child", [grandchild]);
+    const root = makeLayoutNode("root", [child]);
+    const positions = autoLayout.computePositions(root);
+    assert.strictEqual(positions.length, 2, "Both child and grandchild must be positioned");
+    const ids = positions.map(p => p.node.id);
+    assert(ids.includes("child"));
+    assert(ids.includes("gc"));
+  });
+
+  test("symmetric children are centered around y=0", () => {
+    const root = makeLayoutNode("root", [
+      makeLayoutNode("c1"), makeLayoutNode("c2"),
+      makeLayoutNode("c3"), makeLayoutNode("c4"),
+    ]);
+    const positions = autoLayout.computePositions(root);
+    const totalY = positions.reduce((sum, p) => sum + p.point.y, 0);
+    assert(Math.abs(totalY) < 1, `Y positions should be roughly symmetric around zero, got sum=${totalY}`);
+  });
+});

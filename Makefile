@@ -3,13 +3,16 @@ PORT ?= 8080
 DOCROOT ?= .
 PID_FILE ?= .php-server.pid
 
-.PHONY: help check-php serve serve-bg stop test-svg-export test test-e2e test-all install-playwright
+.PHONY: help check-php serve serve-bg stop test test-e2e test-all install-playwright
 
 help:
 	@echo "Available targets:"
 	@echo "  make serve      - Run PHP built-in server in foreground"
 	@echo "  make serve-bg   - Run PHP built-in server in background"
 	@echo "  make stop       - Stop background PHP server"
+	@echo "  make test       - Run all unit tests"
+	@echo "  make test-e2e   - Run Playwright E2E tests (server auto-started)"
+	@echo "  make test-all   - Run unit + E2E tests"
 	@echo ""
 	@echo "Variables (override like: make serve PORT=9000):"
 	@echo "  HOST=$(HOST)"
@@ -47,25 +50,16 @@ stop:
 	fi
 	@rm -f "$(PID_FILE)"
 
-test-svg-export:
-	node tests/export-map-svg.test.js
-
-# Run all Node.js unit tests (no server required)
 test:
-	node tests/export-map-svg.test.js
-	node tests/undo-manager.test.js
-	node tests/import-markdown.test.js
-	node tests/export-markdown.test.js
-	node tests/node-map.test.js
-	@echo ""
-	@echo "All unit tests passed."
+	npm test
 
-# Run Playwright E2E tests (requires: make serve-bg first)
+# Run Playwright E2E tests — PHP server is started automatically via playwright.config.js
 test-e2e:
-	npx playwright test
+	npm run test:e2e
 
-# Run all tests: unit + E2E (requires: make serve-bg first)
-test-all: test test-e2e
+# Run all tests: unit + E2E
+test-all:
+	npm run test:all
 
 # Install Playwright browsers (run once after npm install)
 install-playwright:

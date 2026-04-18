@@ -25,6 +25,12 @@ module.exports = defineConfig({
     },
   ],
 
-  // Requires the PHP server to be running via `make serve-bg` before test run.
-  // webServer is intentionally omitted so tests don't auto-start PHP.
+  // Auto-start the PHP dev server when running E2E tests.
+  // reuseExistingServer: true means an already-running server (e.g. from `make serve-bg`) is used as-is.
+  webServer: {
+    command: `php -S ${process.env.HOST || "127.0.0.1"}:${process.env.PORT || 8080} -t .`,
+    url: "http://127.0.0.1:8080",
+    reuseExistingServer: true,
+    timeout: 10_000,
+  },
 });

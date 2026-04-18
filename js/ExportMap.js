@@ -839,7 +839,7 @@ mindmaps.StaticSVGRenderer = function() {
             width: "100%",
             viewBox: "0 0 " + dimensions.width + " " + dimensions.height
         });
-        var bgData = document.mindmap.root.getPluginData("canvas", "background") || {};
+        var bgData = document.mindmap.getRoot().getPluginData("canvas", "background") || {};
         addSelfTag("rect", {
             x: 0,
             y: 0,
