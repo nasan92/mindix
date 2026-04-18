@@ -1,3 +1,4 @@
+const { test } = require("node:test");
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
@@ -173,225 +174,140 @@ function buildRenderer() {
   return new context.mindmaps.StaticSVGRenderer();
 }
 
-function testBasicVectorOutput() {
-  const root = makeNode("root", "Root", {
-    layout: { offset: { x: 0, y: 0 } }
-  });
-  const childA = makeNode("a", "Alpha", {
-    layout: { offset: { x: 180, y: 80 } }
-  });
-  const childB = makeNode("b", "Beta", {
-    layout: { offset: { x: -180, y: 120 } }
-  });
+// Renderer is stateless between calls — build once for all tests
+const renderer = buildRenderer();
+
+function makeDoc(root, connectedNodes) {
+  return {
+    mindmap: {
+      getRoot() { return root; }
+    },
+    getConnectedNodes() { return connectedNodes || []; }
+  };
+}
+
+// ─── Tests ────────────────────────────────────────────────────────────────────
+
+test("basic vector output", () => {
+  const root = makeNode("root", "Root", { layout: { offset: { x: 0, y: 0 } } });
+  const childA = makeNode("a", "Alpha", { layout: { offset: { x: 180, y: 80 } } });
+  const childB = makeNode("b", "Beta", { layout: { offset: { x: -180, y: 120 } } });
   root.addChild(childA);
   root.addChild(childB);
 
-  const doc = {
-    mindmap: {
-      getRoot() {
-        return root;
-      }
-    },
-    getConnectedNodes() {
-      return [{ from: "a", to: "b", style: "dashed", arrow: "1", color: "#cc0000" }];
-    }
-  };
-
-  const svg = buildRenderer().render(doc);
+  const svg = renderer.render(makeDoc(root, [{ from: "a", to: "b", style: "dashed", arrow: "1", color: "#cc0000" }]));
   assert(svg.includes("<svg "), "Expected SVG root element");
   assert(svg.includes("<path "), "Expected vector branch paths");
   assert(svg.includes("<rect "), "Expected node rectangles");
   assert(svg.includes("<text "), "Expected node text");
-  // Bottom connector rects must carry branch fill color, confirming they were drawn
   assert(svg.includes('fill="#333333"') || svg.includes('fill="#008800"'), "Expected bottom connector rect with branch color");
   assert(!svg.includes('dominant-baseline="text-before-edge"'), "Should not rely on dominant-baseline for alignment");
   assert(!svg.includes('<image href="data:image/png'), "Should not contain PNG fallback image wrapper");
-}
+});
 
-function testExportUsesTightBoundsForRightSideMaps() {
-  const root = makeNode("root", "Root", {
-    layout: { offset: { x: 0, y: 0 } }
-  });
-  const child = makeNode("child", "Alpha", {
-    layout: { offset: { x: 500, y: 20 } }
-  });
+test("tight bounds for right-side-only layout", () => {
+  const root = makeNode("root", "Root", { layout: { offset: { x: 0, y: 0 } } });
+  const child = makeNode("child", "Alpha", { layout: { offset: { x: 500, y: 20 } } });
   root.addChild(child);
 
-  const doc = {
-    mindmap: {
-      getRoot() {
-        return root;
-      }
-    },
-    getConnectedNodes() {
-      return [];
-    }
-  };
-
-  const svg = buildRenderer().render(doc);
+  const svg = renderer.render(makeDoc(root));
   assert(svg.includes('viewBox="0 0 590'), "Expected tight width for right-side only layout");
   assert(svg.includes('transform="translate(25 '), "Expected minimal left padding instead of centering the whole map");
-}
+});
 
-function testMalformedDataDoesNotThrow() {
+test("malformed data does not throw", () => {
   const root = makeNode("root", "Root", {
     layout: { offset: { x: 0, y: 0 } },
     style: {
-      font: {
-        size: 15,
-        color: "#111111"
-      },
-      border: {
-        visible: true,
-        background: "#ffffff"
-      },
+      font: { size: 15, color: "#111111" },
+      border: { visible: true, background: "#ffffff" },
       branchColor: "#444444"
     }
   });
-
-  const child = makeNode("c", "Child", {
-    style: {
-      branchColor: "#008800"
-    }
-  });
+  const child = makeNode("c", "Child", { style: { branchColor: "#008800" } });
   delete child.pluginData.layout;
   root.addChild(child);
 
-  const doc = {
-    mindmap: {
-      getRoot() {
-        return root;
-      }
-    },
-    getConnectedNodes() {
-      return [{ from: "missing", to: "c", style: "dotted", arrow: "2" }];
-    }
-  };
-
-  const svg = buildRenderer().render(doc);
+  const svg = renderer.render(makeDoc(root, [{ from: "missing", to: "c", style: "dotted", arrow: "2" }]));
   assert(svg.includes("<svg "), "Expected SVG generation with malformed plugin data");
-}
+});
 
-function testNodeUrlsAreClickableInSvg() {
+test("node URLs are clickable in SVG", () => {
   const urlNodeColor = "#ff5500";
-  const root = makeNode("root", "Root", {
-    layout: { offset: { x: 0, y: 0 } }
-  });
+  const root = makeNode("root", "Root", { layout: { offset: { x: 0, y: 0 } } });
   const childWithUrl = makeNode("a", "Click Me", {
     layout: { offset: { x: 180, y: 80 } },
     url: { urls: ["https://example.com"] },
-    style: {
-      font: {
-        color: urlNodeColor
-      }
-    }
+    style: { font: { color: urlNodeColor } }
   });
-  const childNoUrl = makeNode("b", "No URL", {
-    layout: { offset: { x: -180, y: 120 } }
-  });
+  const childNoUrl = makeNode("b", "No URL", { layout: { offset: { x: -180, y: 120 } } });
   root.addChild(childWithUrl);
   root.addChild(childNoUrl);
 
-  const doc = {
-    mindmap: {
-      getRoot() {
-        return root;
-      }
-    },
-    getConnectedNodes() {
-      return [];
-    }
-  };
-
-  const svg = buildRenderer().render(doc);
-  // Verify xlink namespace
+  const svg = renderer.render(makeDoc(root));
   assert(svg.includes('xmlns:xlink="http://www.w3.org/1999/xlink"'), "Expected xlink namespace declaration in SVG");
-  // Verify link anchor with correct URL
   assert(svg.includes('xlink:href="https://example.com"'), "Expected anchor tag with xlink:href for node with URL");
   assert(svg.includes('target="_blank"'), "Expected target=_blank attribute on link");
-  // Verify icon elements for the link (chain-link style) and font-color binding
   assert(svg.includes('<rect') && svg.includes('stroke="' + urlNodeColor + '"'), "Expected rect element for chain-link icon with font color");
   assert(svg.includes('transform="rotate(-35'), "Expected rotated link segments in icon");
   assert(svg.includes('<line') && svg.includes('stroke="' + urlNodeColor + '"'), "Expected connector line for chain-link icon with font color");
-  // Verify anchor structure exists
   assert(svg.includes("<a ") && svg.includes("</a>"), "Expected anchor elements wrapping the URL icon");
-  // Verify node rectangles still exist (nodes should be clickable normally, not via link)
   const rects = (svg.match(/<rect/g) || []).length;
   assert(rects >= 3, "Expected at least 3 rectangles (background + nodes)");
-}
+});
 
-function testCurvedConnectionsRenderAsSvgPaths() {
-  const root = makeNode("root", "Root", {
-    layout: { offset: { x: 0, y: 0 } }
-  });
-  const childA = makeNode("a", "Alpha", {
-    layout: { offset: { x: 180, y: 80 } }
-  });
-  const childB = makeNode("b", "Beta", {
-    layout: { offset: { x: -180, y: 120 } }
-  });
+test("curved connections render as SVG paths", () => {
+  const root = makeNode("root", "Root", { layout: { offset: { x: 0, y: 0 } } });
+  const childA = makeNode("a", "Alpha", { layout: { offset: { x: 180, y: 80 } } });
+  const childB = makeNode("b", "Beta", { layout: { offset: { x: -180, y: 120 } } });
   root.addChild(childA);
   root.addChild(childB);
 
-  const doc = {
-    mindmap: {
-      getRoot() {
-        return root;
-      }
-    },
-    getConnectedNodes() {
-      return [{
-        from: "a",
-        to: "b",
-        style: "solid",
-        shape: "curved",
-        arrow: "2",
-        color: "#0055aa",
-        curve1T: 0.2,
-        curve1N: 0.35,
-        curve2T: 0.8,
-        curve2N: -0.3
-      }];
-    }
-  };
-
-  const svg = buildRenderer().render(doc);
+  const svg = renderer.render(makeDoc(root, [{
+    from: "a", to: "b", style: "solid", shape: "curved", arrow: "2", color: "#0055aa",
+    curve1T: 0.2, curve1N: 0.35, curve2T: 0.8, curve2N: -0.3
+  }]));
   assert(svg.includes('stroke="#0055aa"'), "Expected curved connector stroke color in SVG");
   assert(svg.includes(' C '), "Expected cubic bezier command for curved connector");
   assert(svg.includes('<polygon '), "Expected arrow polygons for curved connector");
-}
+});
 
-function testRootMultiLineTextUsesZeroCoordinates() {
-  const root = makeNode("root", "ERKENNTNISTHEORIE\nDenkrichtungen", {
-    layout: { offset: { x: 0, y: 0 } }
-  });
+test("root multi-line text uses zero coordinates", () => {
+  const root = makeNode("root", "ERKENNTNISTHEORIE\nDenkrichtungen", { layout: { offset: { x: 0, y: 0 } } });
 
-  const doc = {
-    mindmap: {
-      getRoot() {
-        return root;
-      }
-    },
-    getConnectedNodes() {
-      return [];
-    }
-  };
-
-  const svg = buildRenderer().render(doc);
+  const svg = renderer.render(makeDoc(root));
   assert(svg.includes('x="0" y="0" width="'), "Expected root SVG background to use zero coordinates");
   assert(svg.includes('<tspan x="0" y="32">ERKENNTNISTHEORIE</tspan>'), "Expected first root-line tspan to preserve x coordinate");
   assert(svg.includes('<tspan x="0" y="47">Denkrichtungen</tspan>'), "Expected second root-line tspan to preserve x coord");
-}
+});
 
-(function run() {
-  const tests = [testBasicVectorOutput, testExportUsesTightBoundsForRightSideMaps, testMalformedDataDoesNotThrow, testNodeUrlsAreClickableInSvg, testCurvedConnectionsRenderAsSvgPaths, testRootMultiLineTextUsesZeroCoordinates];
-  let passed = 0;
-
-  tests.forEach((fn) => {
-    fn();
-    passed += 1;
-    console.log("PASS", fn.name);
+test("background color is preserved in SVG export", () => {
+  const bgColor = "#aabbcc";
+  const root = makeNode("root", "Root", {
+    layout: { offset: { x: 0, y: 0 } },
+    canvas: { background: { color: bgColor } }
   });
+  const child = makeNode("a", "Child", { layout: { offset: { x: 180, y: 80 } } });
+  root.addChild(child);
 
-  console.log("All SVG export tests passed:", passed);
-})();
+  const svg = renderer.render(makeDoc(root));
+  // The canvas background rect is always the first <rect> in the SVG output
+  const firstRectMatch = svg.match(/<rect[^>]*>/);
+  assert(firstRectMatch, "Expected at least one rect element in SVG");
+  assert(
+    firstRectMatch[0].includes('fill="' + bgColor + '"'),
+    "Expected background rect to carry the set background color: " + bgColor + ", got: " + firstRectMatch[0]
+  );
+});
+
+test("background color defaults to white when not set", () => {
+  const root = makeNode("root", "Root", { layout: { offset: { x: 0, y: 0 } } });
+
+  const svg = renderer.render(makeDoc(root));
+  const firstRectMatch = svg.match(/<rect[^>]*>/);
+  assert(firstRectMatch, "Expected at least one rect element in SVG");
+  assert(
+    firstRectMatch[0].includes('fill="#ffffff"'),
+    "Expected background rect to default to #ffffff when no background color is set, got: " + firstRectMatch[0]
+  );
+});

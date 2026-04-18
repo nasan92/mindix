@@ -3,13 +3,16 @@ PORT ?= 8080
 DOCROOT ?= .
 PID_FILE ?= .php-server.pid
 
-.PHONY: help check-php serve serve-bg stop test-svg-export
+.PHONY: help check-php serve serve-bg stop test test-e2e test-all install-playwright
 
 help:
 	@echo "Available targets:"
 	@echo "  make serve      - Run PHP built-in server in foreground"
 	@echo "  make serve-bg   - Run PHP built-in server in background"
 	@echo "  make stop       - Stop background PHP server"
+	@echo "  make test       - Run all unit tests"
+	@echo "  make test-e2e   - Run Playwright E2E tests (server auto-started)"
+	@echo "  make test-all   - Run unit + E2E tests"
 	@echo ""
 	@echo "Variables (override like: make serve PORT=9000):"
 	@echo "  HOST=$(HOST)"
@@ -47,5 +50,17 @@ stop:
 	fi
 	@rm -f "$(PID_FILE)"
 
-test-svg-export:
-	node tests/export-map-svg.test.js
+test:
+	npm test
+
+# Run Playwright E2E tests — PHP server is started automatically via playwright.config.js
+test-e2e:
+	npm run test:e2e
+
+# Run all tests: unit + E2E
+test-all:
+	npm run test:all
+
+# Install Playwright browsers (run once after npm install)
+install-playwright:
+	npx playwright install --with-deps chromium
