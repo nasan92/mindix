@@ -268,12 +268,16 @@ mindmaps.StaticCanvasRenderer = function() {
       var pos = node.getPosition();
       var tm = node.textMetrics;
 
-      if (pos.x < minX) {
-        minX = pos.x;
+      // Root node is drawn centered at pos.x, so its left edge is pos.x - width/2
+      var leftEdge = node.isRoot() ? pos.x - tm.width / 2 : pos.x;
+      var rightEdge = node.isRoot() ? pos.x + tm.width / 2 : pos.x + tm.width;
+
+      if (leftEdge < minX) {
+        minX = leftEdge;
       }
 
-      if (pos.x + tm.width > maxX) {
-        maxX = pos.x + tm.width;
+      if (rightEdge > maxX) {
+        maxX = rightEdge;
       }
 
       if (pos.y < minY) {

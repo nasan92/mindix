@@ -200,11 +200,16 @@ mindmaps.StaticSVGRenderer = function() {
         function updateBounds(node) {
             var pos = getPositionSafe(node);
             var metrics = node.textMetrics;
-            if (pos.x < minX) {
-                minX = pos.x
+
+            // Root node is drawn centered at pos.x, so its left edge is pos.x - width/2
+            var leftEdge = node.isRoot() ? pos.x - metrics.width / 2 : pos.x;
+            var rightEdge = node.isRoot() ? pos.x + metrics.width / 2 : pos.x + metrics.width;
+
+            if (leftEdge < minX) {
+                minX = leftEdge
             }
-            if (pos.x + metrics.width > maxX) {
-                maxX = pos.x + metrics.width
+            if (rightEdge > maxX) {
+                maxX = rightEdge
             }
             if (pos.y < minY) {
                 minY = pos.y
