@@ -19,6 +19,12 @@ mindmaps.autoLayout = {
         return Math.max(nodeHeight, lines * lineHeight + padding);
     },
 
+    estimateNodeWidth: function(node) {
+        var caption = (node.getCaption && node.getCaption()) || '';
+        // ~9px per character for sans-serif 15px; min 60px
+        return Math.max(60, caption.length * 9);
+    },
+
     getSubtreeHeight: function(node, compact) {
         var children = node.getChildren();
         if (!children.length) return this.estimateNodeHeight(node, compact);
@@ -38,6 +44,19 @@ mindmaps.autoLayout = {
         var childGap = compact ? this.COMPACT_CHILD_GAP : this.CHILD_GAP;
         var levelX = compact ? this.COMPACT_LEVEL_X : this.LEVEL_X;
         var rootX = compact ? this.COMPACT_ROOT_X : this.ROOT_X;
+        // Minimum gap between a node's edge and its child's near edge (in pixels).
+        var branchGap = compact ? 10 : 20;
+
+        // Returns the x-offset to use for a child given the layout direction.
+        // Right side: child's left edge must clear the parent's right edge.
+        // Left side:  child's right edge must clear the parent's left edge.
+        function xOffset(parentNode, childNode, direction, baseX) {
+            if (direction > 0) {
+                return Math.max(baseX, self.estimateNodeWidth(parentNode) + branchGap);
+            } else {
+                return -Math.max(baseX, self.estimateNodeWidth(childNode) + branchGap);
+            }
+        }
 
         function layoutSubtree(node, direction) {
             var children = node.getChildren();
@@ -49,7 +68,7 @@ mindmaps.autoLayout = {
             var y = -total / 2;
             children.forEach(function(child, i) {
                 var center = y + heights[i] / 2;
-                positions.push({ node: child, point: new mindmaps.Point(direction * levelX, center) });
+                positions.push({ node: child, point: new mindmaps.Point(xOffset(node, child, direction, levelX), center) });
                 y += heights[i] + childGap;
                 layoutSubtree(child, direction);
             });
@@ -72,7 +91,7 @@ mindmaps.autoLayout = {
             var y = -total / 2;
             group.forEach(function(child, i) {
                 var center = y + heights[i] / 2;
-                positions.push({ node: child, point: new mindmaps.Point(direction * rootX, center) });
+                positions.push({ node: child, point: new mindmaps.Point(xOffset(rootNode, child, direction, rootX), center) });
                 y += heights[i] + childGap;
                 layoutSubtree(child, direction);
             });
