@@ -48,13 +48,16 @@ mindmaps.autoLayout = {
         var branchGap = compact ? 10 : 20;
 
         // Returns the x-offset to use for a child given the layout direction.
-        // Right side: child's left edge must clear the parent's right edge.
-        // Left side:  child's right edge must clear the parent's left edge.
+        // Branch line length is equal on both sides:
+        //   right: child left edge at rightX, branch = rightX - parentWidth
+        //   left:  child right edge at same distance from parent left edge → childX = parentWidth - rightX - childWidth
         function xOffset(parentNode, childNode, direction, baseX) {
+            var parentWidth = self.estimateNodeWidth(parentNode);
+            var rightX = Math.max(baseX, parentWidth + branchGap);
             if (direction > 0) {
-                return Math.max(baseX, self.estimateNodeWidth(parentNode) + branchGap);
+                return rightX;
             } else {
-                return -Math.max(baseX, self.estimateNodeWidth(childNode) + branchGap);
+                return parentWidth - rightX - self.estimateNodeWidth(childNode);
             }
         }
 
