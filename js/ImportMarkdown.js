@@ -77,10 +77,13 @@ mindmaps.autoLayout = {
         var children = rootNode.getChildren();
         var rightGroup = [];
         var leftGroup = [];
+        var half = Math.ceil(children.length / 2);
         children.forEach(function(child, i) {
-            if (i % 2 === 0) rightGroup.push(child);
+            if (i < half) rightGroup.push(child);
             else leftGroup.push(child);
         });
+        // Reverse left group so placement goes bottom-to-top, continuing clockwise from right side.
+        leftGroup.reverse();
 
         function placeGroup(group, direction) {
             if (!group.length) return;
