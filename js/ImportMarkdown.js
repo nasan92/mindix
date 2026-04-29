@@ -4,41 +4,53 @@ mindmaps.autoLayout = {
     ROOT_X: 300,
     LEVEL_X: 260,
 
-    estimateNodeHeight: function(node) {
+    COMPACT_NODE_HEIGHT: 28,
+    COMPACT_CHILD_GAP: 8,
+    COMPACT_ROOT_X: 180,
+    COMPACT_LEVEL_X: 160,
+
+    estimateNodeHeight: function(node, compact) {
+        var nodeHeight = compact ? this.COMPACT_NODE_HEIGHT : this.NODE_HEIGHT;
         var caption = (node.getCaption && node.getCaption()) || '';
-        var charsPerLine = 18;
+        var charsPerLine = compact ? 22 : 18;
+        var lineHeight = compact ? 18 : 22;
+        var padding = compact ? 6 : 12;
         var lines = Math.max(1, Math.ceil(caption.length / charsPerLine));
-        return Math.max(this.NODE_HEIGHT, lines * 22 + 12);
+        return Math.max(nodeHeight, lines * lineHeight + padding);
     },
 
-    getSubtreeHeight: function(node) {
+    getSubtreeHeight: function(node, compact) {
         var children = node.getChildren();
-        if (!children.length) return this.estimateNodeHeight(node);
+        if (!children.length) return this.estimateNodeHeight(node, compact);
         var total = 0;
         var self = this;
         children.forEach(function(child) {
-            total += self.getSubtreeHeight(child);
+            total += self.getSubtreeHeight(child, compact);
         });
-        total += this.CHILD_GAP * (children.length - 1);
+        var childGap = compact ? this.COMPACT_CHILD_GAP : this.CHILD_GAP;
+        total += childGap * (children.length - 1);
         return total;
     },
 
-    computePositions: function(rootNode) {
+    computePositions: function(rootNode, compact) {
         var positions = [];
         var self = this;
+        var childGap = compact ? this.COMPACT_CHILD_GAP : this.CHILD_GAP;
+        var levelX = compact ? this.COMPACT_LEVEL_X : this.LEVEL_X;
+        var rootX = compact ? this.COMPACT_ROOT_X : this.ROOT_X;
 
         function layoutSubtree(node, direction) {
             var children = node.getChildren();
             if (!children.length) return;
             var heights = children.map(function(child) {
-                return self.getSubtreeHeight(child);
+                return self.getSubtreeHeight(child, compact);
             });
-            var total = heights.reduce(function(a, b) { return a + b; }, 0) + self.CHILD_GAP * (children.length - 1);
+            var total = heights.reduce(function(a, b) { return a + b; }, 0) + childGap * (children.length - 1);
             var y = -total / 2;
             children.forEach(function(child, i) {
                 var center = y + heights[i] / 2;
-                positions.push({ node: child, point: new mindmaps.Point(direction * self.LEVEL_X, center) });
-                y += heights[i] + self.CHILD_GAP;
+                positions.push({ node: child, point: new mindmaps.Point(direction * levelX, center) });
+                y += heights[i] + childGap;
                 layoutSubtree(child, direction);
             });
         }
@@ -54,14 +66,14 @@ mindmaps.autoLayout = {
         function placeGroup(group, direction) {
             if (!group.length) return;
             var heights = group.map(function(child) {
-                return self.getSubtreeHeight(child);
+                return self.getSubtreeHeight(child, compact);
             });
-            var total = heights.reduce(function(a, b) { return a + b; }, 0) + self.CHILD_GAP * (group.length - 1);
+            var total = heights.reduce(function(a, b) { return a + b; }, 0) + childGap * (group.length - 1);
             var y = -total / 2;
             group.forEach(function(child, i) {
                 var center = y + heights[i] / 2;
-                positions.push({ node: child, point: new mindmaps.Point(direction * self.ROOT_X, center) });
-                y += heights[i] + self.CHILD_GAP;
+                positions.push({ node: child, point: new mindmaps.Point(direction * rootX, center) });
+                y += heights[i] + childGap;
                 layoutSubtree(child, direction);
             });
         }

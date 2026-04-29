@@ -22,6 +22,7 @@ mindmaps.InspectorView = function() {
         A = $("#inspector-button-connect-node", o),
         N = $("#inspector-button-connect-node-remove", o),
         Q = $("#inspector-button-auto-arrange", o).button(),
+        K = $("#inspector-button-compact-arrange", o).button(),
         T = $("#inspector-color-theme-select", o),
         F = $("#inspector-checkbox-map-grid", o),
         S = $("#inspector-branch-color-picker", o),
@@ -245,6 +246,8 @@ mindmaps.InspectorView = function() {
             e.connectNodeRemoveButtonClicked && e.connectNodeRemoveButtonClicked()
         }), Q.click(function() {
             e.autoArrangeButtonClicked && e.autoArrangeButtonClicked()
+        }), K.click(function() {
+            e.compactArrangeButtonClicked && e.compactArrangeButtonClicked()
         }), _.chain(mindmaps.plugins).sortBy("startOrder").each(function(e) {
             e.inspectorAdviser && e.inspectorAdviser.onInit && e.inspectorAdviser.onInit($("#inspector-table", o))
         }), R(), I()
@@ -464,6 +467,11 @@ mindmaps.InspectorView = function() {
         var n = o.getMindMap();
         if (!n || !n.root) return;
         var e = new mindmaps.action.AutoArrangeAction(n.root);
+        o.executeAction(e)
+    }, t.compactArrangeButtonClicked = function() {
+        var n = o.getMindMap();
+        if (!n || !n.root) return;
+        var e = new mindmaps.action.CompactArrangeAction(n.root);
         o.executeAction(e)
     }, e.subscribe(mindmaps.Event.NODE_FONT_CHANGED, function(e) {
         o.selectedNode === e && i(e)
