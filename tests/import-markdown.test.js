@@ -313,3 +313,55 @@ describe("autoLayout", () => {
     assert(Math.abs(totalY) < 1, `Y positions should be roughly symmetric around zero, got sum=${totalY}`);
   });
 });
+
+// ─── parse (tree structure) ───────────────────────────────────────────────────
+
+describe("parse", () => {
+  test("nested list items become children, not siblings", () => {
+    const ctx2 = buildContext();
+    const doc = ctx2.mindmaps.MarkdownImportParser.parse(
+      "# Root\n## Topics\n- Item A\n  - Sub Item\n- Item B"
+    );
+    const root = doc.mindmap.getRoot();
+    const topics = root.children.find(n => n.getCaption() === "Topics");
+    assert(topics, "Topics node should exist");
+    const itemA = topics.children.find(n => n.getCaption() === "Item A");
+    assert(itemA, "Item A should be a child of Topics");
+    const subItem = itemA.children.find(n => n.getCaption() === "Sub Item");
+    assert(subItem, "Sub Item should be a child of Item A");
+    assert.strictEqual(
+      topics.children.find(n => n.getCaption() === "Sub Item"),
+      undefined,
+      "Sub Item must NOT appear as a sibling of Item A"
+    );
+  });
+
+  test("nested list items under h3 heading become children", () => {
+    const ctx2 = buildContext();
+    const doc = ctx2.mindmaps.MarkdownImportParser.parse(
+      "# Root\n### Deep\n- Item\n  - Sub Item"
+    );
+    const root = doc.mindmap.getRoot();
+    const deep = root.children.find(n => n.getCaption() === "Deep");
+    assert(deep, "Deep node should exist as root child");
+    const item = deep.children.find(n => n.getCaption() === "Item");
+    assert(item, "Item should be a child of Deep");
+    const subItem = item.children.find(n => n.getCaption() === "Sub Item");
+    assert(subItem, "Sub Item should be a child of Item, not a sibling");
+  });
+
+  test("three levels of list nesting produce correct hierarchy", () => {
+    const ctx2 = buildContext();
+    const doc = ctx2.mindmaps.MarkdownImportParser.parse(
+      "# Root\n## H2\n- A\n  - B\n    - C"
+    );
+    const root = doc.mindmap.getRoot();
+    const h2 = root.children.find(n => n.getCaption() === "H2");
+    const a = h2.children.find(n => n.getCaption() === "A");
+    const b = a.children.find(n => n.getCaption() === "B");
+    const c = b.children.find(n => n.getCaption() === "C");
+    assert(a, "A should be child of H2");
+    assert(b, "B should be child of A");
+    assert(c, "C should be child of B");
+  });
+});

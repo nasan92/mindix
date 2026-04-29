@@ -1,12 +1,19 @@
 mindmaps.autoLayout = {
     NODE_HEIGHT: 50,
-    CHILD_GAP: 22,
-    ROOT_X: 260,
-    LEVEL_X: 200,
+    CHILD_GAP: 30,
+    ROOT_X: 300,
+    LEVEL_X: 260,
+
+    estimateNodeHeight: function(node) {
+        var caption = (node.getCaption && node.getCaption()) || '';
+        var charsPerLine = 18;
+        var lines = Math.max(1, Math.ceil(caption.length / charsPerLine));
+        return Math.max(this.NODE_HEIGHT, lines * 22 + 12);
+    },
 
     getSubtreeHeight: function(node) {
         var children = node.getChildren();
-        if (!children.length) return this.NODE_HEIGHT;
+        if (!children.length) return this.estimateNodeHeight(node);
         var total = 0;
         var self = this;
         children.forEach(function(child) {
@@ -90,9 +97,6 @@ mindmaps.MarkdownImportParser = {
             if (level < 2) {
                 level = 2
             }
-            if (level > 4) {
-                level = 4
-            }
 
             var parentLevel = level - 1;
             while (parentLevel >= 1 && !stack[parentLevel]) {
@@ -113,7 +117,7 @@ mindmaps.MarkdownImportParser = {
             parent.addChild(node);
 
             stack[level] = node;
-            for (var clearLevel = level + 1; clearLevel <= 6; clearLevel++) {
+            for (var clearLevel = level + 1; clearLevel <= 20; clearLevel++) {
                 delete stack[clearLevel]
             }
         });
