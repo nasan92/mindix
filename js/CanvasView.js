@@ -1658,6 +1658,7 @@ mindmaps.DefaultCanvasView = function() {
         }).appendTo(h);
         var T = s.getTextMetrics(n, this.zoomFactor);
         x.css(T);
+        if (n.isRoot()) x.css({left: -T.width / 2});
         var N = $("<div/>", {
             id: "node-pluginIcons-" + n.id,
             "class": "node-pluginIcons"
@@ -1831,6 +1832,7 @@ mindmaps.DefaultCanvasView = function() {
         var n = h(e);
         var r = s.getTextMetrics(e, this.zoomFactor, t);
         n.css(r).text(t);
+        if (e.isRoot()) n.css({left: -r.width / 2});
         mindmaps.util.plugins.ui.placeOnNode(mindmaps.util.plugins.ui.pluginIcons(e), e)
     };
     this.getCreator = function() {
@@ -1948,6 +1950,7 @@ mindmaps.DefaultCanvasView = function() {
             "padding-top": "0px",
             "text-align": textAlign
         });
+        if (e.isRoot()) r.css({left: -f.width / 2});
         if (u) {
             r.css("background", bkgrnd);
             r.css("background-size", bkgrndsize);
@@ -2027,7 +2030,7 @@ mindmaps.DefaultCanvasView = function() {
         var u = s.getTextMetrics(r, this.zoomFactor);
         o.css({
             "font-size": t * 100 + "%",
-            left: t * -mindmaps.TextMetrics.ROOT_CAPTION_MIN_WIDTH / 2
+            left: -u.width / 2
         }).css(u);
         var a = $("#node-pluginIcons-" + r.id);
         mindmaps.util.plugins.ui.placeOnNode(a, r);

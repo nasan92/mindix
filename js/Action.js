@@ -509,3 +509,12 @@ mindmaps.action.AutoArrangeAction = function(rootNode) {
     });
 };
 mindmaps.action.AutoArrangeAction.prototype = new mindmaps.action.CompositeAction;
+mindmaps.action.CompactArrangeAction = function(rootNode) {
+    mindmaps.action.CompositeAction.call(this);
+    var self = this;
+    var positions = mindmaps.autoLayout.computePositions(rootNode, true);
+    positions.forEach(function(p) {
+        self.addAction(new mindmaps.action.MoveNodeAction(p.node, p.point));
+    });
+};
+mindmaps.action.CompactArrangeAction.prototype = new mindmaps.action.CompositeAction;
