@@ -131,10 +131,14 @@
             e.stopPropagation();
             nativeInput[0].click();
         });
-        nativeInput.on("input change", function() {
+        nativeInput.on("input", function() {
             var hex = $(this).val();
             hexInput.val(hex.replace("#", ""));
             previewSwatch.css("background-color", hex);
+            $.fn.colorPicker.previewColor(hex);
+        });
+        nativeInput.on("change", function() {
+            var hex = $(this).val();
             $.fn.colorPicker.changeColor(hex);
         });
 
