@@ -311,3 +311,62 @@ test("background color defaults to white when not set", () => {
     "Expected background rect to default to #ffffff when no background color is set, got: " + firstRectMatch[0]
   );
 });
+
+test("node with image renders <image> element in SVG", () => {
+  const imageDataUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+  const root = makeNode("root", "Root", { layout: { offset: { x: 0, y: 0 } } });
+  const child = makeNode("img-node", "With Image", {
+    layout: { offset: { x: 200, y: 60 } },
+    image: { data: { data: imageDataUrl, width: "50", height: "40", align: "top" } }
+  });
+  root.addChild(child);
+
+  const svg = renderer.render(makeDoc(root));
+  assert(svg.includes("<image "), "Expected <image> element for node with image");
+  assert(svg.includes('href="' + imageDataUrl + '"'), "Expected image href to contain the data URL");
+  assert(svg.includes('width="50"'), "Expected image width attribute");
+  assert(svg.includes('height="40"'), "Expected image height attribute");
+});
+
+test("node image is rendered after rect so it is not hidden", () => {
+  const imageDataUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+  const root = makeNode("root", "Root", { layout: { offset: { x: 0, y: 0 } } });
+  const child = makeNode("img-node", "With Image", {
+    layout: { offset: { x: 200, y: 60 } },
+    image: { data: { data: imageDataUrl, width: "50", height: "40", align: "top" } }
+  });
+  root.addChild(child);
+
+  const svg = renderer.render(makeDoc(root));
+  const imagePos = svg.indexOf("<image ");
+  const rectPos = svg.lastIndexOf("<rect ", imagePos);
+  assert(imagePos !== -1, "Expected <image> element in SVG");
+  assert(rectPos !== -1, "Expected <rect> element before <image>");
+  assert(rectPos < imagePos, "Expected <rect> to appear before <image> so image is drawn on top of the node background");
+});
+
+test("node image alignment modes all render <image> element", () => {
+  const imageDataUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+
+  for (const align of ["top", "bottom", "left", "right", "center"]) {
+    const root = makeNode("root", "Root", { layout: { offset: { x: 0, y: 0 } } });
+    const child = makeNode("img-node", "With Image", {
+      layout: { offset: { x: 200, y: 60 } },
+      image: { data: { data: imageDataUrl, width: "50", height: "40", align } }
+    });
+    root.addChild(child);
+
+    const svg = renderer.render(makeDoc(root));
+    assert(svg.includes("<image "), "Expected <image> element for align=" + align);
+    assert(svg.includes('href="' + imageDataUrl + '"'), "Expected image href for align=" + align);
+  }
+});
+
+test("node without image does not render <image> element", () => {
+  const root = makeNode("root", "Root", { layout: { offset: { x: 0, y: 0 } } });
+  const child = makeNode("plain", "No Image", { layout: { offset: { x: 200, y: 60 } } });
+  root.addChild(child);
+
+  const svg = renderer.render(makeDoc(root));
+  assert(!svg.includes("<image "), "Expected no <image> element when node has no image");
+});
