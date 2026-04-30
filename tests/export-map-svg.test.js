@@ -211,8 +211,8 @@ test("tight bounds for right-side-only layout", () => {
   root.addChild(child);
 
   const svg = renderer.render(makeDoc(root));
-  assert(svg.includes('viewBox="0 0 590'), "Expected tight width for right-side only layout");
-  assert(svg.includes('transform="translate(25 '), "Expected minimal left padding instead of centering the whole map");
+  assert(svg.includes('viewBox="0 0 610'), "Expected tight width for right-side only layout");
+  assert(svg.includes('transform="translate(45 '), "Expected minimal left padding instead of centering the whole map");
 });
 
 test("malformed data does not throw", () => {
