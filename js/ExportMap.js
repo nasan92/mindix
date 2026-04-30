@@ -726,13 +726,6 @@ mindmaps.StaticSVGRenderer = function() {
                     }
                 }
 
-                addSelfTag("image", {
-                    href: imageData.data,
-                    x: imageX,
-                    y: imageY,
-                    width: imageWidth,
-                    height: imageHeight
-                })
             }
 
             var borderVisible = borderIsVisible(border);
@@ -753,6 +746,16 @@ mindmaps.StaticSVGRenderer = function() {
                 rectAttrs["stroke-dasharray"] = borderDash
             }
             addSelfTag("rect", rectAttrs);
+
+            if (imageData) {
+                addSelfTag("image", {
+                    href: imageData.data,
+                    x: imageX,
+                    y: imageY,
+                    width: imageWidth,
+                    height: imageHeight
+                })
+            }
 
             var lines = (node.getCaption() || "").split(/\r\n|\r|\n/g);
             var baselineShift = toNumber(font.size, 15) * .8;
