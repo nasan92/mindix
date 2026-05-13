@@ -10,19 +10,25 @@ mindmaps.autoLayout = {
     COMPACT_LEVEL_X: 160,
 
     estimateNodeHeight: function(node, compact) {
-        var nodeHeight = compact ? this.COMPACT_NODE_HEIGHT : this.NODE_HEIGHT;
         var caption = (node.getCaption && node.getCaption()) || '';
-        var charsPerLine = compact ? 22 : 18;
-        var lineHeight = compact ? 18 : 22;
-        var padding = compact ? 6 : 12;
+        var fontData = node.getPluginData && node.getPluginData("style", "font");
+        var fontSize = (fontData && fontData.size) || 15;
+        var fontScale = fontSize / 15;
+        var baseHeight = (compact ? this.COMPACT_NODE_HEIGHT : this.NODE_HEIGHT) * fontScale;
+        var charsPerLine = Math.max(1, Math.floor((compact ? 22 : 18) / fontScale));
+        var lineHeight = (compact ? 18 : 22) * fontScale;
+        var padding = (compact ? 6 : 12) * fontScale;
         var lines = Math.max(1, Math.ceil(caption.length / charsPerLine));
-        return Math.max(nodeHeight, lines * lineHeight + padding);
+        return Math.max(baseHeight, lines * lineHeight + padding);
     },
 
     estimateNodeWidth: function(node) {
         var caption = (node.getCaption && node.getCaption()) || '';
-        // ~9px per character for sans-serif 15px; min 60px
-        return Math.max(60, caption.length * 9);
+        var fontData = node.getPluginData && node.getPluginData("style", "font");
+        var fontSize = (fontData && fontData.size) || 15;
+        var fontScale = fontSize / 15;
+        var pxPerChar = 9 * fontScale;
+        return Math.max(60 * fontScale, caption.length * pxPerChar);
     },
 
     getSubtreeHeight: function(node, compact) {
